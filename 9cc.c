@@ -12,6 +12,14 @@ typedef struct Node {
 	struct Node *rhs;
 } Node;
 
+typedef struct Vector {
+	void **data;
+	int capacity;
+	int len;
+} Vector;
+
+Vector *new_vector();
+void vec_push(Vector*, void*)
 Node *new_node(int, Node*, Node*);
 Node *new_node_num(int);
 int consume(int);
@@ -31,6 +39,21 @@ enum {
 	ND_NUM = 256,
 };
 
+Vector *new_vector() {
+	Vector *vec = malloc(sizeof(Vector));
+	vec->data = malloc(sizeof(void *) * 16);
+	vec->capacity = 16;
+	vec->len = 0;
+	return vec;
+}
+
+void vec_push(Vector *vec, void *elem) {
+	if (vec->capacity == vec->len) {
+		vec->capacity *= 2;
+		vec->data = realloc(vec->data, sizeof(void *) * vec->capacity);
+	}
+	vec->data[vec->len++] = elem;
+}
 
 Node *new_node(int type, Node *lhs, Node *rhs) {
 	Node *node = malloc(sizeof(Node));
@@ -39,7 +62,6 @@ Node *new_node(int type, Node *lhs, Node *rhs) {
 	node->rhs = rhs;
 	return node;
 }
-
 Node *new_node_num(int value) {
 	Node *node = malloc(sizeof(Node));
 	node->type = ND_NUM;
