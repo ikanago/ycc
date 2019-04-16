@@ -1,7 +1,8 @@
-9cc: 9cc.c
+9cc: main.c 9cc.c
+	gcc main.c 9cc.c -o main
 
-test: 9cc 
+test: main.c 9cc.c 
 	./test.sh
 
 clean:
-	rm -f 9cc *.o *~ tmp*
+	rm -f 9cc main *.o *~ tmp*

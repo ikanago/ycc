@@ -3,41 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "9cc.h"
+
 int pos = 0;
-
-typedef struct Node {
-	int type;
-	int value;
-	struct Node *lhs;
-	struct Node *rhs;
-} Node;
-
-typedef struct Vector {
-	void **data;
-	int capacity;
-	int len;
-} Vector;
-
-Vector *new_vector();
-void vec_push(Vector*, void*)
-Node *new_node(int, Node*, Node*);
-Node *new_node_num(int);
-int consume(int);
-void error(int);
-Node *term();
-Node *mul();
-Node *add();
-void gen(Node*);
-void tokenize(char*);
-
-enum {
-	TK_NUM = 256,
-	TK_EOF,
-};
-
-enum {
-	ND_NUM = 256,
-};
+Token tokens[100];
 
 Vector *new_vector() {
 	Vector *vec = malloc(sizeof(Vector));
@@ -69,13 +38,6 @@ Node *new_node_num(int value) {
 	return node;
 }
 
-typedef struct {
-	int type;
-	int value;
-	char *input;
-} Token;
-
-Token tokens[100];
 
 int consume(int type) {
 	if (tokens[pos].type != type)
@@ -187,22 +149,4 @@ void tokenize(char *p) {
 	tokens[i].input = p;
 }
 
-int main(int argc, char **argv){
-	if (argc != 2){
-		fprintf(stderr, "The number of arguments is incorrect.\n");
-		return 1;
-	}
 
-	tokenize(argv[1]);
-	Node *node = add();
-
-	printf(".intel_syntax noprefix\n");
-	printf(".global main\n");
-	printf("main:\n");
-
-	gen(node);
-
-	printf("  pop rax\n");
-	printf("  ret\n");
-	return 0;
-}
