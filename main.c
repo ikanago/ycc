@@ -7,6 +7,11 @@ int main(int argc, char **argv){
 		return 1;
 	}
 
+	if (argc == 2 && !strcmp(argv[1], "-test")) {
+		vec_test();
+		return 0;
+	}
+
 	tokenize(argv[1]);
 	Node *node = add();
 

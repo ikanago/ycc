@@ -24,6 +24,28 @@ void vec_push(Vector *vec, void *elem) {
 	vec->data[vec->len++] = elem;
 }
 
+int expect(int line, int expected, int actual) {
+	if (expected == actual)
+		return;
+	fprintf(stderr, "%d: %d expected, but got %d\n", line, expected, actual);
+	exit(1);
+}
+
+void vec_test() {
+	Vector *vec = new_vector();
+	expect(__LINE__, 0, vec->len);
+
+	for (int i = 0; i < 100; i++)
+		vec_push(vec, (void *)i);
+
+	expect(__LINE__, 100, vec->len);
+	expect(__LINE__, 0, (int)vec->data[0]);
+	expect(__LINE__, 50, (int)vec->data[50]);
+	expect(__LINE__, 99, (int)vec->data[99]);
+
+	printf("OK\n");
+}
+
 Node *new_node(int type, Node *lhs, Node *rhs) {
 	Node *node = malloc(sizeof(Node));
 	node->type = type;

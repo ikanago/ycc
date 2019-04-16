@@ -31,6 +31,9 @@ enum {
 
 Vector *new_vector();
 void vec_push(Vector*, void*);
+int expect(int, int, int);
+void vec_test();
+
 Node *new_node(int, Node*, Node*);
 Node *new_node_num(int);
 int consume(int);
