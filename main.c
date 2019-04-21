@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "9cc.h"
 
 int main(int argc, char **argv){
