@@ -1,5 +1,11 @@
 #ifndef _9CC_H_
 #define _9CC_H_
+#include <ctype.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 
 typedef struct Node {
 	int type;

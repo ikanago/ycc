@@ -1,54 +1,8 @@
-#include <ctype.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "9cc.h"
 
 int pos = 0;
 Token tokens[100];
-
-Vector *new_vector() {
-	Vector *vec = malloc(sizeof(Vector));
-	vec->data = malloc(sizeof(void *) * 16);
-	vec->capacity = 16;
-	vec->len = 0;
-	return vec;
-}
-
-void vec_push(Vector *vec, void *elem) {
-	if (vec->capacity == vec->len) {
-		vec->capacity *= 2;
-		vec->data = realloc(vec->data, sizeof(void *) * vec->capacity);
-	}
-	vec->data[vec->len++] = elem;
-}
-
-int expect(int line, int expected, int actual) {
-	if (expected == actual) {
-		printf("test passed\n");
-		return 0;
-	}
-	fprintf(stderr, "%d: %d expected, but got %d\n", line, expected, actual);
-	exit(1);
-}
-
-void vec_test() {
-	Vector *vec = new_vector();
-	expect(__LINE__, 0, vec->len);
-
-	for (int i = 0; i < 100; i++) {
-		vec_push(vec, (void *)(intptr_t)i);
-	}
-
-	expect(__LINE__, 100, vec->len);
-	expect(__LINE__, 50, (intptr_t)vec->data[50]);
-	expect(__LINE__, 99, (intptr_t)vec->data[99]);
-	printf("%ld\n", sizeof(vec->data[0]));
-
-	printf("OK\n");
-}
+//Vector *tokens = new_vector();
 
 Node *new_node(int type, Node *lhs, Node *rhs) {
 	Node *node = malloc(sizeof(Node));
