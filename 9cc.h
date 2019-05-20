@@ -2,6 +2,7 @@
 #define _9CC_H_
 #include <ctype.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +15,7 @@ typedef struct Node {
 	struct Node *rhs;
 } Node;
 
-typedef struct {
+typedef struct Token {
 	int type;
 	int value;
 	char *input;
@@ -43,12 +44,14 @@ void vec_test();
 Node *new_node(int, Node*, Node*);
 Node *new_node_num(int);
 int consume(int);
-void error(int);
-Node *term();
+Node *expr();
 Node *mul();
-Node *add();
+Node *term();
+Node *parse(Vector*);
+Token *add_token(Vector*, int, char*);
+void error(char* fmt, ...);
 void gen(Node*);
-void tokenize(char*);
+Vector *tokenize(char*);
 
 
 #endif

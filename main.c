@@ -11,8 +11,8 @@ int main(int argc, char **argv){
 		return 0;
 	}
 
-	tokenize(argv[1]);
-	Node *node = add();
+	Vector *tokens = tokenize(argv[1]);
+	Node *node = parse(tokens);
 
 	printf(".intel_syntax noprefix\n");
 	printf(".global main\n");
