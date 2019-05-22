@@ -46,6 +46,7 @@ Node *new_node_num(int);
 int consume(int);
 Node *expr();
 Node *mul();
+Node *unary();
 Node *term();
 Node *parse(Vector*);
 Token *add_token(Vector*, int, char*);

@@ -15,4 +15,4 @@ debug: $(OBJS)
 	$(CC) -g -o d9cc $(SRCS) $(LDFLAGS)
 
 clean:
-	rm -f 9cc  *.o *~
+	rm -f 9cc  *.o *~ tmp*
