@@ -11,5 +11,8 @@ test: 9cc
 	./9cc -test
 	./test.sh
 
+debug: $(OBJS)
+	$(CC) -g -o d9cc $(SRCS) $(LDFLAGS)
+
 clean:
 	rm -f 9cc  *.o *~
