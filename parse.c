@@ -3,32 +3,37 @@
 Vector *tokens;
 int pos;
 
-Node *new_node(int type, Node *lhs, Node *rhs) {
+Node *new_node(int type, Node *lhs, Node *rhs)
+{
 	Node *node = malloc(sizeof(Node));
 	node->type = type;
 	node->lhs = lhs;
 	node->rhs = rhs;
 	return node;
 }
-Node *new_node_num(int value) {
+Node *new_node_num(int value)
+{
 	Node *node = malloc(sizeof(Node));
 	node->type = ND_NUM;
 	node->value = value;
 	return node;
 }
 
-int consume(int type) {
-    Token *t = tokens->data[pos];
+int consume(int type)
+{
+	Token *t = tokens->data[pos];
 	if (t->type != type)
 		return 0;
 	pos++;
 	return 1;
 }
 
-Node *expr() {
+Node *expr()
+{
 	Node *node = mul();
 
-	for(;;) {
+	for (;;)
+	{
 		if (consume('+'))
 			node = new_node('+', node, mul());
 		else if (consume('-'))
@@ -38,9 +43,11 @@ Node *expr() {
 	}
 }
 
-Node *mul() {
+Node *mul()
+{
 	Node *node = unary();
-    for(;;) {
+	for (;;)
+	{
 		if (consume('*'))
 			node = new_node('*', node, unary());
 		else if (consume('/'))
@@ -50,7 +57,8 @@ Node *mul() {
 	}
 }
 
-Node *unary() {
+Node *unary()
+{
 	if (consume('+'))
 		return term();
 	if (consume('-'))
@@ -58,27 +66,31 @@ Node *unary() {
 	return term();
 }
 
-Node *term() {
-    Token *t = tokens->data[pos];
-	if (consume('(')) {
+Node *term()
+{
+	Token *t = tokens->data[pos];
+	if (consume('('))
+	{
 		Node *node = expr();
-		if(!consume(')'))
-			printf("There is no close parenthese corresponds open one: %s",
-					t->input);
+		if (!consume(')'))
+			printf("There is no close parenthese corresponds open one: %s", t->input);
 		return node;
 	}
-
-	if (t->type == TK_NUM) {
-        Token *next_t = tokens->data[pos++];
+	else if (t->type == TK_NUM)
+	{
+		Token *next_t = tokens->data[pos++];
 		return new_node_num(next_t->value);
-    }
-
-    printf("This is token which is neither value nor open parenthese: %s",
-			t->input);
+	}
+	else
+	{
+		printf("This is token which is neither value nor open parenthese: %s",
+			   t->input);
+	}
 }
 
-Node *parse(Vector *v) {
-    tokens = v;
-    pos = 0;
-    return expr();
+Node *parse(Vector *v)
+{
+	tokens = v;
+	pos = 0;
+	return expr();
 }

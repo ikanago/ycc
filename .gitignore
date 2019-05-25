@@ -5,3 +5,4 @@ tmp*
 d9cc
 main
 .vscode
+.clang-format

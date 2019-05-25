@@ -1,6 +1,7 @@
 #include "9cc.h"
 
-Token *add_token(Vector *v, int type, char *input) {
+Token *add_token(Vector *v, int type, char *input)
+{
 	Token *t = malloc(sizeof(Token));
 	t->type = type;
 	t->input = input;
@@ -8,21 +9,28 @@ Token *add_token(Vector *v, int type, char *input) {
 	return t;
 }
 
-Vector *tokenize(char *p) {
-  Vector *v = new_vector();
-	while (*p) {
-		if(isspace(*p)) {
+Vector *tokenize(char *p)
+{
+	Vector *v = new_vector();
+	while (*p)
+	{
+		if (isspace(*p))
+		{
 			p++;
 		}
-		else if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' || *p == ')') {
+		else if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' ||
+				 *p == ')')
+		{
 			add_token(v, *p, p);
 			p++;
 		}
-		else if (isdigit(*p)) {
+		else if (isdigit(*p))
+		{
 			Token *t = add_token(v, TK_NUM, p);
 			t->value = strtol(p, &p, 10);
 		}
-		else {
+		else
+		{
 			fprintf(stderr, "Cannot tokenize: %s\n", p);
 			exit(1);
 		}
@@ -30,5 +38,3 @@ Vector *tokenize(char *p) {
 	add_token(v, TK_EOF, p);
 	return v;
 }
-
-

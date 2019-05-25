@@ -16,3 +16,6 @@ debug: $(OBJS)
 
 clean:
 	rm -f 9cc  *.o *~ tmp*
+
+format:
+	clang-format -i *.c *.h

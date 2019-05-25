@@ -1,6 +1,7 @@
 #include "9cc.h"
 
-void error(char *fmt, ...) {
+void error(char *fmt, ...)
+{
 	va_list ap;
 	va_start(ap, fmt);
 	vfprintf(stderr, fmt, ap);
@@ -8,7 +9,8 @@ void error(char *fmt, ...) {
 	exit(1);
 }
 
-Vector *new_vector() {
+Vector *new_vector()
+{
 	Vector *v = malloc(sizeof(Vector));
 	v->data = malloc(sizeof(void *) * 16);
 	v->capacity = 16;
@@ -16,11 +18,12 @@ Vector *new_vector() {
 	return v;
 }
 
-void vec_push(Vector *v, void *elem) {
-	if (v->capacity == v->len) {
+void vec_push(Vector *v, void *elem)
+{
+	if (v->capacity == v->len)
+	{
 		v->capacity *= 2;
 		v->data = realloc(v->data, sizeof(void *) * v->capacity);
 	}
 	v->data[v->len++] = elem;
 }
-

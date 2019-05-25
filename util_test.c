@@ -1,7 +1,9 @@
 #include "9cc.h"
 
-int expect(int line, int expected, int actual) {
-	if (expected == actual) {
+int expect(int line, int expected, int actual)
+{
+	if (expected == actual)
+	{
 		printf("test passed\n");
 		return 0;
 	}
@@ -9,11 +11,13 @@ int expect(int line, int expected, int actual) {
 	exit(1);
 }
 
-void vec_test() {
+void vec_test()
+{
 	Vector *v = new_vector();
 	expect(__LINE__, 0, v->len);
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 100; i++)
+	{
 		vec_push(v, (void *)(intptr_t)i);
 	}
 
@@ -25,4 +29,3 @@ void vec_test() {
 
 	printf("OK\n");
 }
-
