@@ -33,6 +33,8 @@ enum
 {
 	TK_NUM = 256,
 	TK_EOF,
+	TK_EQ,
+	TK_NE,
 };
 
 enum
@@ -49,6 +51,8 @@ Node *new_node(int, Node *, Node *);
 Node *new_node_num(int);
 int consume(int);
 Node *expr();
+Node *equality();
+Node *add();
 Node *mul();
 Node *unary();
 Node *term();

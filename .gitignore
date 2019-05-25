@@ -5,4 +5,6 @@ tmp*
 d9cc
 main
 .vscode
-.clang-format
+.idea
+CMakeLists.txt
+cmake-build-debug

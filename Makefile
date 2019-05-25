@@ -15,7 +15,7 @@ debug: $(OBJS)
 	$(CC) -g -o d9cc $(SRCS) $(LDFLAGS)
 
 clean:
-	rm -f 9cc  *.o *~ tmp*
+	rm -f 9cc d9cc *.o *~ tmp*
 
 format:
 	clang-format -i *.c *.h

@@ -11,6 +11,7 @@ Node *new_node(int type, Node *lhs, Node *rhs)
 	node->rhs = rhs;
 	return node;
 }
+
 Node *new_node_num(int value)
 {
 	Node *node = malloc(sizeof(Node));
@@ -30,8 +31,36 @@ int consume(int type)
 
 Node *expr()
 {
-	Node *node = mul();
+	Node *node = equality();
+	return node;
+}
 
+Node *equality()
+{
+	Node *node = add();
+	Token *t = tokens->data[pos];
+	for(;;)
+	{
+		if (consume(TK_EQ))
+		{
+			pos++;
+			node = new_node(TK_EQ, node, add());
+		}
+		else if (consume(TK_NE))
+		{
+			pos++;
+			node = new_node(TK_NE, node, add());
+		}
+		else
+		{
+			return node;
+		}
+	}
+}
+
+Node *add()
+{
+	Node *node = mul();
 	for (;;)
 	{
 		if (consume('+'))
@@ -73,17 +102,18 @@ Node *term()
 	{
 		Node *node = expr();
 		if (!consume(')'))
-			printf("There is no close parenthese corresponds open one: %s", t->input);
+			printf("There is no close parenthesis corresponds open one: %s", t->input);
 		return node;
 	}
 	else if (t->type == TK_NUM)
 	{
-		Token *next_t = tokens->data[pos++];
+		Token *next_t = tokens->data[pos];
+		pos++;
 		return new_node_num(next_t->value);
 	}
 	else
 	{
-		printf("This is token which is neither value nor open parenthese: %s",
+		printf("This is token which is neither value nor open parenthesis: %s",
 			   t->input);
 	}
 }

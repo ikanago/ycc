@@ -29,6 +29,16 @@ Vector *tokenize(char *p)
 			Token *t = add_token(v, TK_NUM, p);
 			t->value = strtol(p, &p, 10);
 		}
+		else if (!strncmp(p, "==", 2))
+		{
+			add_token(v, TK_EQ, p);
+			p += 2;
+		}
+		else if (!strncmp(p, "!=", 2))
+		{
+			add_token(v, TK_NE, p);
+			p += 2;
+		}
 		else
 		{
 			fprintf(stderr, "Cannot tokenize: %s\n", p);
