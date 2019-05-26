@@ -40,17 +40,20 @@ enum
 	TK_LE,
 	TK_GE,
 	TK_IDENT,
+	TK_RETURN,
 };
 
 enum
 {
 	ND_NUM = 256,
 	ND_IDENT,
+	ND_RETURN,
 };
 
 
 // ---tokenize.c---
 Token *add_token(Vector *, int, char *);
+int is_alnum(char c);
 Vector *tokenize(char *);
 
 // ---parse.c---

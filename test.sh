@@ -26,6 +26,6 @@ try 1 "4 * 3 <= (27 / 9 + 9);"
 try 0 "3 < 5 - 3;"
 try 1 "55 >= 3 * 13;"
 try 1 "55 > 3 * 13;"
-try 5 "a = 5; a;"
-try 11 "a = 5; b = 6; a + b;"
+try 5 "a = 5; return a;"
+try 11 "a = 5; b = 6; return a + b;"
 echo OK

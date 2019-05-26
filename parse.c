@@ -62,9 +62,21 @@ Vector *program()
 
 Node *stmt()
 {
-	Node *node = expr();
+	Node *node;
+	if (consume(TK_RETURN))
+	{
+		node = new_node(ND_RETURN, expr(), NULL);
+	}
+	else
+	{
+		node = expr();
+	}
+
 	if (!consume(';'))
-		fprintf(stderr, "Expected a ';'");
+	{
+		Token *t = tokens->data[pos];
+		error("Expected a ';' but got %s", t->input);
+	}
 	return node;
 }
 

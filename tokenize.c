@@ -9,6 +9,14 @@ Token *add_token(Vector *v, int type, char *input)
 	return t;
 }
 
+int is_alnum(char c)
+{
+	return ('a' <= c && c <= 'z') ||
+		   ('A' <= c && c <= 'Z') ||
+		   ('0' <= c && c <= '9') ||
+		   (c == '_');
+}
+
 Vector *tokenize(char *p)
 {
 	Vector *v = new_vector();
@@ -58,6 +66,11 @@ Vector *tokenize(char *p)
 		{
 			add_token(v, '>', p);
 			p++;
+		}
+		else if (!strncmp(p, "return", 6) && !is_alnum(p[6]))
+		{
+			add_token(v, TK_RETURN, p);
+			p += 6;
 		}
 		else if ('a' <= *p && *p <= 'z')
 		{
