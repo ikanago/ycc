@@ -35,6 +35,8 @@ enum
 	TK_EOF,
 	TK_EQ,
 	TK_NE,
+	TK_LE,
+	TK_GE,
 };
 
 enum
@@ -52,6 +54,7 @@ Node *new_node_num(int);
 int consume(int);
 Node *expr();
 Node *equality();
+Node *relational();
 Node *add();
 Node *mul();
 Node *unary();

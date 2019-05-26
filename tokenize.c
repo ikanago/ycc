@@ -39,6 +39,26 @@ Vector *tokenize(char *p)
 			add_token(v, TK_NE, p);
 			p += 2;
 		}
+		else if (!strncmp(p, "<=", 2))
+		{
+			add_token(v, TK_LE, p);
+			p += 2;
+		}
+		else if (*p == '<')
+		{
+			add_token(v, '<', p);
+			p++;
+		}
+		else if (!strncmp(p, ">=", 2))
+		{
+			add_token(v, TK_GE, p);
+			p += 2;
+		}
+		else if (*p == '>')
+		{
+			add_token(v, '>', p);
+			p++;
+		}
 		else
 		{
 			fprintf(stderr, "Cannot tokenize: %s\n", p);

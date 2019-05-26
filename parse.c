@@ -29,6 +29,13 @@ int consume(int type)
 	return 1;
 }
 
+Node *parse(Vector *v)
+{
+	tokens = v;
+	pos = 0;
+	return expr();
+}
+
 Node *expr()
 {
 	Node *node = equality();
@@ -37,19 +44,44 @@ Node *expr()
 
 Node *equality()
 {
-	Node *node = add();
-	Token *t = tokens->data[pos];
-	for(;;)
+	Node *node = relational();
+	for (;;)
 	{
 		if (consume(TK_EQ))
 		{
-			pos++;
-			node = new_node(TK_EQ, node, add());
+			node = new_node(TK_EQ, node, relational());
 		}
 		else if (consume(TK_NE))
 		{
-			pos++;
-			node = new_node(TK_NE, node, add());
+			node = new_node(TK_NE, node, relational());
+		}
+		else
+		{
+			return node;
+		}
+	}
+}
+
+Node *relational()
+{
+	Node *node = add();
+	for (;;)
+	{
+		if (consume(TK_LE))
+		{
+			node = new_node(TK_LE, node, add());
+		}
+		else if (consume('<'))
+		{
+			node = new_node('<', node, add());
+		}
+		else if (consume(TK_GE))
+		{
+			node = new_node(TK_LE, add(), node);
+		}
+		else if (consume('>'))
+		{
+			node = new_node('<', add(), node);
 		}
 		else
 		{
@@ -107,20 +139,12 @@ Node *term()
 	}
 	else if (t->type == TK_NUM)
 	{
-		Token *next_t = tokens->data[pos];
 		pos++;
-		return new_node_num(next_t->value);
+		return new_node_num(t->value);
 	}
 	else
 	{
 		printf("This is token which is neither value nor open parenthesis: %s",
 			   t->input);
 	}
-}
-
-Node *parse(Vector *v)
-{
-	tokens = v;
-	pos = 0;
-	return expr();
 }

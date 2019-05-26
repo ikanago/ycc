@@ -15,12 +15,6 @@ int main(int argc, char **argv)
 	}
 
 	Vector *tokens = tokenize(argv[1]);
-	// for (int i = 0; i < 4; i++)
-	// {
-	// 	Token *t = tokens->data[i];
-	// 	printf("type: %d, value: %d\n", t->type, t->value);
-	// }
-	
 	Node *node = parse(tokens);
 
 	printf(".intel_syntax noprefix\n");
