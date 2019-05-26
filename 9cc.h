@@ -11,6 +11,7 @@ typedef struct Node
 {
 	int type;
 	int value;
+	char name;
 	struct Node *lhs;
 	struct Node *rhs;
 } Node;
@@ -19,6 +20,7 @@ typedef struct Token
 {
 	int type;
 	int value;
+	char name;
 	char *input;
 } Token;
 
@@ -37,32 +39,48 @@ enum
 	TK_NE,
 	TK_LE,
 	TK_GE,
+	TK_IDENT,
 };
 
 enum
 {
 	ND_NUM = 256,
+	ND_IDENT,
 };
 
-Vector *new_vector();
-void vec_push(Vector *, void *);
-int expect(int, int, int);
-void vec_test();
 
+// ---tokenize.c---
+Token *add_token(Vector *, int, char *);
+Vector *tokenize(char *);
+
+// ---parse.c---
 Node *new_node(int, Node *, Node *);
 Node *new_node_num(int);
+Node *new_node_val(char name);
 int consume(int);
+Vector *parse(Vector *);
+Vector *program();
+Node *stmt();
 Node *expr();
+Node *assign();
 Node *equality();
 Node *relational();
 Node *add();
 Node *mul();
 Node *unary();
 Node *term();
-Node *parse(Vector *);
-Token *add_token(Vector *, int, char *);
-void error(char *fmt, ...);
+
+// ---codegen.c---
 void gen(Node *);
-Vector *tokenize(char *);
+void gen_lval(Node *);
+
+// ---util.c---
+void error(char *fmt, ...);
+Vector *new_vector();
+void vec_push(Vector *, void *);
+
+// ---util_test.c---
+int expect(int, int, int);
+void vec_test();
 
 #endif

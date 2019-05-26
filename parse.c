@@ -1,6 +1,7 @@
 #include "9cc.h"
 
 Vector *tokens;
+Vector *nodes;
 int pos;
 
 Node *new_node(int type, Node *lhs, Node *rhs)
@@ -20,6 +21,14 @@ Node *new_node_num(int value)
 	return node;
 }
 
+Node *new_node_val(char name)
+{
+	Node *node = malloc(sizeof(Node));
+	node->type = ND_IDENT;
+	node->name = name;
+	return node;
+}
+
 int consume(int type)
 {
 	Token *t = tokens->data[pos];
@@ -29,16 +38,49 @@ int consume(int type)
 	return 1;
 }
 
-Node *parse(Vector *v)
+Vector *parse(Vector *v)
 {
 	tokens = v;
+	nodes = new_vector();
 	pos = 0;
-	return expr();
+	return program();
+}
+
+Vector *program()
+{
+	for (;;)
+	{
+		Token *t = tokens->data[pos];
+		if (t->type == TK_EOF)
+			break;
+		Node *node = stmt();
+		vec_push(nodes, node);
+	}
+	vec_push(nodes, NULL);
+	return nodes;
+}
+
+Node *stmt()
+{
+	Node *node = expr();
+	if (!consume(';'))
+		fprintf(stderr, "Expected a ';'");
+	return node;
 }
 
 Node *expr()
 {
+	Node *node = assign();
+	return node;
+}
+
+Node *assign()
+{
 	Node *node = equality();
+	if (consume('='))
+	{
+		node = new_node('=', node, assign());
+	}
 	return node;
 }
 
@@ -142,9 +184,14 @@ Node *term()
 		pos++;
 		return new_node_num(t->value);
 	}
+	else if (t->type == TK_IDENT)
+	{
+		pos++;
+		Node *node = new_node_val(t->name);
+		return node;
+	}
 	else
 	{
-		printf("This is token which is neither value nor open parenthesis: %s",
-			   t->input);
+		error("Expected value, but got %s", t->input);
 	}
 }

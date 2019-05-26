@@ -59,6 +59,22 @@ Vector *tokenize(char *p)
 			add_token(v, '>', p);
 			p++;
 		}
+		else if ('a' <= *p && *p <= 'z')
+		{
+			Token *t = add_token(v, TK_IDENT, p);
+			t->name = *p;
+			p++;
+		}
+		else if (*p == '=')
+		{
+			add_token(v, '=', p);
+			p++;
+		}
+		else if (*p == ';')
+		{
+			add_token(v, ';', p);
+			p++;
+		}
 		else
 		{
 			fprintf(stderr, "Cannot tokenize: %s\n", p);

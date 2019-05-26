@@ -15,15 +15,24 @@ int main(int argc, char **argv)
 	}
 
 	Vector *tokens = tokenize(argv[1]);
-	Node *node = parse(tokens);
+	Vector *nodes = parse(tokens);
 
 	printf(".intel_syntax noprefix\n");
 	printf(".global main\n");
 	printf("main:\n");
+	
+	printf("  push rbp\n");
+	printf("  mov rbp, rsp\n");
+	printf("  sub rsp, 208\n");
 
-	gen(node);
+	for (int i = 0; nodes->data[i]; i++)
+	{
+		gen(nodes->data[i]);
+		printf("  pop rax\n");
+	}
 
-	printf("  pop rax\n");
+    printf("  mov rsp, rbp\n");
+	printf("  pop rbp\n");
 	printf("  ret\n");
 	return 0;
 }
