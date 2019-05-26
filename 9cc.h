@@ -31,6 +31,12 @@ typedef struct Vector
 	int len;
 } Vector;
 
+typedef struct Map
+{
+	Vector *keys;
+	Vector *values;
+} Map;
+
 enum
 {
 	TK_NUM = 256,
@@ -49,7 +55,6 @@ enum
 	ND_IDENT,
 	ND_RETURN,
 };
-
 
 // ---tokenize.c---
 Token *add_token(Vector *, int, char *);
@@ -81,9 +86,13 @@ void gen_lval(Node *);
 void error(char *fmt, ...);
 Vector *new_vector();
 void vec_push(Vector *, void *);
+Map *new_map();
+void map_set(Map *, char *, void *);
+void *map_get(Map *, char *);
 
 // ---util_test.c---
 int expect(int, int, int);
 void vec_test();
+void map_test();
 
 #endif

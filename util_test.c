@@ -13,6 +13,7 @@ int expect(int line, int expected, int actual)
 
 void vec_test()
 {
+	printf("---Vector test---\n");
 	Vector *v = new_vector();
 	expect(__LINE__, 0, v->len);
 
@@ -28,4 +29,20 @@ void vec_test()
 	printf("%ld\n", sizeof(v->data[0]));
 
 	printf("OK\n");
+}
+
+void map_test()
+{
+	printf("---Map test---\n");
+	Map *map = new_map();
+	expect(__LINE__, 0, (long)map_get(map, "foo"));
+
+	map_set(map, "foo", (void *)2);
+	expect(__LINE__, 2, (long)map_get(map, "foo"));
+
+	map_set(map, "bar", (void *)1);
+	expect(__LINE__, 1, (long)map_get(map, "bar"));
+
+	map_set(map, "foo", (void *)6);
+	expect(__LINE__, 6, (long)map_get(map, "foo"));
 }
