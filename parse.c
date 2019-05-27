@@ -2,7 +2,7 @@
 
 Vector *tokens;
 Vector *nodes;
-int pos;
+int index;
 
 Node *new_node(int type, Node *lhs, Node *rhs)
 {
@@ -31,10 +31,10 @@ Node *new_node_val(char name)
 
 int consume(int type)
 {
-	Token *t = tokens->data[pos];
+	Token *t = tokens->data[index];
 	if (t->type != type)
 		return 0;
-	pos++;
+	index++;
 	return 1;
 }
 
@@ -42,7 +42,7 @@ Vector *parse(Vector *v)
 {
 	tokens = v;
 	nodes = new_vector();
-	pos = 0;
+	index = 0;
 	return program();
 }
 
@@ -50,7 +50,7 @@ Vector *program()
 {
 	for (;;)
 	{
-		Token *t = tokens->data[pos];
+		Token *t = tokens->data[index];
 		if (t->type == TK_EOF)
 			break;
 		Node *node = stmt();
@@ -74,7 +74,7 @@ Node *stmt()
 
 	if (!consume(';'))
 	{
-		Token *t = tokens->data[pos];
+		Token *t = tokens->data[index];
 		error("Expected a ';' but got %s", t->input);
 	}
 	return node;
@@ -183,7 +183,7 @@ Node *unary()
 
 Node *term()
 {
-	Token *t = tokens->data[pos];
+	Token *t = tokens->data[index];
 	if (consume('('))
 	{
 		Node *node = expr();
@@ -193,12 +193,12 @@ Node *term()
 	}
 	else if (t->type == TK_NUM)
 	{
-		pos++;
+		index++;
 		return new_node_num(t->value);
 	}
 	else if (t->type == TK_IDENT)
 	{
-		pos++;
+		index++;
 		Node *node = new_node_val(t->name);
 		return node;
 	}

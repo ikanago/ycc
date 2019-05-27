@@ -17,83 +17,83 @@ int is_alnum(char c)
 		   (c == '_');
 }
 
-Vector *tokenize(char *p)
+Vector *tokenize(char *pos)
 {
 	Vector *v = new_vector();
-	while (*p)
+	while (*pos)
 	{
-		if (isspace(*p))
+		if (isspace(*pos))
 		{
-			p++;
+			pos++;
 		}
-		else if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' ||
-				 *p == ')')
+		else if (*pos == '+' || *pos == '-' || *pos == '*' || *pos == '/' || *pos == '(' ||
+				 *pos == ')')
 		{
-			add_token(v, *p, p);
-			p++;
+			add_token(v, *pos, pos);
+			pos++;
 		}
-		else if (isdigit(*p))
+		else if (isdigit(*pos))
 		{
-			Token *t = add_token(v, TK_NUM, p);
-			t->value = strtol(p, &p, 10);
+			Token *t = add_token(v, TK_NUM, pos);
+			t->value = strtol(pos, &pos, 10);
 		}
-		else if (!strncmp(p, "==", 2))
+		else if (!strncmp(pos, "==", 2))
 		{
-			add_token(v, TK_EQ, p);
-			p += 2;
+			add_token(v, TK_EQ, pos);
+			pos += 2;
 		}
-		else if (!strncmp(p, "!=", 2))
+		else if (!strncmp(pos, "!=", 2))
 		{
-			add_token(v, TK_NE, p);
-			p += 2;
+			add_token(v, TK_NE, pos);
+			pos += 2;
 		}
-		else if (!strncmp(p, "<=", 2))
+		else if (!strncmp(pos, "<=", 2))
 		{
-			add_token(v, TK_LE, p);
-			p += 2;
+			add_token(v, TK_LE, pos);
+			pos += 2;
 		}
-		else if (*p == '<')
+		else if (*pos == '<')
 		{
-			add_token(v, '<', p);
-			p++;
+			add_token(v, '<', pos);
+			pos++;
 		}
-		else if (!strncmp(p, ">=", 2))
+		else if (!strncmp(pos, ">=", 2))
 		{
-			add_token(v, TK_GE, p);
-			p += 2;
+			add_token(v, TK_GE, pos);
+			pos += 2;
 		}
-		else if (*p == '>')
+		else if (*pos == '>')
 		{
-			add_token(v, '>', p);
-			p++;
+			add_token(v, '>', pos);
+			pos++;
 		}
-		else if (!strncmp(p, "return", 6) && !is_alnum(p[6]))
+		else if (!strncmp(pos, "return", 6) && !is_alnum(pos[6]))
 		{
-			add_token(v, TK_RETURN, p);
-			p += 6;
+			add_token(v, TK_RETURN, pos);
+			pos += 6;
 		}
-		else if ('a' <= *p && *p <= 'z')
+		else if ('a' <= *pos && *pos <= 'z')
 		{
-			Token *t = add_token(v, TK_IDENT, p);
-			t->name = *p;
-			p++;
+			Token *t = add_token(v, TK_IDENT, pos);
+			t->name = *pos;
+			pos++;
 		}
-		else if (*p == '=')
+		else if (*pos == '=')
 		{
-			add_token(v, '=', p);
-			p++;
+			add_token(v, '=', pos);
+			pos++;
 		}
-		else if (*p == ';')
+		else if (*pos == ';')
 		{
-			add_token(v, ';', p);
-			p++;
+			add_token(v, ';', pos);
+			pos++;
 		}
 		else
 		{
-			fprintf(stderr, "Cannot tokenize: %s\n", p);
+			fprintf(stderr, "Cannot tokenize: %s\n", pos);
 			exit(1);
 		}
 	}
-	add_token(v, TK_EOF, p);
+	add_token(v, TK_EOF, pos);
 	return v;
 }
