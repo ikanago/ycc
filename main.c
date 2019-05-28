@@ -25,15 +25,18 @@ int main(int argc, char **argv)
 	printf("  push rbp\n");
 	printf("  mov rbp, rsp\n");
 	printf("  sub rsp, 208\n");
+	printf("; prologue\n");
 
 	for (int i = 0; nodes->data[i]; i++)
 	{
 		gen(nodes->data[i]);
 		printf("  pop rax\n");
+		printf("; end of a statement\n\n");
 	}
 
     printf("  mov rsp, rbp\n");
 	printf("  pop rbp\n");
 	printf("  ret\n");
+	printf("; end of a program\n");
 	return 0;
 }
