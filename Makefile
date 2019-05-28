@@ -2,20 +2,20 @@ CFLAGS=-Wall -std=c11
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
-9cc: $(OBJS)
-	$(CC) -o 9cc $(OBJS) $(LDFLAGS)
+ycc: $(OBJS)
+	$(CC) -o ycc $(OBJS) $(LDFLAGS)
 
-$(OBJS): 9cc.h
+$(OBJS): ycc.h
 
-test: 9cc
-	./9cc -test
+test: ycc
+	./ycc -test
 	./test.sh
 
 debug: $(OBJS)
-	$(CC) -g -o d9cc $(SRCS) $(LDFLAGS)
+	$(CC) -g -o dycc $(SRCS) $(LDFLAGS)
 
 clean:
-	rm -f 9cc d9cc *.o *~ tmp*
+	rm -f ycc dycc *.o *~ tmp*
 
 format:
 	clang-format -i *.c *.h

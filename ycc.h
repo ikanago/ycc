@@ -1,5 +1,5 @@
-#ifndef _9CC_H_
-#define _9CC_H_
+#ifndef _YCC_H_
+#define _YCC_H_
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdint.h>

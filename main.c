@@ -1,4 +1,4 @@
-#include "9cc.h"
+#include "ycc.h"
 
 int main(int argc, char **argv)
 {

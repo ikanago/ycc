@@ -1,4 +1,4 @@
-#include "9cc.h"
+#include "ycc.h"
 
 int expect(int line, int expected, int actual)
 {

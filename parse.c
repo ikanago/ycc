@@ -1,4 +1,4 @@
-#include "9cc.h"
+#include "ycc.h"
 
 Vector *tokens;
 Vector *nodes;
