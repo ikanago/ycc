@@ -15,28 +15,24 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
+	Map *variable_map = new_map();
 	Vector *tokens = tokenize(argv[1]);
-	Vector *nodes = parse(tokens);
+	Vector *nodes = parse(tokens, variable_map);
 
 	printf(".intel_syntax noprefix\n");
 	printf(".global main\n");
 	printf("main:\n");
-	
+
 	printf("  push rbp\n");
 	printf("  mov rbp, rsp\n");
-	printf("  sub rsp, 208\n");
-	printf("; prologue\n");
+	printf("  sub rsp, %d\n", variable_offset);
+	// printf("; prologue\n");
 
-	for (int i = 0; nodes->data[i]; i++)
-	{
-		gen(nodes->data[i]);
-		printf("  pop rax\n");
-		printf("; end of a statement\n\n");
-	}
+	codegen(nodes, variable_map);
 
-    printf("  mov rsp, rbp\n");
+	printf("  mov rsp, rbp\n");
 	printf("  pop rbp\n");
 	printf("  ret\n");
-	printf("; end of a program\n");
+	// printf("; end of a program\n");
 	return 0;
 }

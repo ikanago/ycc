@@ -2,7 +2,9 @@
 
 Vector *tokens;
 Vector *nodes;
-int index;
+int token_index;
+Map *variable_map;
+int variable_offset = 0;
 
 Node *new_node(int type, Node *lhs, Node *rhs)
 {
@@ -21,7 +23,7 @@ Node *new_node_num(int value)
 	return node;
 }
 
-Node *new_node_val(char name)
+Node *new_node_val(char *name)
 {
 	Node *node = malloc(sizeof(Node));
 	node->type = ND_IDENT;
@@ -31,18 +33,20 @@ Node *new_node_val(char name)
 
 int consume(int type)
 {
-	Token *t = tokens->data[index];
+	Token *t = tokens->data[token_index];
 	if (t->type != type)
 		return 0;
-	index++;
+	token_index++;
 	return 1;
 }
 
-Vector *parse(Vector *v)
+Vector *parse(Vector *v, Map *map)
 {
 	tokens = v;
 	nodes = new_vector();
-	index = 0;
+	token_index = 0;
+	variable_map = map;
+	// variable_offset = 0;
 	return program();
 }
 
@@ -50,7 +54,7 @@ Vector *program()
 {
 	for (;;)
 	{
-		Token *t = tokens->data[index];
+		Token *t = tokens->data[token_index];
 		if (t->type == TK_EOF)
 			break;
 		Node *node = stmt();
@@ -74,7 +78,7 @@ Node *stmt()
 
 	if (!consume(';'))
 	{
-		Token *t = tokens->data[index];
+		Token *t = tokens->data[token_index];
 		error("Expected a ';' but got %s", t->input);
 	}
 	return node;
@@ -183,7 +187,7 @@ Node *unary()
 
 Node *term()
 {
-	Token *t = tokens->data[index];
+	Token *t = tokens->data[token_index];
 	if (consume('('))
 	{
 		Node *node = expr();
@@ -193,17 +197,23 @@ Node *term()
 	}
 	else if (t->type == TK_NUM)
 	{
-		index++;
+		token_index++;
 		return new_node_num(t->value);
 	}
 	else if (t->type == TK_IDENT)
 	{
-		index++;
+		token_index++;
 		Node *node = new_node_val(t->name);
+		if (!map_exists(variable_map, t->name))
+		{
+			variable_offset += 8;
+			map_set(variable_map, t->name, (void *)(intptr_t)variable_offset);
+		}
 		return node;
 	}
 	else
 	{
 		error("Expected value, but got %s", t->input);
+		return NULL;
 	}
 }

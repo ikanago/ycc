@@ -51,3 +51,13 @@ void *map_get(Map *map, char *key)
 	}
 	return NULL;
 }
+
+bool map_exists(Map *map, char *key)
+{
+	for (int i = 0; i < map->keys->len; i++)
+	{
+		if(!strcmp(map->keys->data[i], key))
+			return true;
+	}
+	return false;
+}

@@ -27,5 +27,8 @@ try 0 "3 < 5 - 3;"
 try 1 "55 >= 3 * 13;"
 try 1 "55 > 3 * 13;"
 try 5 "a = 5; return a;"
+try 5 "hoge = 5; return hoge;"
 try 11 "a = 5; b = 6; return a + b;"
+try 11 "hoge = 5; fuga = 6; return hoge + fuga;"
+try 31 "hoge = 3; fuga = 7; piyo = hoge * fuga; hoge = 40; bar = 4; return piyo + hoge / bar;"
 echo OK

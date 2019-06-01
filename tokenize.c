@@ -9,7 +9,7 @@ Token *add_token(Vector *v, int type, char *input)
 	return t;
 }
 
-int is_alnum(char c)
+bool is_alnum(char c)
 {
 	return ('a' <= c && c <= 'z') ||
 		   ('A' <= c && c <= 'Z') ||
@@ -72,11 +72,15 @@ Vector *tokenize(char *pos)
 			add_token(v, TK_RETURN, pos);
 			pos += 6;
 		}
-		else if ('a' <= *pos && *pos <= 'z')
+		else if (isalpha(*pos))
 		{
+			int length = 1;
+			while (isalnum(pos[length]))
+				length++;
 			Token *t = add_token(v, TK_IDENT, pos);
-			t->name = *pos;
-			pos++;
+			// t->name = *pos;
+			t->name = strndup(pos, length);
+			pos += length;
 		}
 		else if (*pos == '=')
 		{
