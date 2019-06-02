@@ -1,11 +1,8 @@
 #include "ycc.h"
 
-extern Map *variable_map;
-extern int variable_offset;
 
-void codegen(Vector *nodes, Map *map)
+void codegen(Vector *nodes)
 {
-	variable_map = map;
 	for (int i = 0; nodes->data[i]; i++)
 	{
 		gen(nodes->data[i]);

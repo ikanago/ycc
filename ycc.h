@@ -59,6 +59,8 @@ enum
 };
 
 // ---main.c---
+extern Map *variable_map;
+extern int variable_offset;
 extern bool is_debug;
 
 // ---tokenize.c---
@@ -72,7 +74,7 @@ Node *new_node(int, Node *, Node *);
 Node *new_node_num(int);
 Node *new_node_val(char *name);
 int consume(int);
-Vector *parse(Vector *, Map *);
+Vector *parse(Vector *);
 Vector *program();
 Node *stmt();
 Node *expr();
@@ -85,7 +87,7 @@ Node *unary();
 Node *term();
 
 // ---codegen.c---
-void codegen(Vector *, Map *);
+void codegen(Vector *);
 void gen(Node *);
 void gen_lval(Node *);
 

@@ -20,9 +20,8 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	Map *variable_map = new_map();
 	Vector *tokens = tokenize(argv[1]);
-	Vector *nodes = parse(tokens, variable_map);
+	Vector *nodes = parse(tokens);
 
 	printf(".intel_syntax noprefix\n");
 	printf(".global main\n");
@@ -33,7 +32,7 @@ int main(int argc, char **argv)
 	printf("  sub rsp, %d\n", variable_offset);
 	debug_printf("; prologue\n");
 
-	codegen(nodes, variable_map);
+	codegen(nodes);
 
 	printf("  mov rsp, rbp\n");
 	printf("  pop rbp\n");

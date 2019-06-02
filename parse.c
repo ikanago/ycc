@@ -4,7 +4,7 @@ Vector *tokens;
 Vector *nodes;
 int token_index;
 Map *variable_map;
-int variable_offset = 0;
+int variable_offset;
 
 Node *new_node(int type, Node *lhs, Node *rhs)
 {
@@ -23,7 +23,7 @@ Node *new_node_num(int value)
 	return node;
 }
 
-Node *new_node_val(char *name)
+Node *new_node_var(char *name)
 {
 	Node *node = malloc(sizeof(Node));
 	node->type = ND_IDENT;
@@ -40,12 +40,13 @@ int consume(int type)
 	return 1;
 }
 
-Vector *parse(Vector *v, Map *map)
+Vector *parse(Vector *v)
 {
 	tokens = v;
 	nodes = new_vector();
 	token_index = 0;
-	variable_map = map;
+	variable_map = new_map();
+	int variable_offset = 0;
 	return program();
 }
 
@@ -202,7 +203,7 @@ Node *term()
 	else if (t->type == TK_IDENT)
 	{
 		token_index++;
-		Node *node = new_node_val(t->name);
+		Node *node = new_node_var(t->name);
 		if (!map_exists(variable_map, t->name))
 		{
 			variable_offset += 8;
