@@ -26,12 +26,6 @@ Vector *tokenize(char *pos)
 		{
 			pos++;
 		}
-		else if (*pos == '+' || *pos == '-' || *pos == '*' || *pos == '/' || *pos == '(' ||
-				 *pos == ')')
-		{
-			add_token(v, *pos, pos);
-			pos++;
-		}
 		else if (isdigit(*pos))
 		{
 			Token *t = add_token(v, TK_NUM, pos);
@@ -52,20 +46,10 @@ Vector *tokenize(char *pos)
 			add_token(v, TK_LE, pos);
 			pos += 2;
 		}
-		else if (*pos == '<')
-		{
-			add_token(v, '<', pos);
-			pos++;
-		}
 		else if (!strncmp(pos, ">=", 2))
 		{
 			add_token(v, TK_GE, pos);
 			pos += 2;
-		}
-		else if (*pos == '>')
-		{
-			add_token(v, '>', pos);
-			pos++;
 		}
 		else if (!strncmp(pos, "return", 6) && !is_alnum(pos[6]))
 		{
@@ -78,18 +62,13 @@ Vector *tokenize(char *pos)
 			while (isalnum(pos[length]))
 				length++;
 			Token *t = add_token(v, TK_IDENT, pos);
-			// t->name = *pos;
 			t->name = strndup(pos, length);
 			pos += length;
 		}
-		else if (*pos == '=')
+		else if (*pos == '+' || *pos == '-' || *pos == '*' || *pos == '/' || *pos == '(' ||
+				 *pos == ')' || *pos == '<' || *pos == '>' || *pos == '=' || *pos == ';')
 		{
-			add_token(v, '=', pos);
-			pos++;
-		}
-		else if (*pos == ';')
-		{
-			add_token(v, ';', pos);
+			add_token(v, *pos, pos);
 			pos++;
 		}
 		else
