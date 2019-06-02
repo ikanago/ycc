@@ -58,7 +58,8 @@ enum
 	ND_RETURN,
 };
 
-extern int variable_offset;
+// ---main.c---
+extern bool is_debug;
 
 // ---tokenize.c---
 Token *add_token(Vector *, int, char *);
@@ -66,6 +67,7 @@ bool is_alnum(char c);
 Vector *tokenize(char *);
 
 // ---parse.c---
+extern int variable_offset;
 Node *new_node(int, Node *, Node *);
 Node *new_node_num(int);
 Node *new_node_val(char *name);
@@ -88,6 +90,7 @@ void gen(Node *);
 void gen_lval(Node *);
 
 // ---util.c---
+void debug_printf(char *fmt, ...);
 void error(char *fmt, ...);
 Vector *new_vector();
 void vec_push(Vector *, void *);

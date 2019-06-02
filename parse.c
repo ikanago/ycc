@@ -46,7 +46,6 @@ Vector *parse(Vector *v, Map *map)
 	nodes = new_vector();
 	token_index = 0;
 	variable_map = map;
-	// variable_offset = 0;
 	return program();
 }
 

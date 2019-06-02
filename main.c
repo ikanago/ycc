@@ -1,4 +1,9 @@
 #include "ycc.h"
+#ifdef DEBUG
+bool is_debug = true;
+#else
+bool is_debug = false;
+#endif
 
 int main(int argc, char **argv)
 {
@@ -26,13 +31,13 @@ int main(int argc, char **argv)
 	printf("  push rbp\n");
 	printf("  mov rbp, rsp\n");
 	printf("  sub rsp, %d\n", variable_offset);
-	// printf("; prologue\n");
+	debug_printf("; prologue\n");
 
 	codegen(nodes, variable_map);
 
 	printf("  mov rsp, rbp\n");
 	printf("  pop rbp\n");
 	printf("  ret\n");
-	// printf("; end of a program\n");
+	debug_printf("; end of a program\n");
 	return 0;
 }

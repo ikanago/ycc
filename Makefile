@@ -14,6 +14,9 @@ test: ycc
 debug: $(OBJS)
 	$(CC) -g -o dycc $(SRCS) $(LDFLAGS)
 
+debug_asm: $(OBJS)
+	$(CC) -g -DDEBUG -o dycc $(SRCS) $(LDFLAGS)
+
 clean:
 	rm -f ycc dycc *.o *~ tmp*
 
