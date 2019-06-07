@@ -9,57 +9,51 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Node
-{
-	int type;
-	int value;
-	char* name;
-	struct Node *lhs;
-	struct Node *rhs;
-	struct Node *condition;
-	struct Node *then;
+typedef struct Node {
+    int type;
+    int value;
+    char *name;
+    struct Node *lhs;
+    struct Node *rhs;
+    struct Node *condition;
+    struct Node *then;
 } Node;
 
-typedef struct Token
-{
-	int type;
-	int value;
-	char *name;
-	char *input;
+typedef struct Token {
+    int type;
+    int value;
+    char *name;
+    char *input;
 } Token;
 
-typedef struct Vector
-{
-	void **data;
-	int capacity;
-	int len;
+typedef struct Vector {
+    void **data;
+    int capacity;
+    int len;
 } Vector;
 
-typedef struct Map
-{
-	Vector *keys;
-	Vector *values;
+typedef struct Map {
+    Vector *keys;
+    Vector *values;
 } Map;
 
-enum
-{
-	TK_NUM = 256,
-	TK_EOF,
-	TK_EQ,
-	TK_NE,
-	TK_LE,
-	TK_GE,
-	TK_IDENT,
-	TK_IF,
-	TK_RETURN,
+enum {
+    TK_NUM = 256,
+    TK_EOF,
+    TK_EQ,
+    TK_NE,
+    TK_LE,
+    TK_GE,
+    TK_IDENT,
+    TK_IF,
+    TK_RETURN,
 };
 
-enum
-{
-	ND_NUM = 512,
-	ND_IDENT,
-	ND_IF,
-	ND_RETURN,
+enum {
+    ND_NUM = 512,
+    ND_IDENT,
+    ND_IF,
+    ND_RETURN,
 };
 
 // ---main.c---
