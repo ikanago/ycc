@@ -1,5 +1,6 @@
 #include "ycc.h"
 
+int label_number = 0;
 
 void codegen(Vector *nodes)
 {
@@ -49,6 +50,18 @@ void gen(Node *node)
 		debug_printf("; return\n");
 		return;
 	}
+	else if (node->type == ND_IF)
+	{
+		gen(node->condition);
+		printf("  pop rax\n");
+		printf("  cmp rax, 0\n");
+		label_number++;
+		printf("  je .Lend%06d\n", label_number);
+		gen(node->then);
+		printf(".Lend%06d:\n", label_number);
+		return;
+	}
+	
 
 	gen(node->lhs);
 	gen(node->rhs);
@@ -106,7 +119,7 @@ void gen_lval(Node *node)
 		error("Left value of assignment is not variable.");
 
 	int offset = (intptr_t)map_get(variable_map, node->name);
-	map_set(variable_map, node->name, (void *)offset);
+	map_set(variable_map, node->name, offset);
 
 	printf("  mov rax, rbp\n");
 	printf("  sub rax, %d\n", offset);

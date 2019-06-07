@@ -31,6 +31,14 @@ Node *new_node_var(char *name)
 	return node;
 }
 
+void expect(int type)
+{
+	Token *t = tokens->data[token_index];
+	if (t->type != type)
+		error("%c (%d9 expected, but got %c (%d)", type, type, t->type, t->type);
+	token_index++;
+}
+
 int consume(int type)
 {
 	Token *t = tokens->data[token_index];
@@ -46,7 +54,7 @@ Vector *parse(Vector *v)
 	nodes = new_vector();
 	token_index = 0;
 	variable_map = new_map();
-	int variable_offset = 0;
+	variable_offset = 0;
 	return program();
 }
 
@@ -70,16 +78,21 @@ Node *stmt()
 	if (consume(TK_RETURN))
 	{
 		node = new_node(ND_RETURN, expr(), NULL);
+		expect(';');
+	}
+	else if (consume(TK_IF))
+	{
+		node = malloc(sizeof(Node));
+		node->type = ND_IF;
+		expect('(');
+		node->condition = assign();
+		expect(')');
+		node->then = stmt();
 	}
 	else
 	{
 		node = expr();
-	}
-
-	if (!consume(';'))
-	{
-		Token *t = tokens->data[token_index];
-		error("Expected a ';' but got %s", t->input);
+		expect(';');
 	}
 	return node;
 }

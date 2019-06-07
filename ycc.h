@@ -16,6 +16,8 @@ typedef struct Node
 	char* name;
 	struct Node *lhs;
 	struct Node *rhs;
+	struct Node *condition;
+	struct Node *then;
 } Node;
 
 typedef struct Token
@@ -48,13 +50,15 @@ enum
 	TK_LE,
 	TK_GE,
 	TK_IDENT,
+	TK_IF,
 	TK_RETURN,
 };
 
 enum
 {
-	ND_NUM = 256,
+	ND_NUM = 512,
 	ND_IDENT,
+	ND_IF,
 	ND_RETURN,
 };
 
@@ -67,12 +71,14 @@ extern bool is_debug;
 Token *add_token(Vector *, int, char *);
 bool is_alnum(char c);
 Vector *tokenize(char *);
+Vector *scan(char *);
 
 // ---parse.c---
 extern int variable_offset;
 Node *new_node(int, Node *, Node *);
 Node *new_node_num(int);
 Node *new_node_val(char *name);
+void expect(int);
 int consume(int);
 Vector *parse(Vector *);
 Vector *program();
@@ -102,7 +108,7 @@ void *map_get(Map *, char *);
 bool map_exists(Map *, char *);
 
 // ---util_test.c---
-int expect(int, int, int);
+int examine(int, int, int);
 void vec_test();
 void map_test();
 
