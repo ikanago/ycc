@@ -182,10 +182,11 @@ Node *term() {
     }
     else if (t->type == TK_IDENT) {
         token_index++;
-        Node *node = new_node_var(t->name);
-        if (!map_exists(variable_map, t->name)) {
+        Node *node = new_node_var(t->token_string);
+        if (!map_exists(variable_map, t->token_string)) {
             variable_offset += 8;
-            map_set(variable_map, t->name, (void *)(intptr_t)variable_offset);
+            map_set(variable_map, t->token_string,
+                    (void *)(intptr_t)variable_offset);
         }
         return node;
     }

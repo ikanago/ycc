@@ -30,45 +30,53 @@ Vector *scan(char *pos) {
         }
         else if (isdigit(*pos)) {
             Token *t = add_token(v, TK_NUM, pos);
+            t->type_name = "INT";
             t->value = strtol(pos, &pos, 10);
         }
         else if (!strncmp(pos, "==", 2)) {
-            add_token(v, TK_EQ, pos);
+            Token *t = add_token(v, TK_EQ, pos);
+            t->type_name = "EQUAL";
+            t->token_string = "==";
             pos += 2;
         }
         else if (!strncmp(pos, "!=", 2)) {
-            add_token(v, TK_NE, pos);
+            Token *t = add_token(v, TK_NE, pos);
+            t->type_name = "NOT_EQUAL";
+            t->token_string = "!=";
             pos += 2;
         }
         else if (!strncmp(pos, "<=", 2)) {
-            add_token(v, TK_LE, pos);
+            Token *t = add_token(v, TK_LE, pos);
+            t->type_name = "LESS/EQUAL";
+            t->token_string = "<=";
             pos += 2;
         }
         else if (!strncmp(pos, ">=", 2)) {
-            add_token(v, TK_GE, pos);
+            Token *t = add_token(v, TK_GE, pos);
+            t->type_name = "GREATER/EQUAL";
+            t->token_string = ">=";
             pos += 2;
-        }
-        else if (!strncmp(pos, "return", 6) && !is_alnum(pos[6])) {
-            add_token(v, TK_RETURN, pos);
-            pos += 6;
         }
         else if (isalpha(*pos)) {
             int length = 1;
             while (isalnum(pos[length]))
                 length++;
 
-            char *name = strndup(pos, length);
-            int type = (intptr_t)map_get(keywords, name);
+            char *token_string = strndup(pos, length);
+            int type = (intptr_t)map_get(keywords, token_string);
             if (!type)
                 type = TK_IDENT;
             Token *t = add_token(v, type, pos);
-            t->name = name;
+            t->type_name = "IDENTIFIER";
+            t->token_string = token_string;
             pos += length;
         }
         else if (*pos == '+' || *pos == '-' || *pos == '*' || *pos == '/' ||
                  *pos == '(' || *pos == ')' || *pos == '<' || *pos == '>' ||
                  *pos == '=' || *pos == ';') {
-            add_token(v, *pos, pos);
+            Token *t = add_token(v, *pos, pos);
+            t->type_name = strndup(pos, 1);
+            t->token_string = strndup(pos, 1);
             pos++;
         }
         else {

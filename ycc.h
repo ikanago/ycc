@@ -21,8 +21,9 @@ typedef struct Node {
 
 typedef struct Token {
     int type;
+    char *type_name;
     int value;
-    char *name;
+    char *token_string;
     char *input;
 } Token;
 
@@ -94,6 +95,7 @@ void gen_lval(Node *);
 // ---util.c---
 void debug_printf(char *fmt, ...);
 void error(char *fmt, ...);
+void dump_token(Vector *);
 Vector *new_vector();
 void vec_push(Vector *, void *);
 Map *new_map();

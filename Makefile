@@ -8,7 +8,7 @@ ycc: $(OBJS)
 $(OBJS): ycc.h
 
 test: ycc
-	./ycc -test
+	./ycc --test
 	./test.sh
 
 debug: $(OBJS)
