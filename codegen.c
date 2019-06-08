@@ -51,6 +51,7 @@ void gen(Node *node) {
         printf("  je .Lend%06d\n", label_number);
         gen(node->then);
         printf(".Lend%06d:\n", label_number);
+        printf("  push rax\n");
         return;
     }
 
