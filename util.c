@@ -1,14 +1,5 @@
 #include "ycc.h"
 
-void debug_printf(char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    if (is_debug)
-        printf(fmt, ap);
-    else
-        printf("\n");
-}
-
 void error(char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);

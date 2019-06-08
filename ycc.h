@@ -9,6 +9,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct Token {
+    int type;
+    char *type_name;
+    int value;
+    char *token_string;
+    char *input;
+} Token;
+
 typedef struct Node {
     int type;
     int value;
@@ -18,14 +26,6 @@ typedef struct Node {
     struct Node *condition;
     struct Node *then;
 } Node;
-
-typedef struct Token {
-    int type;
-    char *type_name;
-    int value;
-    char *token_string;
-    char *input;
-} Token;
 
 typedef struct Vector {
     void **data;
@@ -60,7 +60,6 @@ enum {
 // ---main.c---
 extern Map *variable_map;
 extern int variable_offset;
-extern bool is_debug;
 
 // ---tokenize.c---
 Token *add_token(Vector *, int, char *);
@@ -93,7 +92,6 @@ void gen(Node *);
 void gen_lval(Node *);
 
 // ---util.c---
-void debug_printf(char *fmt, ...);
 void error(char *fmt, ...);
 void dump_token(Vector *);
 Vector *new_vector();
