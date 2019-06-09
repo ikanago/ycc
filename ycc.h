@@ -39,22 +39,26 @@ typedef struct Map {
 } Map;
 
 enum {
-    TK_NUM = 256,
-    TK_EOF,
-    TK_EQ,
-    TK_NE,
-    TK_LE,
-    TK_GE,
-    TK_IDENT,
-    TK_IF,
-    TK_RETURN,
+    TK_NUM = 256, // Number literal
+    TK_EQ,        // ==
+    TK_NE,        // !=
+    TK_LE,        // <=
+    TK_GE,        // >=
+    TK_IDENT,     // Ifentifier
+    TK_IF,        // if
+    TK_RETURN,    // return
+    TK_EOF,       // End Of Statement
 };
 
 enum {
-    ND_NUM = 512,
-    ND_IDENT,
-    ND_IF,
-    ND_RETURN,
+    ND_NUM = 256, // Number literal
+    ND_EQ,        // ==
+    ND_NE,        // !=
+    ND_LE,        // <=
+    ND_GE,        // >=
+    ND_IDENT,     // Ifentifier
+    ND_IF,        // if
+    ND_RETURN,    // return
 };
 
 // ---main.c---

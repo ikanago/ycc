@@ -13,11 +13,14 @@ void dump_token(Vector *tokens) {
     while (true) {
         Token *t = tokens->data[i];
         if (t->type == TK_EOF)
-            break;
+            return;
         printf("\033[0;32m");
-        printf("%s", t->type_name);
+        printf("%-10s", t->type_name);
         printf("\033[0m");
-        printf(" -> %s\n", t->token_string);
+        if (t->value)
+            printf(" -> %d\n", t->value);
+        else
+            printf(" -> %s\n", t->token_string);
         i++;
     }
 }

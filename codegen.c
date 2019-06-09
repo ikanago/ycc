@@ -79,17 +79,17 @@ void gen(Node *node) {
         printf("  div rdi\n");
         printf("# /\n");
         break;
-    case TK_EQ:
+    case ND_EQ:
         printf("  cmp rax, rdi\n");
         printf("  sete al\n");
         printf("  movzb rax, al\n");
         break;
-    case TK_NE:
+    case ND_NE:
         printf("  cmp rax, rdi\n");
         printf("  setne al\n");
         printf("  movzb rax, al\n");
         break;
-    case TK_LE:
+    case ND_LE:
         printf("  cmp rax, rdi\n");
         printf("  setle al\n");
         printf("  movzb rax, al\n");
@@ -108,11 +108,11 @@ void gen_lval(Node *node) {
     if (node->type != ND_IDENT)
         error("Left value of assignment is not variable.");
 
-    int offset = (intptr_t)map_get(variable_map, node->name);
-    map_set(variable_map, node->name, offset);
+    int *offset = (int *)map_get(variable_map, node->name);
+    map_set(variable_map, node->name, (void *)offset);
 
     printf("  mov rax, rbp\n");
-    printf("  sub rax, %d\n", offset);
+    printf("  sub rax, %d\n", *offset);
     printf("  push rax\n");
     printf("# left value: %s\n", node->name);
 }
