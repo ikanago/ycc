@@ -1,6 +1,7 @@
 #include "ycc.h"
 
-int label_number = 0;
+int label_else_number = 0;
+int label_end_number = 0;
 
 void codegen(Vector *nodes) {
     for (int i = 0; nodes->data[i]; i++) {
@@ -47,10 +48,17 @@ void gen(Node *node) {
         gen(node->condition);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        label_number++;
-        printf("  je .Lend%06d\n", label_number);
+        label_else_number++;
+        printf("  je .Lelse%06d\n", label_else_number);
         gen(node->then);
-        printf(".Lend%06d:\n", label_number);
+
+        label_end_number++;
+        printf("  jmp .Lend%06d\n", label_end_number);
+        printf(".Lelse%06d:\n", label_else_number);
+        if (node->els) {
+            gen(node->els);
+        }
+        printf(".Lend%06d:\n", label_end_number);
         printf("  push rax\n");
         return;
     }
@@ -112,7 +120,7 @@ void gen_lval(Node *node) {
     map_set(variable_map, node->name, (void *)offset);
 
     printf("  mov rax, rbp\n");
-    printf("  sub rax, %d\n", *offset);
+    printf("  sub rax, %ld\n", (intptr_t)offset);
     printf("  push rax\n");
     printf("# left value: %s\n", node->name);
 }

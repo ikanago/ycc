@@ -25,6 +25,7 @@ typedef struct Node {
     struct Node *rhs;
     struct Node *condition;
     struct Node *then;
+    struct Node *els;
 } Node;
 
 typedef struct Vector {
@@ -46,6 +47,7 @@ enum {
     TK_GE,        // >=
     TK_IDENT,     // Ifentifier
     TK_IF,        // if
+    TK_ELSE,      // else
     TK_RETURN,    // return
     TK_EOF,       // End Of Statement
 };

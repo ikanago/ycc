@@ -8,14 +8,14 @@ I develop this compiler incrementally. In other words, I write code of tokenizer
 # Generative grammer
 
 A: nonterminal symbol  
-$\epsilon$: null
+e: null
 
-| Expression | Meaning |
-| :---: | :---: |
-| A* | Repeat A more than 0 times |
-| A? | A or $\epsilon$ |
-| A \| B | A or B |
-| (...) | Grouping |
+| Expression |          Meaning           |
+| :--------: | :------------------------: |
+|     A*     | Repeat A more than 0 times |
+|     A?     |           A or e           |
+|   A \| B   |           A or B           |
+|   (...)    |          Grouping          |
 
 ```
 program    = stmt*

@@ -31,8 +31,8 @@ Node *new_node_var(char *name) {
 void expect(int type) {
     Token *t = tokens->data[token_index];
     if (t->type != type)
-        error("%c (%d9 expected, but got %c (%d)", type, type, t->type,
-              t->type);
+        error("%c (%d) expected, but got %c (%d) at %s", type, type, t->type,
+              t->type, t->input);
     token_index++;
 }
 
@@ -78,6 +78,8 @@ Node *stmt() {
         node->condition = assign();
         expect(')');
         node->then = stmt();
+        if (consume(TK_ELSE))
+            node->els = stmt();
     }
     else {
         node = expr();

@@ -18,6 +18,7 @@ bool is_alnum(char c) {
 Vector *tokenize(char *pos) {
     keywords = new_map();
     map_set(keywords, "if", (void *)TK_IF);
+    map_set(keywords, "else", (void *)TK_ELSE);
     map_set(keywords, "return", (void *)TK_RETURN);
     return scan(pos);
 }
