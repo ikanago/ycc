@@ -33,5 +33,6 @@ try 11 "hoge = 5; fuga = 6; return hoge + fuga;"
 try 31 "hoge = 3; fuga = 7; piyo = hoge * fuga; hoge = 40; bar = 4; return piyo + hoge / bar;"
 try 3 "hoge = 1; fuga = 1; if (hoge == fuga) fuga = 3; return fuga;"
 try 2 "hoge = 1; fuga = 2; if (hoge == fuga) fuga = 3; return fuga;"
-try 4 "hoge = 1; fuga = 2; if (hoge == fuga) fuga = 3; else fuga = 4; return fuga;"
+try 7 "hoge = 1; fuga = 2; if (hoge == fuga){ fuga = 3; } else { hoge = 3; fuga = 4; } return hoge + fuga;"
+try 2 "va = 1; if(va < 0){va = 3;} else if(va > 0){va = 2;} return va;"
 echo OK

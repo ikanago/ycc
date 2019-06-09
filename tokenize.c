@@ -72,9 +72,7 @@ Vector *scan(char *pos) {
             t->token_string = token_string;
             pos += length;
         }
-        else if (*pos == '+' || *pos == '-' || *pos == '*' || *pos == '/' ||
-                 *pos == '(' || *pos == ')' || *pos == '<' || *pos == '>' ||
-                 *pos == '=' || *pos == ';') {
+        else if (strchr("+-*/;=(){}<>", *pos)) {
             Token *t = add_token(v, *pos, pos);
             t->type_name = strndup(pos, 1);
             t->token_string = strndup(pos, 1);

@@ -23,6 +23,7 @@ typedef struct Node {
     char *name;
     struct Node *lhs;
     struct Node *rhs;
+    struct Vector *stmts_in_block;
     struct Node *condition;
     struct Node *then;
     struct Node *els;
@@ -53,7 +54,7 @@ enum {
 };
 
 enum {
-    ND_NUM = 256, // Number literal
+    ND_NUM = 512, // Number literal
     ND_EQ,        // ==
     ND_NE,        // !=
     ND_LE,        // <=
@@ -61,6 +62,7 @@ enum {
     ND_IDENT,     // Ifentifier
     ND_IF,        // if
     ND_RETURN,    // return
+    ND_BLOCK,     // { }
 };
 
 // ---main.c---

@@ -46,20 +46,32 @@ void gen(Node *node) {
     }
     else if (node->type == ND_IF) {
         gen(node->condition);
+        printf("# if-condition\n");
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
         label_else_number++;
         printf("  je .Lelse%06d\n", label_else_number);
         gen(node->then);
+        printf("# if-then\n");
 
         label_end_number++;
         printf("  jmp .Lend%06d\n", label_end_number);
         printf(".Lelse%06d:\n", label_else_number);
         if (node->els) {
             gen(node->els);
+            printf("# else\n");
         }
         printf(".Lend%06d:\n", label_end_number);
         printf("  push rax\n");
+        return;
+    }
+    else if (node->type == ND_BLOCK) {
+        Vector *stmts = node->stmts_in_block;
+        for (int i = 0; stmts->data[i]; i++) {
+            gen(stmts->data[i]);
+            printf("  pop rax\n");
+            printf("# end of a statement\n\n");
+        }
         return;
     }
 

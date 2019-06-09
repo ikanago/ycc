@@ -81,6 +81,13 @@ Node *stmt() {
         if (consume(TK_ELSE))
             node->els = stmt();
     }
+    else if (consume('{')) {
+        node = malloc(sizeof(Node));
+        node->type = ND_BLOCK;
+        node->stmts_in_block = new_vector();
+        while (!consume('}'))
+            vec_push(node->stmts_in_block, stmt());
+    }
     else {
         node = expr();
         expect(';');

@@ -20,6 +20,7 @@ e: null
 ```
 program    = stmt*
 stmt       = expr ";"
+            | "{" stmt* "}"
             | "if" "(" expr ")" stmt ("else" stmt)?
 expr       = assign
 assign     = equality
