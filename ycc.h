@@ -97,7 +97,14 @@ Node *term();
 // ---codegen.c---
 void codegen(Vector *);
 void gen(Node *);
+void gen_num(Node *);
 void gen_lval(Node *);
+void gen_ident(Node *);
+void gen_assign(Node *);
+void gen_return(Node *);
+void gen_if(Node *);
+void gen_block(Node *);
+void gen_binary_operator(Node *);
 
 // ---util.c---
 void error(char *fmt, ...);
