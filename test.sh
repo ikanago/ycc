@@ -4,7 +4,7 @@ try() {
 	input="$2"
 
 	./ycc "$input" > tmp.s
-	gcc -o tmp tmp.s
+	gcc -o tmp tmp.s ./test/test.c
 	./tmp
 	actual="$?"
 
@@ -34,5 +34,6 @@ try 31 "hoge = 3; fuga = 7; piyo = hoge * fuga; hoge = 40; bar = 4; return piyo 
 try 3 "hoge = 1; fuga = 1; if (hoge == fuga) fuga = 3; return fuga;"
 try 2 "hoge = 1; fuga = 2; if (hoge == fuga) fuga = 3; return fuga;"
 try 7 "hoge = 1; fuga = 2; if (hoge == fuga){ fuga = 3; } else { hoge = 3; fuga = 4; } return hoge + fuga;"
-try 2 "va = 1; if(va < 0){va = 3;} else if(va > 0){va = 2;} else{va = 1;} return va;"
+try 8 "hoge = 3; fuga = foo(); return hoge + fuga;"
+# try 2 "va = 1; if(va < 0){va = 3;} else if(va > 0){va = 2;} else{va = 1;} return va;"
 echo OK

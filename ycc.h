@@ -49,6 +49,7 @@ enum {
     TK_IDENT,     // Ifentifier
     TK_IF,        // if
     TK_ELSE,      // else
+    TK_FUNCCALL,  // function call
     TK_RETURN,    // return
     TK_EOF,       // End Of Statement
 };
@@ -62,6 +63,7 @@ enum {
     ND_IDENT,     // Ifentifier
     ND_IF,        // if
     ND_RETURN,    // return
+    ND_FUNCCALL,  // function call
     ND_BLOCK,     // { }
 };
 
@@ -101,8 +103,9 @@ void gen_num(Node *);
 void gen_lval(Node *);
 void gen_ident(Node *);
 void gen_assign(Node *);
-void gen_return(Node *);
 void gen_if(Node *);
+void gen_funccall(Node *);
+void gen_return(Node *);
 void gen_block(Node *);
 void gen_binary_operator(Node *);
 

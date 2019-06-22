@@ -181,8 +181,7 @@ Node *term() {
     if (consume('(')) {
         Node *node = expr();
         if (!consume(')'))
-            printf("There is no close parenthesis corresponds open one: %s",
-                   t->input);
+            error("Expected ')', but got %s", t->input);
         return node;
     }
     else if (t->type == TK_NUM) {
@@ -192,6 +191,14 @@ Node *term() {
     else if (t->type == TK_IDENT) {
         token_index++;
         Node *node = new_node_var(t->token_string);
+        if (consume('(')) {
+            if (consume(')')) {
+                node->type = ND_FUNCCALL;
+                node->name = t->token_string;
+            }
+            else
+                error("Expected ')', but got %s", t->input);
+        }
         if (!map_exists(variable_map, t->token_string)) {
             variable_offset += 8;
             map_set(variable_map, t->token_string,

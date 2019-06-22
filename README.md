@@ -29,5 +29,5 @@ relational = add ("<" add | "<=" add | ">" add | ">= add)*
 add        = mul ("+" mul | "-" mul)
 mul        = unary ("*" unary | "/" unary)*
 unary      = ("+" | "-")? term
-term       = num | ident | "(" expr ")"
+term       = num | ident ("(" ")")? | "(" expr ")"
 ```

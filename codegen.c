@@ -23,11 +23,14 @@ void gen(Node *node) {
     case '=':
         gen_assign(node);
         break;
-    case ND_RETURN:
-        gen_return(node);
-        break;
     case ND_IF:
         gen_if(node);
+        break;
+    case ND_FUNCCALL:
+        gen_funccall(node);
+        break;
+    case ND_RETURN:
+        gen_return(node);
         break;
     case ND_BLOCK:
         gen_block(node);
@@ -76,16 +79,6 @@ void gen_assign(Node *node) {
     return;
 }
 
-void gen_return(Node *node) {
-    gen(node->lhs);
-    printf("  pop rax\n");
-    printf("  mov rsp, rbp\n");
-    printf("  pop rbp\n");
-    printf("  ret\n");
-    printf("# return\n");
-    return;
-}
-
 void gen_if(Node *node) {
     if (node->els) {
         label_else_number++;
@@ -113,6 +106,22 @@ void gen_if(Node *node) {
         printf(".Lend%d:\n", label_end_number);
     }
     printf("  push rax\n");
+    return;
+}
+
+void gen_funccall(Node *node) {
+    printf("  call %s\n", node->name);
+    printf("  push rax\n");
+    printf("# function  call\n");
+}
+
+void gen_return(Node *node) {
+    gen(node->lhs);
+    printf("  pop rax\n");
+    printf("  mov rsp, rbp\n");
+    printf("  pop rbp\n");
+    printf("  ret\n");
+    printf("# return\n");
     return;
 }
 
