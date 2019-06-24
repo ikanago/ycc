@@ -2,6 +2,7 @@
 
 int label_else_number = 0;
 int label_end_number = 0;
+char *registers_for_args[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 
 void codegen(Vector *nodes) {
     for (int i = 0; nodes->data[i]; i++) {
@@ -110,9 +111,13 @@ void gen_if(Node *node) {
 }
 
 void gen_funccall(Node *node) {
+    for (int i = node->args->len - 1; i >= 0; i--) {
+        gen(node->args->data[i]);
+        printf("  pop %s\n", registers_for_args[i]);
+    }
     printf("  call %s\n", node->name);
     printf("  push rax\n");
-    printf("# function  call\n");
+    printf("# function call\n");
 }
 
 void gen_return(Node *node) {

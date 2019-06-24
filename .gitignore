@@ -1,7 +1,6 @@
 *~
 *.o
 tmp*
-test
 ycc
 dycc
 main

@@ -25,6 +25,18 @@ Node *new_node_var(char *name) {
     Node *node = malloc(sizeof(Node));
     node->type = ND_IDENT;
     node->name = name;
+    if (!map_exists(variable_map, name)) {
+        variable_offset += 8;
+        map_set(variable_map, name, (void *)(intptr_t)variable_offset);
+    }
+    return node;
+}
+
+Node *new_node_funccall(char *name, Vector *args) {
+    Node *node = malloc(sizeof(Node));
+    node->type = ND_FUNCCALL;
+    node->name = name;
+    node->args = args;
     return node;
 }
 
@@ -190,21 +202,21 @@ Node *term() {
     }
     else if (t->type == TK_IDENT) {
         token_index++;
-        Node *node = new_node_var(t->token_string);
-        if (consume('(')) {
-            if (consume(')')) {
-                node->type = ND_FUNCCALL;
-                node->name = t->token_string;
-            }
-            else
-                error("Expected ')', but got %s", t->input);
+        char *name = t->token_string;
+        if (!consume('(')) {
+            return new_node_var(name);
         }
-        if (!map_exists(variable_map, t->token_string)) {
-            variable_offset += 8;
-            map_set(variable_map, t->token_string,
-                    (void *)(intptr_t)variable_offset);
+
+        Vector *args = new_vector();
+        if (consume(')')) {
+            return new_node_funccall(name, args);
         }
-        return node;
+
+        vec_push(args, expr());
+        while (consume(','))
+            vec_push(args, expr());
+        expect(')');
+        return new_node_funccall(name, args);
     }
     else {
         error("Expected value, but got %s", t->input);

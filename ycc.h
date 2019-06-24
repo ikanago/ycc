@@ -10,11 +10,11 @@
 #include <string.h>
 
 typedef struct Token {
-    int type;
-    char *type_name;
-    int value;
-    char *token_string;
-    char *input;
+    int type;           // type of token(integer)
+    char *type_name;    // type name(string)
+    int value;          // value of integer token
+    char *token_string; // raw string of token
+    char *input;        // tokens which remain to be tokenized
 } Token;
 
 typedef struct Node {
@@ -27,6 +27,7 @@ typedef struct Node {
     struct Node *condition;
     struct Node *then;
     struct Node *els;
+    struct Vector *args;
 } Node;
 
 typedef struct Vector {
