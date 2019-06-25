@@ -202,7 +202,7 @@ Node *term() {
     }
     else if (t->type == TK_IDENT) {
         token_index++;
-        char *name = t->token_string;
+        char *name = t->name;
         if (!consume('(')) {
             return new_node_var(name);
         }

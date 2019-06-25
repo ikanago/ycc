@@ -10,24 +10,24 @@
 #include <string.h>
 
 typedef struct Token {
-    int type;           // type of token(integer)
-    char *type_name;    // type name(string)
-    int value;          // value of integer token
-    char *token_string; // raw string of token
-    char *input;        // tokens which remain to be tokenized
+    int type;        // type of token(integer)
+    char *type_name; // type name(string)
+    int value;       // value of integer token
+    char *name;      // name of identifier token
+    char *input;     // tokens which remain to be tokenized
 } Token;
 
-typedef struct Node {
-    int type;
-    int value;
-    char *name;
-    struct Node *lhs;
-    struct Node *rhs;
-    struct Vector *stmts_in_block;
-    struct Node *condition;
-    struct Node *then;
-    struct Node *els;
-    struct Vector *args;
+typedef struct Node{
+    int type;                      // type of node(integer)
+    int value;                     // value of integer node
+    char *name;                    // name of identifier node
+    struct Node *lhs;              // left-hand side node
+    struct Node *rhs;              // right-hand side node
+    struct Node *condition;        // node of if-condition
+    struct Node *then;             // node of if-then
+    struct Node *els;              // node of if-else
+    struct Vector *args;           // node of function arguments
+    struct Vector *stmts_in_block; // nodes of block scope
 } Node;
 
 typedef struct Vector {
@@ -41,7 +41,7 @@ typedef struct Map {
     Vector *values;
 } Map;
 
-enum {
+enum Token_type {
     TK_NUM = 256, // Number literal
     TK_EQ,        // ==
     TK_NE,        // !=
@@ -55,7 +55,7 @@ enum {
     TK_EOF,       // End Of Statement
 };
 
-enum {
+enum Node_type {
     ND_NUM = 512, // Number literal
     ND_EQ,        // ==
     ND_NE,        // !=
@@ -112,7 +112,6 @@ void gen_binary_operator(Node *);
 
 // ---util.c---
 void error(char *fmt, ...);
-void dump_token(Vector *);
 Vector *new_vector();
 void vec_push(Vector *, void *);
 Map *new_map();
@@ -124,5 +123,11 @@ bool map_exists(Map *, char *);
 int examine(int, int, int);
 void vec_test();
 void map_test();
+
+// ---dump.c---
+void dump_token(Vector *);
+void dump_nodes(Vector *);
+void dump_node(Node *, int);
+void dump_type(Node *);
 
 #endif

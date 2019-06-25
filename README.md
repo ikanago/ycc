@@ -18,10 +18,14 @@ e: null
 |   (...)    |          Grouping          |
 
 ```
-program    = stmt*
+program    = definition*
+definition = define_func
+define_func = identifier "(" params? ")" "{" stmt * "}"
+params     = expr ("," expr)*
 stmt       = expr ";"
             | "{" stmt* "}"
             | "if" "(" expr ")" stmt ("else" stmt)?
+            | "return" expr ";"
 expr       = assign
 assign     = equality
 equality   = relational ("==" relational | "!=" relational)*
@@ -29,5 +33,5 @@ relational = add ("<" add | "<=" add | ">" add | ">= add)*
 add        = mul ("+" mul | "-" mul)
 mul        = unary ("*" unary | "/" unary)*
 unary      = ("+" | "-")? term
-term       = num | ident ("(" ")")? | "(" expr ")"
+term       = num | identifier ("(" params? ")")? | "(" expr ")"
 ```

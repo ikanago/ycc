@@ -13,6 +13,13 @@ int main(int argc, char **argv) {
         return 0;
     }
 
+    if (argc == 3 && !strcmp(argv[1], "--dump-node")) {
+        Vector *tokens = tokenize(argv[2]);
+        Vector *nodes = parse(tokens);
+        dump_nodes(nodes);
+        return 0;
+    }
+
     Vector *tokens = tokenize(argv[1]);
     Vector *nodes = parse(tokens);
 

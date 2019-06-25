@@ -37,25 +37,25 @@ Vector *scan(char *pos) {
         else if (!strncmp(pos, "==", 2)) {
             Token *t = add_token(v, TK_EQ, pos);
             t->type_name = "EQUAL";
-            t->token_string = "==";
+            t->name = "==";
             pos += 2;
         }
         else if (!strncmp(pos, "!=", 2)) {
             Token *t = add_token(v, TK_NE, pos);
             t->type_name = "NOT_EQUAL";
-            t->token_string = "!=";
+            t->name = "!=";
             pos += 2;
         }
         else if (!strncmp(pos, "<=", 2)) {
             Token *t = add_token(v, TK_LE, pos);
             t->type_name = "LESS/EQUAL";
-            t->token_string = "<=";
+            t->name = "<=";
             pos += 2;
         }
         else if (!strncmp(pos, ">=", 2)) {
             Token *t = add_token(v, TK_GE, pos);
             t->type_name = "GREATER/EQUAL";
-            t->token_string = ">=";
+            t->name = ">=";
             pos += 2;
         }
         else if (isalpha(*pos)) {
@@ -63,19 +63,19 @@ Vector *scan(char *pos) {
             while (isalnum(pos[length]))
                 length++;
 
-            char *token_string = strndup(pos, length);
-            int type = (intptr_t)map_get(keywords, token_string);
+            char *name = strndup(pos, length);
+            int type = (intptr_t)map_get(keywords, name);
             if (!type)
                 type = TK_IDENT;
             Token *t = add_token(v, type, pos);
             t->type_name = "IDENTIFIER";
-            t->token_string = token_string;
+            t->name = name;
             pos += length;
         }
         else if (strchr("+-*/;=(){}<>,", *pos)) {
             Token *t = add_token(v, *pos, pos);
             t->type_name = strndup(pos, 1);
-            t->token_string = strndup(pos, 1);
+            t->name = strndup(pos, 1);
             pos++;
         }
         else {

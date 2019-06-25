@@ -8,23 +8,6 @@ void error(char *fmt, ...) {
     exit(1);
 }
 
-void dump_token(Vector *tokens) {
-    int i = 0;
-    while (true) {
-        Token *t = tokens->data[i];
-        if (t->type == TK_EOF)
-            return;
-        printf("\033[0;32m");
-        printf("%-10s", t->type_name);
-        printf("\033[0m");
-        if (t->value)
-            printf(" -> %d\n", t->value);
-        else
-            printf(" -> %s\n", t->token_string);
-        i++;
-    }
-}
-
 Vector *new_vector() {
     Vector *v = malloc(sizeof(Vector));
     v->data = malloc(sizeof(void *) * 16);
