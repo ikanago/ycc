@@ -3,11 +3,15 @@
 int label_else_number = 0;
 int label_end_number = 0;
 char *registers_for_args[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+Map *variablemap;
 
 void codegen(Vector *nodes) {
+    printf(".intel_syntax noprefix\n");
     for (int i = 0; nodes->data[i]; i++) {
         label_end_number++;
-        gen(nodes->data[i]);
+        Node *node = nodes->data[i];
+        printf(".global %s\n", node->name);
+        gen(node);
         printf("  pop rax\n");
         printf("# end of a statement\n\n");
     }
@@ -30,6 +34,9 @@ void gen(Node *node) {
     case ND_FUNCCALL:
         gen_funccall(node);
         break;
+    case ND_DEF_FUNC:
+        gen_def_func(node);
+        break;
     case ND_RETURN:
         gen_return(node);
         break;
@@ -51,8 +58,8 @@ void gen_lval(Node *node) {
     if (node->type != ND_IDENT)
         error("Left value of assignment is not variable.");
 
-    int *offset = (int *)map_get(variable_map, node->name);
-    map_set(variable_map, node->name, (void *)offset);
+    int *offset = (int *)map_get(variablemap, node->name);
+    map_set(variablemap, node->name, (void *)offset);
 
     printf("  mov rax, rbp\n");
     printf("  sub rax, %ld\n", (intptr_t)offset);
@@ -114,10 +121,34 @@ void gen_funccall(Node *node) {
     for (int i = node->args->len - 1; i >= 0; i--) {
         gen(node->args->data[i]);
         printf("  pop %s\n", registers_for_args[i]);
+        printf("# store arg to regester\n");
     }
     printf("  call %s\n", node->name);
     printf("  push rax\n");
     printf("# function call\n");
+}
+
+void gen_def_func(Node *node) {
+    variablemap = node->vars;
+    printf("%s:\n", node->name);
+    printf("  push rbp\n");
+    printf("  mov rbp, rsp\n");
+    printf("  sub rsp, %d\n", node->max_variable_offset);
+    printf("# prologue\n");
+
+    for (int i = 0; i < node->params->len; i++) {
+        int offset = (intptr_t)map_get(variablemap, node->params->data[i]);
+        printf("  mov rax, rbp\n");
+        printf("  sub rax, %d\n", offset);
+        printf("  mov [rax], %s\n", registers_for_args[i]);
+        printf("# store parameters to stack\n");
+    }
+
+    gen(node->body);
+
+    printf("  mov rsp, rbp\n");
+    printf("  pop rbp\n");
+    printf("  ret\n");
 }
 
 void gen_return(Node *node) {

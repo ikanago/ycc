@@ -26,11 +26,15 @@ void dump_nodes(Vector *nodes) {
     }
 }
 
+void emit_space(int num, int step) {
+    for (int i = 0; i < num; i += 4)
+        printf("    ");
+}
+
 void dump_node(Node *node, int depth) {
     int child_depth = depth + 4;
     if (depth != 0) {
-        for (int i = 0; i < depth - 4; i += 4)
-            printf("    ");
+        emit_space(depth - 4, 4);
         printf("└───");
     }
 
@@ -47,10 +51,21 @@ void dump_node(Node *node, int depth) {
     if (node->els)
         dump_node(node->els, child_depth);
     if (node->args) {
+        emit_space(child_depth - 4, 4);
+        printf("ARGS:\n");
         for (int i = 0; node->args->data[i]; i++) {
             dump_node(node->args->data[i], child_depth);
         }
     }
+    if (node->params) {
+        emit_space(child_depth - 4, 4);
+        printf("PARAMS:\n");
+        for (int i = 0; node->params->data[i]; i++) {
+            dump_node(node->params->data[i], child_depth);
+        }
+    }
+    if (node->body)
+        dump_node(node->body, child_depth);
     if (node->stmts_in_block) {
         for (int i = 0; node->stmts_in_block->data[i]; i++) {
             dump_node(node->stmts_in_block->data[i], child_depth);
@@ -85,7 +100,10 @@ void dump_type(Node *node) {
         printf("RETURN");
         break;
     case ND_FUNCCALL:
-        printf("%s", node->name);
+        printf("%s: call", node->name);
+        break;
+    case ND_DEF_FUNC:
+        printf("%s: define", node->name);
         break;
     case ND_BLOCK:
         printf("BLOCK");

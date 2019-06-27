@@ -40,6 +40,15 @@ Node *new_node_funccall(char *name, Vector *args) {
     return node;
 }
 
+Node *new_node_def_func(char *name, Vector *params, Node *body) {
+    Node *node = malloc(sizeof(Node));
+    node->type = ND_DEF_FUNC;
+    node->name = name;
+    node->params = params;
+    node->body = body;
+    return node;
+}
+
 void expect(int type) {
     Token *t = tokens->data[token_index];
     if (t->type != type)
@@ -60,8 +69,6 @@ Vector *parse(Vector *v) {
     tokens = v;
     nodes = new_vector();
     token_index = 0;
-    variable_map = new_map();
-    variable_offset = 0;
     return program();
 }
 
@@ -70,11 +77,55 @@ Vector *program() {
         Token *t = tokens->data[token_index];
         if (t->type == TK_EOF)
             break;
-        Node *node = stmt();
+        variable_map = new_map();
+        variable_offset = 0;
+        Node *node = definition();
+        node->vars = variable_map;
+        node->max_variable_offset = variable_offset;
         vec_push(nodes, node);
     }
     vec_push(nodes, NULL);
     return nodes;
+}
+
+Node *definition() { return define_func(); }
+
+Node *define_func() {
+    Token *t = tokens->data[token_index];
+    if (t->type != TK_IDENT)
+        error("Not an identifier");
+    char *name = t->name;
+    token_index++;
+
+    Vector *params = func_params();
+    Node *body = stmt();
+    Node *node = new_node_def_func(name, params, body);
+    return node;
+}
+
+Vector *func_params() {
+    Vector *params = new_vector();
+    if (!consume('(')) {
+        Token *t = tokens->data[token_index];
+        error("Expected '(', but got: %s", t->input);
+    }
+    if (consume(')'))
+        return params;
+
+    bool is_first_param = true;
+    while (!consume(')')) {
+        if (!is_first_param)
+            if (!consume(','))
+                error("Expected ','");
+        is_first_param = false;
+
+        Token *t = tokens->data[token_index];
+        if (!consume(TK_IDENT))
+            error("Expexted identifier.");
+        Node *node = new_node_var(t->name);
+        vec_push(params, node);
+    }
+    return params;
 }
 
 Node *stmt() {
@@ -193,7 +244,7 @@ Node *term() {
     if (consume('(')) {
         Node *node = expr();
         if (!consume(')'))
-            error("Expected ')', but got %s", t->input);
+            error("Expected ')', but got: %s", t->input);
         return node;
     }
     else if (t->type == TK_NUM) {
@@ -219,7 +270,7 @@ Node *term() {
         return new_node_funccall(name, args);
     }
     else {
-        error("Expected value, but got %s", t->input);
+        error("Expected value, but got: %s", t->input);
         return NULL;
     }
 }

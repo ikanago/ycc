@@ -27,6 +27,10 @@ typedef struct Node{
     struct Node *then;             // node of if-then
     struct Node *els;              // node of if-else
     struct Vector *args;           // node of function arguments
+    struct Vector *params;         // node of function params
+    struct Map *vars;
+    int max_variable_offset;
+    struct Node *body;
     struct Vector *stmts_in_block; // nodes of block scope
 } Node;
 
@@ -50,7 +54,6 @@ enum Token_type {
     TK_IDENT,     // Ifentifier
     TK_IF,        // if
     TK_ELSE,      // else
-    TK_FUNCCALL,  // function call
     TK_RETURN,    // return
     TK_EOF,       // End Of Statement
 };
@@ -65,6 +68,7 @@ enum Node_type {
     ND_IF,        // if
     ND_RETURN,    // return
     ND_FUNCCALL,  // function call
+    ND_DEF_FUNC,  // define function
     ND_BLOCK,     // { }
 };
 
@@ -80,13 +84,18 @@ Vector *scan(char *);
 
 // ---parse.c---
 extern int variable_offset;
-Node *new_node(int, Node *, Node *);
-Node *new_node_num(int);
-Node *new_node_val(char *name);
-void expect(int);
-int consume(int);
-Vector *parse(Vector *);
+Node *new_node(int type, Node *lhs, Node *rhs);
+Node *new_node_num(int value);
+Node *new_node_var(char *name);
+Node *new_node_funccall(char *name, Vector *args);
+Node *new_node_var(char *name);
+void expect(int type);
+int consume(int type);
+Vector *parse(Vector *v);
 Vector *program();
+Node *definition();
+Node *define_func();
+Vector *func_params();
 Node *stmt();
 Node *expr();
 Node *assign();
@@ -106,6 +115,7 @@ void gen_ident(Node *);
 void gen_assign(Node *);
 void gen_if(Node *);
 void gen_funccall(Node *);
+void gen_def_func(Node *);
 void gen_return(Node *);
 void gen_block(Node *);
 void gen_binary_operator(Node *);
