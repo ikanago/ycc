@@ -122,8 +122,8 @@ Vector *func_params() {
         Token *t = tokens->data[token_index];
         if (!consume(TK_IDENT))
             error("Expexted identifier.");
-        Node *node = new_node_var(t->name);
-        vec_push(params, node);
+        char *param = t->name;
+        vec_push(params, param);
     }
     return params;
 }

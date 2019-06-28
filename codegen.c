@@ -88,8 +88,9 @@ void gen_assign(Node *node) {
 }
 
 void gen_if(Node *node) {
+    label_else_number++;
+    label_end_number++;
     if (node->els) {
-        label_else_number++;
         gen(node->condition);
         printf("# if-condition\n");
         printf("  pop rax\n");
