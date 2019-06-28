@@ -28,9 +28,9 @@ typedef struct Node{
     struct Node *els;              // node of if-else
     struct Vector *args;           // node of function arguments
     struct Vector *params;         // node of function params
-    struct Map *vars;
-    int max_variable_offset;
-    struct Node *body;
+    struct Map *vars;              // local variable map
+    int max_variable_offset;       // sum of variable offset
+    struct Node *body;             // node of block statement
     struct Vector *stmts_in_block; // nodes of block scope
 } Node;
 
@@ -51,7 +51,7 @@ enum Token_type {
     TK_NE,        // !=
     TK_LE,        // <=
     TK_GE,        // >=
-    TK_IDENT,     // Ifentifier
+    TK_IDENT,     // Identifier
     TK_IF,        // if
     TK_ELSE,      // else
     TK_RETURN,    // return
@@ -64,7 +64,7 @@ enum Node_type {
     ND_NE,        // !=
     ND_LE,        // <=
     ND_GE,        // >=
-    ND_IDENT,     // Ifentifier
+    ND_IDENT,     // Identifier
     ND_IF,        // if
     ND_RETURN,    // return
     ND_FUNCCALL,  // function call
@@ -72,23 +72,18 @@ enum Node_type {
     ND_BLOCK,     // { }
 };
 
-// ---main.c---
-extern Map *variable_map;
-extern int variable_offset;
-
 // ---tokenize.c---
 Token *add_token(Vector *, int, char *);
-bool is_alnum(char c);
+bool is_alnum(char);
 Vector *tokenize(char *);
 Vector *scan(char *);
 
 // ---parse.c---
-extern int variable_offset;
 Node *new_node(int type, Node *lhs, Node *rhs);
 Node *new_node_num(int value);
 Node *new_node_var(char *name);
 Node *new_node_funccall(char *name, Vector *args);
-Node *new_node_var(char *name);
+Node *new_node_def_func(char *name, Vector *params, Node *body);
 void expect(int type);
 int consume(int type);
 Vector *parse(Vector *v);

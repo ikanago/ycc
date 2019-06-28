@@ -24,6 +24,5 @@ int main(int argc, char **argv) {
     Vector *nodes = parse(tokens);
     codegen(nodes);
 
-    printf("# end of a program\n");
     return 0;
 }

@@ -1,6 +1,6 @@
 #include "ycc.h"
 
-Map *keywords;
+Map *g_keywords;
 
 Token *add_token(Vector *v, int type, char *input) {
     Token *t = malloc(sizeof(Token));
@@ -16,10 +16,10 @@ bool is_alnum(char c) {
 }
 
 Vector *tokenize(char *pos) {
-    keywords = new_map();
-    map_set(keywords, "if", (void *)TK_IF);
-    map_set(keywords, "else", (void *)TK_ELSE);
-    map_set(keywords, "return", (void *)TK_RETURN);
+    g_keywords = new_map();
+    map_set(g_keywords, "if", (void *)TK_IF);
+    map_set(g_keywords, "else", (void *)TK_ELSE);
+    map_set(g_keywords, "return", (void *)TK_RETURN);
     return scan(pos);
 }
 
@@ -60,11 +60,11 @@ Vector *scan(char *pos) {
         }
         else if (isalpha(*pos)) {
             int length = 1;
-            while (isalnum(pos[length]))
+            while (is_alnum(pos[length]))
                 length++;
 
             char *name = strndup(pos, length);
-            int type = (intptr_t)map_get(keywords, name);
+            int type = (intptr_t)map_get(g_keywords, name);
             if (!type)
                 type = TK_IDENT;
             Token *t = add_token(v, type, pos);
