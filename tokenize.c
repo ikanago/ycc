@@ -5,18 +5,6 @@ Map *g_keywords;
 Token *add_token(Vector *v, int type, char *input) {
     Token *t = malloc(sizeof(Token));
     t->type = type;
-    t->input = input;
-    vec_push(v, t);
-    return t;
-}
-
-bool is_digit(char c) {
-    return '0' <= c && c <= '9';
-}
-
-bool is_alnum(char c) {
-    return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') ||
-           ('0' <= c && c <= '9') || (c == '_');
 }
 
 Map *reserve_keywords() {

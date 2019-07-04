@@ -51,7 +51,7 @@ enum Token_type {
     TK_NE,        // !=
     TK_LE,        // <=
     TK_GE,        // >=
-    TK_IDENT,     // Ifentifier
+    TK_IDENT,     // Identifier
     TK_IF,        // if
     TK_ELSE,      // else
     TK_WHILE,     // while
@@ -65,7 +65,7 @@ enum Node_type {
     ND_NE,        // !=
     ND_LE,        // <=
     ND_GE,        // >=
-    ND_IDENT,     // Ifentifier
+    ND_IDENT,     // Identifier
     ND_IF,        // if
     ND_WHILE,     // while
     ND_FUNCCALL,  // function call
@@ -73,10 +73,6 @@ enum Node_type {
     ND_RETURN,    // return
     ND_BLOCK,     // { }
 };
-
-// ---main.c---
-extern Map *variable_map;
-extern int variable_offset;
 
 // ---tokenize.c---
 Token *add_token(Vector *, int, char *);
@@ -86,12 +82,11 @@ Vector *tokenize(char *);
 Vector *scan(char *);
 
 // ---parse.c---
-extern int variable_offset;
 Node *new_node(int type, Node *lhs, Node *rhs);
 Node *new_node_num(int value);
 Node *new_node_var(char *name);
 Node *new_node_funccall(char *name, Vector *args);
-Node *new_node_var(char *name);
+Node *new_node_def_func(char *name, Vector *params, Node *body);
 void expect(int type);
 int consume(int type);
 Vector *parse(Vector *v);
