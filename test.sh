@@ -45,4 +45,6 @@ try 3 "add2(a, b){ c = a + b; return c; } main(){ a = 1; b = 2; return add2(1, 2
 try 21 "add6(a, b, c, d, e, f){ x = a + b + c + d + e + f; return x; } main(){ return add6(1, 2, 3, 4, 5, 6); }"
 try 8 "fib(n){ if(n == 0){ return 1; } if(n == 1){ return 1; } return fib(n - 1) + fib(n - 2); } main(){ n = 5; return fib(n); }"
 try 120 "fact(n){ if(n == 1){ return 1; } return n * fact(n - 1); } main(){ n = 5; return fact(n); }"
+try 15 "main(){ n = 0; i = 0; while(i < 6){ n = n + i; i = i + 1; } return n; }"
+try 24 "fact(n){ a = 1; i = 1; while(i <= n){ a = a * i; i = i + 1; } return a; } main(){ a = fact(5); return a; }"
 echo OK

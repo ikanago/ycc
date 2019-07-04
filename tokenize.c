@@ -1,6 +1,6 @@
 #include "ycc.h"
 
-Map *keywords;
+Map *g_keywords;
 
 Token *add_token(Vector *v, int type, char *input) {
     Token *t = malloc(sizeof(Token));
@@ -10,16 +10,26 @@ Token *add_token(Vector *v, int type, char *input) {
     return t;
 }
 
+bool is_digit(char c) {
+    return '0' <= c && c <= '9';
+}
+
 bool is_alnum(char c) {
     return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') ||
            ('0' <= c && c <= '9') || (c == '_');
 }
 
-Vector *tokenize(char *pos) {
-    keywords = new_map();
+Map *reserve_keywords() {
+    Map *keywords = new_map();
     map_set(keywords, "if", (void *)TK_IF);
     map_set(keywords, "else", (void *)TK_ELSE);
+    map_set(keywords, "while", (void *)TK_WHILE);
     map_set(keywords, "return", (void *)TK_RETURN);
+    return keywords;
+}
+
+Vector *tokenize(char *pos) {
+    g_keywords = reserve_keywords();
     return scan(pos);
 }
 
@@ -29,7 +39,7 @@ Vector *scan(char *pos) {
         if (isspace(*pos)) {
             pos++;
         }
-        else if (isdigit(*pos)) {
+        else if (is_digit(*pos)) {
             Token *t = add_token(v, TK_NUM, pos);
             t->type_name = "INT";
             t->value = strtol(pos, &pos, 10);
@@ -60,11 +70,11 @@ Vector *scan(char *pos) {
         }
         else if (isalpha(*pos)) {
             int length = 1;
-            while (isalnum(pos[length]))
+            while (is_alnum(pos[length]))
                 length++;
 
             char *name = strndup(pos, length);
-            int type = (intptr_t)map_get(keywords, name);
+            int type = (intptr_t)map_get(g_keywords, name);
             if (!type)
                 type = TK_IDENT;
             Token *t = add_token(v, type, pos);

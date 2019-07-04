@@ -1,10 +1,10 @@
 #include "ycc.h"
 
-Vector *tokens;
-Vector *nodes;
-int token_index;
-Map *variable_map;
-int variable_offset;
+Vector *g_tokens;
+Vector *g_nodes;
+int g_token_index;
+Map *g_variable_map;
+int g_variable_offset;
 
 Node *new_node(int type, Node *lhs, Node *rhs) {
     Node *node = malloc(sizeof(Node));
@@ -25,9 +25,9 @@ Node *new_node_var(char *name) {
     Node *node = malloc(sizeof(Node));
     node->type = ND_IDENT;
     node->name = name;
-    if (!map_exists(variable_map, name)) {
-        variable_offset += 8;
-        map_set(variable_map, name, (void *)(intptr_t)variable_offset);
+    if (!map_exists(g_variable_map, name)) {
+        g_variable_offset += 8;
+        map_set(g_variable_map, name, (void *)(intptr_t)g_variable_offset);
     }
     return node;
 }
@@ -50,52 +50,52 @@ Node *new_node_def_func(char *name, Vector *params, Node *body) {
 }
 
 void expect(int type) {
-    Token *t = tokens->data[token_index];
+    Token *t = g_tokens->data[g_token_index];
     if (t->type != type)
         error("%c (%d) expected, but got %c (%d) at %s", type, type, t->type,
               t->type, t->input);
-    token_index++;
+    g_token_index++;
 }
 
 int consume(int type) {
-    Token *t = tokens->data[token_index];
+    Token *t = g_tokens->data[g_token_index];
     if (t->type != type)
         return 0;
-    token_index++;
+    g_token_index++;
     return 1;
 }
 
 Vector *parse(Vector *v) {
-    tokens = v;
-    nodes = new_vector();
-    token_index = 0;
+    g_tokens = v;
+    g_nodes = new_vector();
+    g_token_index = 0;
     return program();
 }
 
 Vector *program() {
     for (;;) {
-        Token *t = tokens->data[token_index];
+        Token *t = g_tokens->data[g_token_index];
         if (t->type == TK_EOF)
             break;
-        variable_map = new_map();
-        variable_offset = 0;
+        g_variable_map = new_map();
+        g_variable_offset = 0;
         Node *node = definition();
-        node->vars = variable_map;
-        node->max_variable_offset = variable_offset;
-        vec_push(nodes, node);
+        node->vars = g_variable_map;
+        node->max_variable_offset = g_variable_offset;
+        vec_push(g_nodes, node);
     }
-    vec_push(nodes, NULL);
-    return nodes;
+    vec_push(g_nodes, NULL);
+    return g_nodes;
 }
 
 Node *definition() { return define_func(); }
 
 Node *define_func() {
-    Token *t = tokens->data[token_index];
+    Token *t = g_tokens->data[g_token_index];
     if (t->type != TK_IDENT)
         error("Not an identifier");
     char *name = t->name;
-    token_index++;
+    g_token_index++;
 
     Vector *params = func_params();
     Node *body = stmt();
@@ -106,7 +106,7 @@ Node *define_func() {
 Vector *func_params() {
     Vector *params = new_vector();
     if (!consume('(')) {
-        Token *t = tokens->data[token_index];
+        Token *t = g_tokens->data[g_token_index];
         error("Expected '(', but got: %s", t->input);
     }
     if (consume(')'))
@@ -119,7 +119,7 @@ Vector *func_params() {
                 error("Expected ','");
         is_first_param = false;
 
-        Token *t = tokens->data[token_index];
+        Token *t = g_tokens->data[g_token_index];
         if (!consume(TK_IDENT))
             error("Expexted identifier.");
         char *param = t->name;
@@ -138,7 +138,7 @@ Node *stmt() {
         node = malloc(sizeof(Node));
         node->type = ND_IF;
         expect('(');
-        node->condition = assign();
+        node->condition = equality();
         expect(')');
         node->then = stmt();
         if (consume(TK_ELSE))
@@ -150,6 +150,14 @@ Node *stmt() {
         node->stmts_in_block = new_vector();
         while (!consume('}'))
             vec_push(node->stmts_in_block, stmt());
+    }
+    else if (consume(TK_WHILE)) {
+        node = malloc(sizeof(Node));
+        node->type = ND_WHILE;
+        expect('(');
+        node->condition = equality();
+        expect(')');
+        node->body = stmt();
     }
     else {
         node = expr();
@@ -240,7 +248,7 @@ Node *unary() {
 }
 
 Node *term() {
-    Token *t = tokens->data[token_index];
+    Token *t = g_tokens->data[g_token_index];
     if (consume('(')) {
         Node *node = expr();
         if (!consume(')'))
@@ -248,11 +256,11 @@ Node *term() {
         return node;
     }
     else if (t->type == TK_NUM) {
-        token_index++;
+        g_token_index++;
         return new_node_num(t->value);
     }
     else if (t->type == TK_IDENT) {
-        token_index++;
+        g_token_index++;
         char *name = t->name;
         if (!consume('(')) {
             return new_node_var(name);

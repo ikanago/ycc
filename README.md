@@ -24,7 +24,8 @@ define_func = identifier "(" params? ")" "{" stmt * "}"
 params     = expr ("," expr)*
 stmt       = expr ";"
             | "{" stmt* "}"
-            | "if" "(" expr ")" stmt ("else" stmt)?
+            | "if" "(" equality ")" stmt ("else" stmt)?
+            | "while "(" equality ")" "{" stmt* "}"
             | "return" expr ";"
 expr       = assign
 assign     = equality

@@ -99,6 +99,9 @@ void dump_type(Node *node) {
     case ND_RETURN:
         printf("RETURN");
         break;
+    case ND_WHILE:
+        printf("WHILE");
+        break;
     case ND_FUNCCALL:
         printf("%s: call", node->name);
         break;

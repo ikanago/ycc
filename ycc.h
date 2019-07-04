@@ -17,20 +17,20 @@ typedef struct Token {
     char *input;     // tokens which remain to be tokenized
 } Token;
 
-typedef struct Node{
+typedef struct Node {
     int type;                      // type of node(integer)
     int value;                     // value of integer node
     char *name;                    // name of identifier node
     struct Node *lhs;              // left-hand side node
     struct Node *rhs;              // right-hand side node
-    struct Node *condition;        // node of if-condition
+    struct Node *condition;        // node of (if|while)-condition
     struct Node *then;             // node of if-then
     struct Node *els;              // node of if-else
     struct Vector *args;           // node of function arguments
     struct Vector *params;         // node of function params
-    struct Map *vars;
-    int max_variable_offset;
-    struct Node *body;
+    struct Map *vars;              // variables for function
+    int max_variable_offset;       // sum of variable offset
+    struct Node *body;             // compound statement
     struct Vector *stmts_in_block; // nodes of block scope
 } Node;
 
@@ -54,6 +54,7 @@ enum Token_type {
     TK_IDENT,     // Ifentifier
     TK_IF,        // if
     TK_ELSE,      // else
+    TK_WHILE,     // while
     TK_RETURN,    // return
     TK_EOF,       // End Of Statement
 };
@@ -66,9 +67,10 @@ enum Node_type {
     ND_GE,        // >=
     ND_IDENT,     // Ifentifier
     ND_IF,        // if
-    ND_RETURN,    // return
+    ND_WHILE,     // while
     ND_FUNCCALL,  // function call
     ND_DEF_FUNC,  // define function
+    ND_RETURN,    // return
     ND_BLOCK,     // { }
 };
 
@@ -79,6 +81,7 @@ extern int variable_offset;
 // ---tokenize.c---
 Token *add_token(Vector *, int, char *);
 bool is_alnum(char c);
+Map *reserve_keywords();
 Vector *tokenize(char *);
 Vector *scan(char *);
 
@@ -114,9 +117,10 @@ void gen_lval(Node *);
 void gen_ident(Node *);
 void gen_assign(Node *);
 void gen_if(Node *);
+void gen_while(Node *);
+void gen_return(Node *);
 void gen_funccall(Node *);
 void gen_def_func(Node *);
-void gen_return(Node *);
 void gen_block(Node *);
 void gen_binary_operator(Node *);
 
