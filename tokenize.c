@@ -10,6 +10,10 @@ Token *add_token(Vector *v, int type, char *input) {
     return t;
 }
 
+bool is_new_line(char *c) {
+    return *c == '\\' && *(c + 1) == 'n';
+}
+
 bool is_digit(char c) { return '0' <= c && c <= '9'; }
 
 bool is_alnum(char c) {
@@ -36,6 +40,9 @@ Vector *scan(char *pos) {
     while (*pos) {
         if (isspace(*pos)) {
             pos++;
+        }
+        else if (is_new_line(pos)) {
+            pos += 2;
         }
         else if (is_digit(*pos)) {
             Token *t = add_token(v, TK_NUM, pos);
