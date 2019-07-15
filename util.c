@@ -51,3 +51,21 @@ bool map_exists(Map *map, char *key) {
     }
     return false;
 }
+
+StringBuilder *new_stringbiulder() {
+    StringBuilder *sb = malloc(sizeof(StringBuilder));
+    sb->entity = (char *)malloc(sizeof(char) * 50);
+    sb->capacity = 50;
+    sb->len = 0;
+    return sb;
+}
+
+void stringbuilder_append(StringBuilder *sb, char *str) {
+    int delta_len = strlen(str);
+    if (sb->capacity <= sb->len + delta_len) {
+        sb->capacity += delta_len;
+        sb->entity = (char *)realloc(sb->entity, sizeof(char) * sb->capacity);
+    }
+    memcpy(sb->entity + sb->len, str, delta_len);
+    sb->len += delta_len;
+}

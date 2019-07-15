@@ -10,9 +10,7 @@ Token *add_token(Vector *v, int type, char *input) {
     return t;
 }
 
-bool is_new_line(char *c) {
-    return *c == '\\' && *(c + 1) == 'n';
-}
+bool is_new_line(char *c) { return *c == '\\' && *(c + 1) == 'n'; }
 
 bool is_digit(char c) { return '0' <= c && c <= '9'; }
 

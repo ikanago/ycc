@@ -4,6 +4,7 @@ int main(int argc, char **argv) {
     if (argc == 2 && !strcmp(argv[1], "--test")) {
         vec_test();
         map_test();
+        stringbuilder_test();
         return 0;
     }
 

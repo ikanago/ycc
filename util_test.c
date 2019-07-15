@@ -1,11 +1,20 @@
 #include "ycc.h"
 
-int examine(int line, int examineed, int actual) {
-    if (examineed == actual) {
+int examine(int line, int examined, int actual) {
+    if (examined == actual) {
         printf("test passed\n");
         return 0;
     }
-    fprintf(stderr, "%d: %d examineed, but got %d\n", line, examineed, actual);
+    fprintf(stderr, "%d: %d examined, but got %d\n", line, examined, actual);
+    exit(1);
+}
+
+int examine_string(int line, char *examined, char *actual) {
+    if (strcmp(examined, actual) == 0) {
+        printf("test passed\n");
+        return 0;
+    }
+    fprintf(stderr, "%d: %s examined, but got %s\n", line, examined, actual);
     exit(1);
 }
 
@@ -43,4 +52,28 @@ void map_test() {
 
     examine(__LINE__, true, map_exists(map, "foo"));
     examine(__LINE__, false, map_exists(map, "baz"));
+}
+
+void stringbuilder_test() {
+    printf("---StringBuilder test---\n");
+    StringBuilder *sb = new_stringbiulder();
+    examine(__LINE__, 0, sb->len);
+
+    stringbuilder_append(sb, "hoge");
+    examine_string(__LINE__, "hoge", sb->entity);
+    examine(__LINE__, 4, sb->len);
+
+    stringbuilder_append(sb, "fuga");
+    examine_string(__LINE__, "hogefuga", sb->entity);
+    examine(__LINE__, 8, sb->len);
+
+    char *str = (char *)malloc(sizeof(char) * 42);
+    for (int i = 0; i < 42; i++) {
+        str[i] = 'A';
+    }
+    stringbuilder_append(sb, str);
+    examine_string(__LINE__,
+                   "hogefugaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                   sb->entity);
+    examine(__LINE__, 50, sb->len);
 }
