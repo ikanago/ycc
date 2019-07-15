@@ -52,7 +52,7 @@ Node *new_node_def_func(char *name, Vector *params, Node *body) {
 void expect(int type) {
     Token *t = g_tokens->data[g_token_index];
     if (t->type != type)
-        error("%c (%d) expected, but got %c (%d) at %s", type, type, t->type,
+        ERROR("%c (%d) expected, but got %c (%d) at %s", type, type, t->type,
               t->type, t->input);
     g_token_index++;
 }
@@ -93,7 +93,7 @@ Node *definition() { return define_func(); }
 Node *define_func() {
     Token *t = g_tokens->data[g_token_index];
     if (t->type != TK_IDENT)
-        error("Not an identifier");
+        ERROR("Not an identifier");
     char *name = t->name;
     g_token_index++;
 
@@ -107,7 +107,7 @@ Vector *func_params() {
     Vector *params = new_vector();
     if (!consume('(')) {
         Token *t = g_tokens->data[g_token_index];
-        error("Expected '(', but got: %s", t->input);
+        ERROR("Expected '(', but got: %s", t->input);
     }
     if (consume(')'))
         return params;
@@ -116,12 +116,12 @@ Vector *func_params() {
     while (!consume(')')) {
         if (!is_first_param)
             if (!consume(','))
-                error("Expected ','");
+                ERROR("Expected ','");
         is_first_param = false;
 
         Token *t = g_tokens->data[g_token_index];
         if (!consume(TK_IDENT))
-            error("Expexted identifier.");
+            ERROR("Expexted identifier.");
         char *param = t->name;
         vec_push(params, param);
     }
@@ -252,7 +252,7 @@ Node *term() {
     if (consume('(')) {
         Node *node = expr();
         if (!consume(')'))
-            error("Expected ')', but got: %s", t->input);
+            ERROR("Expected ')', but got: %s", t->input);
         return node;
     }
     else if (t->type == TK_NUM) {
@@ -278,7 +278,7 @@ Node *term() {
         return new_node_funccall(name, args);
     }
     else {
-        error("Expected value, but got: %s", t->input);
+        ERROR("Expected value, but got: %s", t->input);
         return NULL;
     }
 }

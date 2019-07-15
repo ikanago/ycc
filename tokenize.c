@@ -92,8 +92,7 @@ Vector *scan(char *pos) {
             pos++;
         }
         else {
-            fprintf(stderr, "Cannot tokenize: %s\n", pos);
-            exit(1);
+            ERROR("Cannot tokenize: %s", pos);
         }
     }
     add_token(v, TK_EOF, pos);

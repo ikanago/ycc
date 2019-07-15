@@ -60,7 +60,7 @@ void gen_num(Node *node) {
 
 void gen_lval(Node *node) {
     if (node->type != ND_IDENT)
-        error("Left value of assignment is not variable.");
+        ERROR("Left value of assignment is not variable.");
 
     int *offset = (int *)map_get(g_variable_map, node->name);
     map_set(g_variable_map, node->name, (void *)offset);

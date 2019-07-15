@@ -1,6 +1,7 @@
 #include "ycc.h"
 
-void error(char *fmt, ...) {
+void error(const char *file_name, const char *func_name, int line, const char *fmt, ...) {
+    fprintf(stderr, "%s:%s:%d: ", file_name, func_name, line);
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define ERROR(fmt, ...) error(__FILE__, __FUNCTION__, __LINE__, fmt, ##__VA_ARGS__)
 
 typedef struct Token {
     int type;        // type of token(integer)
@@ -126,7 +127,7 @@ void gen_block(Node *);
 void gen_binary_operator(Node *);
 
 // ---util.c---
-void error(char *fmt, ...);
+void error(const char *, const char *, int line, const char *fmt, ...);
 Vector *new_vector();
 void vec_push(Vector *, void *);
 Map *new_map();

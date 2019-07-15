@@ -1,5 +1,21 @@
 #include "ycc.h"
 
+char *read_file(char *file_path) {
+    FILE *source = fopen(file_path, "r");
+    if (source == NULL) {
+        perror(file_path);
+        exit(1);
+    }
+
+    StringBuilder *code = new_stringbiulder();
+    int n = 256;
+    char buffer[n];
+    while (fgets(buffer, n, source) != NULL) {
+        stringbuilder_append(code, buffer);
+    }
+    return code->entity;
+}
+
 int main(int argc, char **argv) {
     if (argc == 2 && !strcmp(argv[1], "--test")) {
         vec_test();
@@ -8,22 +24,33 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    if (argc == 3 && !strcmp(argv[1], "--dump-token")) {
-        Vector *tokens = tokenize(argv[2]);
-        dump_token(tokens);
-        return 0;
+    bool is_dump_token = false;
+    bool is_dump_nodes = false;
+    bool read_from_file = false;
+    char *code;
+
+    for (int i = 1; i < argc; i++) {
+        if (!strcmp(argv[i], "--dump-token"))
+            is_dump_token = true;
+        else if (!strcmp(argv[i], "--dump-node"))
+            is_dump_nodes = true;
+        else if (!strcmp(argv[i], "--file")) {
+            code = read_file(argv[argc - 1]);
+            read_from_file = true;
+        }
     }
 
-    if (argc == 3 && !strcmp(argv[1], "--dump-node")) {
-        Vector *tokens = tokenize(argv[2]);
-        Vector *nodes = parse(tokens);
-        dump_nodes(nodes);
-        return 0;
-    }
+    if (!read_from_file)
+        code = argv[argc - 1];
 
-    Vector *tokens = tokenize(argv[1]);
+    Vector *tokens = tokenize(code);
     Vector *nodes = parse(tokens);
-    codegen(nodes);
+    if (is_dump_token)
+        dump_token(tokens);
+    if (is_dump_nodes)
+        dump_nodes(nodes);
+    if (!(is_dump_token || is_dump_nodes))
+        codegen(nodes);
 
     return 0;
 }
