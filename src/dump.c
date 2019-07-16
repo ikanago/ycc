@@ -1,4 +1,4 @@
-#include "ycc.h"
+#include "../src/ycc.h"
 
 void dump_token(Vector *tokens) {
     int i = 0;
