@@ -3,7 +3,7 @@ try() {
 	expected="$1"
 	input="$2"
 
-	./bin/ycc "$input" > ./obj/tmp.s
+	./bin/ycc --raw "$input" > ./obj/tmp.s
 	gcc -o ./obj/tmp ./obj/tmp.s ./test/test.c
 	./obj/tmp
 	actual="$?"

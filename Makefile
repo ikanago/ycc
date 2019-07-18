@@ -21,7 +21,7 @@ debug: $(OBJS)
 	$(CC) -g -o $(BIN_DIR)/dycc $(OBJS) $(LDFLAGS)
 
 clean:
-	rm -f $(TARGET) $(OBJ_DIR)/*
+	rm -f $(OBJ_DIR)/*
 
 format:
 	clang-format -i $(SRC_DIR)/*

@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 
     bool is_dump_token = false;
     bool is_dump_nodes = false;
-    bool read_from_file = false;
+    bool is_raw = false;
     char *code;
 
     for (int i = 1; i < argc; i++) {
@@ -34,14 +34,14 @@ int main(int argc, char **argv) {
             is_dump_token = true;
         else if (!strcmp(argv[i], "--dump-node"))
             is_dump_nodes = true;
-        else if (!strcmp(argv[i], "--file")) {
-            code = read_file(argv[argc - 1]);
-            read_from_file = true;
+        else if (!strcmp(argv[i], "--raw")) {
+            code = argv[argc - 1];
+            is_raw = true;
         }
     }
 
-    if (!read_from_file)
-        code = argv[argc - 1];
+    if (!is_raw)
+        code = read_file(argv[argc - 1]);
 
     Vector *tokens = tokenize(code);
     Vector *nodes = parse(tokens);
