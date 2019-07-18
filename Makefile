@@ -24,4 +24,4 @@ clean:
 	rm -f $(TARGET) $(OBJ_DIR)/*
 
 format:
-	clang-format -i *.c *.h
+	clang-format -i $(SRC_DIR)/*

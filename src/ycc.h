@@ -8,7 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define ERROR(fmt, ...) error(__FILE__, __FUNCTION__, __LINE__, fmt, ##__VA_ARGS__)
+#define ERROR(fmt, ...)                                                        \
+    error(__FILE__, __FUNCTION__, __LINE__, fmt, ##__VA_ARGS__)
 
 typedef struct Token {
     int type;        // type of token(integer)
