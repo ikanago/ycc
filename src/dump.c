@@ -1,6 +1,7 @@
-#include "ycc.h"
+#include "../src/ycc.h"
 
 void dump_token(Vector *tokens) {
+    printf("-----DUMP-TOKEN-----\n");
     int i = 0;
     while (true) {
         Token *t = tokens->data[i];
@@ -18,6 +19,7 @@ void dump_token(Vector *tokens) {
 }
 
 void dump_nodes(Vector *nodes) {
+    printf("-----DUMP-NODES-----\n");
     int i = 0;
     while (nodes->data[i]) {
         dump_node(nodes->data[i], 0);

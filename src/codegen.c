@@ -60,7 +60,7 @@ void gen_num(Node *node) {
 
 void gen_lval(Node *node) {
     if (node->type != ND_IDENT)
-        error("Left value of assignment is not variable.");
+        ERROR("Left value of assignment is not variable.");
 
     int *offset = (int *)map_get(g_variable_map, node->name);
     map_set(g_variable_map, node->name, (void *)offset);
@@ -152,7 +152,8 @@ void gen_def_func(Node *node) {
     printf("# prologue\n");
 
     for (int i = 0; i < node->params->len; i++) {
-        int offset = (intptr_t)map_get(g_variable_map, node->params->data[i]);
+        Node *param = node->params->data[i];
+        int offset = (intptr_t)map_get(g_variable_map, param->name);
         printf("  mov rax, rbp\n");
         printf("  sub rax, %d\n", offset);
         printf("  mov [rax], %s\n", g_registers_for_args[i]);

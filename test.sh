@@ -3,9 +3,9 @@ try() {
 	expected="$1"
 	input="$2"
 
-	./ycc "$input" > tmp.s
-	gcc -o tmp tmp.s ./test/test.c
-	./tmp
+	./bin/ycc --raw "$input" > ./obj/tmp.s
+	gcc -o ./obj/tmp ./obj/tmp.s ./test/test.c
+	./obj/tmp
 	actual="$?"
 
 	if [ "$actual" = "$expected" ]; then
@@ -47,4 +47,5 @@ try 8 "fib(n){ if(n == 0){ return 1; } if(n == 1){ return 1; } return fib(n - 1)
 try 120 "fact(n){ if(n == 1){ return 1; } return n * fact(n - 1); } main(){ n = 5; return fact(n); }"
 try 15 "main(){ n = 0; i = 0; while(i < 6){ n = n + i; i = i + 1; } return n; }"
 try 120 "fact(n){ a = 1; i = 1; while(i <= n){ a = a * i; i = i + 1; } return a; } main(){ a = fact(5); return a; }"
-echo OK
+echo Passed all test.
+make clean

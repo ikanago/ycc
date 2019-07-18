@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define ERROR(fmt, ...)                                                        \
+    error(__FILE__, __FUNCTION__, __LINE__, fmt, ##__VA_ARGS__)
 
 typedef struct Token {
     int type;        // type of token(integer)
@@ -44,6 +46,12 @@ typedef struct Map {
     Vector *keys;
     Vector *values;
 } Map;
+
+typedef struct StringBuilder {
+    char *entity;
+    int capacity;
+    int len;
+} StringBuilder;
 
 enum Token_type {
     TK_NUM = 256, // Number literal
@@ -120,18 +128,21 @@ void gen_block(Node *);
 void gen_binary_operator(Node *);
 
 // ---util.c---
-void error(char *fmt, ...);
+void error(const char *, const char *, int line, const char *fmt, ...);
 Vector *new_vector();
 void vec_push(Vector *, void *);
 Map *new_map();
 void map_set(Map *, char *, void *);
 void *map_get(Map *, char *);
 bool map_exists(Map *, char *);
+StringBuilder *new_stringbiulder();
+void stringbuilder_append(StringBuilder *, char *);
 
 // ---util_test.c---
 int examine(int, int, int);
 void vec_test();
 void map_test();
+void stringbuilder_test();
 
 // ---dump.c---
 void dump_token(Vector *);
