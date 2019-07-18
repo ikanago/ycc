@@ -1,21 +1,27 @@
 CFLAGS=-Wall -std=c11
-SRCS=$(wildcard *.c)
-OBJS=$(SRCS:.c=.o)
+SRC_DIR=./src
+OBJ_DIR=./obj
+BIN_DIR=./bin
+SRCS=$(wildcard $(SRC_DIR)/*.c)
+OBJS=$(addprefix $(OBJ_DIR)/, $(notdir $(SRCS:.c=.o)))
+HEADERS=$(SRC_DIR)/ycc.h
+TARGET=$(BIN_DIR)/*
 
 ycc: $(OBJS)
-	$(CC) -o ycc $(OBJS) $(LDFLAGS)
+	$(CC) -o $(BIN_DIR)/ycc $(OBJS) $(LDFLAGS)
 
-$(OBJS): ycc.h
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) -o $@ -c $< $(CFLAGS)
 
 test: ycc
-	./ycc --test
+	$(BIN_DIR)/ycc --test
 	./test.sh
 
 debug: $(OBJS)
-	$(CC) -g -o dycc $(SRCS) $(LDFLAGS)
+	$(CC) -g -o $(BIN_DIR)/dycc $(OBJS) $(LDFLAGS)
 
 clean:
-	rm -f ycc dycc *.o *~ tmp*
+	rm -f $(TARGET) $(OBJ_DIR)/*
 
 format:
-	clang-format -i *.c *.h
+	clang-format -i $(SRC_DIR)/*

@@ -1,4 +1,4 @@
-#include "ycc.h"
+#include "../src/ycc.h"
 
 int examine(int line, int examined, int actual) {
     if (examined == actual) {

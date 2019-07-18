@@ -112,19 +112,11 @@ Vector *func_params() {
     if (consume(')'))
         return params;
 
-    bool is_first_param = true;
-    while (!consume(')')) {
-        if (!is_first_param)
-            if (!consume(','))
-                ERROR("Expected ','");
-        is_first_param = false;
-
-        Token *t = g_tokens->data[g_token_index];
-        if (!consume(TK_IDENT))
-            ERROR("Expexted identifier.");
-        char *param = t->name;
-        vec_push(params, param);
+    vec_push(params, term());
+    while (consume(',')) {
+        vec_push(params, term());
     }
+    expect(')');
     return params;
 }
 

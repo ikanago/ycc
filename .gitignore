@@ -1,5 +1,5 @@
-*~
-*.o
+bin
+obj
 tmp*
 ycc
 dycc
