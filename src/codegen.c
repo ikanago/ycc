@@ -36,6 +36,9 @@ void gen(Node *node) {
     case ND_WHILE:
         gen_while(node);
         break;
+    case ND_FOR:
+        gen_for(node);
+        break;
     case ND_FUNCCALL:
         gen_funccall(node);
         break;
@@ -128,6 +131,21 @@ void gen_while(Node *node) {
     printf("  cmp rax, 0\n");
     printf("  je .Lend%d\n", g_label_end_number);
     gen(node->body);
+    printf("  jmp .Lbegin%d\n", g_label_begin_number);
+    printf(".Lend%d:\n", g_label_end_number);
+}
+
+void gen_for(Node *node) {
+    g_label_begin_number++;
+    g_label_end_number++;
+    gen(node->init);
+    printf(".Lbegin%d:\n", g_label_begin_number);
+    gen(node->condition);
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  je .Lend%d\n", g_label_end_number);
+    gen(node->body);
+    gen(node->inc);
     printf("  jmp .Lbegin%d\n", g_label_begin_number);
     printf(".Lend%d:\n", g_label_end_number);
 }

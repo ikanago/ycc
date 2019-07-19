@@ -1,7 +1,7 @@
 #include "../src/ycc.h"
 
 void dump_token(Vector *tokens) {
-    printf("-----DUMP-TOKEN-----\n");
+    printf("\n-----DUMP-TOKEN-----\n");
     int i = 0;
     while (true) {
         Token *t = tokens->data[i];
@@ -19,7 +19,7 @@ void dump_token(Vector *tokens) {
 }
 
 void dump_nodes(Vector *nodes) {
-    printf("-----DUMP-NODES-----\n");
+    printf("\n-----DUMP-NODES-----\n");
     int i = 0;
     while (nodes->data[i]) {
         dump_node(nodes->data[i], 0);
@@ -46,8 +46,12 @@ void dump_node(Node *node, int depth) {
         dump_node(node->lhs, child_depth);
     if (node->rhs)
         dump_node(node->rhs, child_depth);
+    if (node->init)
+        dump_node(node->init, child_depth);
     if (node->condition)
         dump_node(node->condition, child_depth);
+    if (node->inc)
+        dump_node(node->inc, child_depth);
     if (node->then)
         dump_node(node->then, child_depth);
     if (node->els)
@@ -103,6 +107,9 @@ void dump_type(Node *node) {
         break;
     case ND_WHILE:
         printf("WHILE");
+        break;
+    case ND_FOR:
+        printf("FOR");
         break;
     case ND_FUNCCALL:
         printf("%s: call", node->name);

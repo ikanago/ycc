@@ -151,6 +151,18 @@ Node *stmt() {
         expect(')');
         node->body = stmt();
     }
+    else if (consume(TK_FOR)) {
+        node = malloc(sizeof(Node));
+        node->type = ND_FOR;
+        expect('(');
+        node->init = assign();
+        expect(';');
+        node->condition = equality();
+        expect(';');
+        node->inc = assign();
+        expect(')');
+        node->body = stmt();
+    }
     else {
         node = expr();
         expect(';');

@@ -17,8 +17,8 @@ test: ycc
 	$(BIN_DIR)/ycc --test
 	./test.sh
 
-debug: $(OBJS)
-	$(CC) -g -o $(BIN_DIR)/dycc $(OBJS) $(LDFLAGS)
+debug: $(SRCS)
+	$(CC) -g -o $(BIN_DIR)/dycc $(SRCS) $(LDFLAGS)
 
 clean:
 	rm -f $(OBJ_DIR)/*

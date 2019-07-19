@@ -25,9 +25,11 @@ typedef struct Node {
     char *name;                    // name of identifier node
     struct Node *lhs;              // left-hand side node
     struct Node *rhs;              // right-hand side node
-    struct Node *condition;        // node of (if|while)-condition
+    struct Node *condition;        // node of (if|while|for)-condition
     struct Node *then;             // node of if-then
     struct Node *els;              // node of if-else
+    struct Node *init;//node of for-loop variable
+    struct Node *inc;// for-loop variable update
     struct Vector *args;           // node of function arguments
     struct Vector *params;         // node of function params
     struct Map *vars;              // variables for function
@@ -63,6 +65,7 @@ enum Token_type {
     TK_IF,        // if
     TK_ELSE,      // else
     TK_WHILE,     // while
+    TK_FOR,       // for
     TK_RETURN,    // return
     TK_EOF,       // End Of Statement
 };
@@ -76,6 +79,7 @@ enum Node_type {
     ND_IDENT,     // Identifier
     ND_IF,        // if
     ND_WHILE,     // while
+    ND_FOR,       // for
     ND_FUNCCALL,  // function call
     ND_DEF_FUNC,  // define function
     ND_RETURN,    // return
@@ -121,9 +125,10 @@ void gen_ident(Node *);
 void gen_assign(Node *);
 void gen_if(Node *);
 void gen_while(Node *);
-void gen_return(Node *);
+void gen_for(Node *);
 void gen_funccall(Node *);
 void gen_def_func(Node *);
+void gen_return(Node *);
 void gen_block(Node *);
 void gen_binary_operator(Node *);
 

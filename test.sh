@@ -47,5 +47,7 @@ try 8 "fib(n){ if(n == 0){ return 1; } if(n == 1){ return 1; } return fib(n - 1)
 try 120 "fact(n){ if(n == 1){ return 1; } return n * fact(n - 1); } main(){ n = 5; return fact(n); }"
 try 15 "main(){ n = 0; i = 0; while(i < 6){ n = n + i; i = i + 1; } return n; }"
 try 120 "fact(n){ a = 1; i = 1; while(i <= n){ a = a * i; i = i + 1; } return a; } main(){ a = fact(5); return a; }"
+try 120 "fact(n){ if(n < 0){ return -1; } r = 1; for(i = 1; i <= n; i = i + 1){ r = r * i; } return r; } main(){ n = 5; return fact(n);}"
+try 0 "fact(n){ if(n < 0){ return 0; } r = 1; for(i = 1; i <= n; i = i + 1){ r = r * i; } return r; } main(){ n = -3; return fact(n);}"
 echo Passed all test.
 make clean
