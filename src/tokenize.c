@@ -29,11 +29,6 @@ Map *reserve_keywords() {
     return keywords;
 }
 
-Vector *tokenize(char *pos) {
-    g_keywords = reserve_keywords();
-    return scan(pos);
-}
-
 Vector *scan(char *pos) {
     Vector *v = new_vector();
     while (*pos) {
@@ -46,7 +41,8 @@ Vector *scan(char *pos) {
         else if (is_digit(*pos)) {
             Token *t = add_token(v, TK_NUM, pos);
             t->type_name = "INT";
-            t->value = strtol(pos, &pos, 10);
+            t->value =
+                strtol(pos, &pos, 10); // this function increments pointer
         }
         else if (!strncmp(pos, "==", 2)) {
             Token *t = add_token(v, TK_EQ, pos);
@@ -98,4 +94,9 @@ Vector *scan(char *pos) {
     }
     add_token(v, TK_EOF, pos);
     return v;
+}
+
+Vector *tokenize(char *pos) {
+    g_keywords = reserve_keywords();
+    return scan(pos);
 }

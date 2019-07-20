@@ -1,4 +1,4 @@
-#include "../src/ycc.h"
+#include "ycc.h"
 
 int examine(int line, int examined, int actual) {
     if (examined == actual) {
@@ -76,4 +76,10 @@ void stringbuilder_test() {
                    "hogefugaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
                    sb->entity);
     examine(__LINE__, 50, sb->len);
+}
+
+void util_test() {
+    vec_test();
+    map_test();
+    stringbuilder_test();
 }

@@ -1,10 +1,10 @@
 #include "ycc.h"
 
-Vector *g_tokens;
-Vector *g_nodes;
-int g_token_index;
-Map *g_variable_map;
-int g_variable_offset;
+Vector *g_tokens;      // token array received from tokenizer.
+Vector *g_nodes;       // node array to store parsed node.
+int g_token_index;     // index to indicate current position at `g_tokens`.
+Map *g_variable_map;   // map to store sets of local variable and stack offset.
+int g_variable_offset; // sum of variable's offset.
 
 Node *new_node(int type, Node *lhs, Node *rhs) {
     Node *node = malloc(sizeof(Node));
@@ -77,6 +77,7 @@ Vector *program() {
         Token *t = g_tokens->data[g_token_index];
         if (t->type == TK_EOF)
             break;
+
         g_variable_map = new_map();
         g_variable_offset = 0;
         Node *node = definition();

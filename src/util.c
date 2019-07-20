@@ -1,4 +1,4 @@
-#include "../src/ycc.h"
+#include "ycc.h"
 
 void error(const char *file_name, const char *func_name, int line,
            const char *fmt, ...) {

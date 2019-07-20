@@ -28,8 +28,8 @@ typedef struct Node {
     struct Node *condition;        // node of (if|while|for)-condition
     struct Node *then;             // node of if-then
     struct Node *els;              // node of if-else
-    struct Node *init;//node of for-loop variable
-    struct Node *inc;// for-loop variable update
+    struct Node *init;             // node of for-loop variable
+    struct Node *inc;              // for-loop variable update
     struct Vector *args;           // node of function arguments
     struct Vector *params;         // node of function params
     struct Map *vars;              // variables for function
@@ -39,9 +39,9 @@ typedef struct Node {
 } Node;
 
 typedef struct Vector {
-    void **data;
-    int capacity;
-    int len;
+    void **data;  // array of stored data
+    int capacity; // maximum numbers of data to store
+    int len;      // actual length of data array
 } Vector;
 
 typedef struct Map {
@@ -50,9 +50,9 @@ typedef struct Map {
 } Map;
 
 typedef struct StringBuilder {
-    char *entity;
-    int capacity;
-    int len;
+    char *entity; // entity of string
+    int capacity; // maximum length to store
+    int len;      // actual length
 } StringBuilder;
 
 enum Token_type {
@@ -87,20 +87,9 @@ enum Node_type {
 };
 
 // ---tokenize.c---
-Token *add_token(Vector *, int, char *);
-bool is_alnum(char c);
-Map *reserve_keywords();
-Vector *tokenize(char *);
-Vector *scan(char *);
+Vector *tokenize(char *code);
 
 // ---parse.c---
-Node *new_node(int type, Node *lhs, Node *rhs);
-Node *new_node_num(int value);
-Node *new_node_var(char *name);
-Node *new_node_funccall(char *name, Vector *args);
-Node *new_node_def_func(char *name, Vector *params, Node *body);
-void expect(int type);
-int consume(int type);
 Vector *parse(Vector *v);
 Vector *program();
 Node *definition();
@@ -117,20 +106,8 @@ Node *unary();
 Node *term();
 
 // ---codegen.c---
-void codegen(Vector *);
+void codegen(Vector *nodes);
 void gen(Node *);
-void gen_num(Node *);
-void gen_lval(Node *);
-void gen_ident(Node *);
-void gen_assign(Node *);
-void gen_if(Node *);
-void gen_while(Node *);
-void gen_for(Node *);
-void gen_funccall(Node *);
-void gen_def_func(Node *);
-void gen_return(Node *);
-void gen_block(Node *);
-void gen_binary_operator(Node *);
 
 // ---util.c---
 void error(const char *, const char *, int line, const char *fmt, ...);
@@ -144,15 +121,10 @@ StringBuilder *new_stringbiulder();
 void stringbuilder_append(StringBuilder *, char *);
 
 // ---util_test.c---
-int examine(int, int, int);
-void vec_test();
-void map_test();
-void stringbuilder_test();
+void util_test();
 
 // ---dump.c---
 void dump_token(Vector *);
 void dump_nodes(Vector *);
-void dump_node(Node *, int);
-void dump_type(Node *);
 
 #endif

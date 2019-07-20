@@ -3,58 +3,9 @@
 int g_label_else_number = 0;
 int g_label_begin_number = 0;
 int g_label_end_number = 0;
+// registers to store function parameters and arguments.
 char *g_registers_for_args[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 Map *g_variable_map;
-
-void codegen(Vector *nodes) {
-    printf(".intel_syntax noprefix\n");
-    for (int i = 0; nodes->data[i]; i++) {
-        g_label_end_number++;
-        Node *node = nodes->data[i];
-        printf(".global %s\n", node->name);
-        gen(node);
-        printf("  pop rax\n");
-        printf("# end of a statement\n\n");
-    }
-    printf("# end of a program\n");
-}
-
-void gen(Node *node) {
-    switch (node->type) {
-    case ND_NUM:
-        gen_num(node);
-        break;
-    case ND_IDENT:
-        gen_ident(node);
-        break;
-    case '=':
-        gen_assign(node);
-        break;
-    case ND_IF:
-        gen_if(node);
-        break;
-    case ND_WHILE:
-        gen_while(node);
-        break;
-    case ND_FOR:
-        gen_for(node);
-        break;
-    case ND_FUNCCALL:
-        gen_funccall(node);
-        break;
-    case ND_DEF_FUNC:
-        gen_def_func(node);
-        break;
-    case ND_RETURN:
-        gen_return(node);
-        break;
-    case ND_BLOCK:
-        gen_block(node);
-        break;
-    default:
-        gen_binary_operator(node);
-    }
-}
 
 void gen_num(Node *node) {
     printf("  push %d\n", node->value);
@@ -251,4 +202,54 @@ void gen_binary_operator(Node *node) {
     }
 
     printf("  push rax\n");
+}
+
+void gen(Node *node) {
+    switch (node->type) {
+    case ND_NUM:
+        gen_num(node);
+        break;
+    case ND_IDENT:
+        gen_ident(node);
+        break;
+    case '=':
+        gen_assign(node);
+        break;
+    case ND_IF:
+        gen_if(node);
+        break;
+    case ND_WHILE:
+        gen_while(node);
+        break;
+    case ND_FOR:
+        gen_for(node);
+        break;
+    case ND_FUNCCALL:
+        gen_funccall(node);
+        break;
+    case ND_DEF_FUNC:
+        gen_def_func(node);
+        break;
+    case ND_RETURN:
+        gen_return(node);
+        break;
+    case ND_BLOCK:
+        gen_block(node);
+        break;
+    default:
+        gen_binary_operator(node);
+    }
+}
+
+void codegen(Vector *nodes) {
+    printf(".intel_syntax noprefix\n");
+    for (int i = 0; nodes->data[i]; i++) {
+        g_label_end_number++;
+        Node *node = nodes->data[i];
+        printf(".global %s\n", node->name);
+        gen(node);
+        printf("  pop rax\n");
+        printf("# end of a statement\n\n");
+    }
+    printf("# end of a program\n");
 }

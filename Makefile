@@ -14,6 +14,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 test: ycc
+	make format
 	$(BIN_DIR)/ycc --test
 	./test.sh
 

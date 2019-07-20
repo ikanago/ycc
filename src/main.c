@@ -1,5 +1,15 @@
 #include "ycc.h"
 
+void usage() {
+    printf("Usage: ycc [options] <file|code>\n");
+    printf("Options:\n");
+    printf(" --help          Show compiler usage.\n");
+    printf(" --test          Run test to check each feature of compiler works well.\n");
+    printf(" --raw           Receive source code as a command line argument.\n");
+    printf(" --dump-token    Display analyzed token.\n");
+    printf(" --dump-node     Display tree structures of analyzed node.\n");
+}
+
 char *read_file(char *file_path) {
     FILE *source = fopen(file_path, "r");
     if (source == NULL) {
@@ -11,17 +21,21 @@ char *read_file(char *file_path) {
     int n = 256;
     char buffer[n];
     while (fgets(buffer, n, source) != NULL) {
-        stringbuilder_append(code, buffer);
+        stringbuilder_append(code, buffer);  // `buffer` is overwritten every `fgets` execution.
     }
     return code->entity;
 }
 
 int main(int argc, char **argv) {
-    if (argc == 2 && !strcmp(argv[1], "--test")) {
-        vec_test();
-        map_test();
-        stringbuilder_test();
-        return 0;
+    if (argc == 2) {
+        if (!strcmp(argv[1], "--test")) {
+            util_test();
+            return 0;
+        }
+        else if (!strcmp(argv[1], "--help")) {
+            usage();
+            return 0;
+        }
     }
 
     bool is_dump_token = false;
