@@ -44,61 +44,51 @@ void gen_assign(Node *node) {
 }
 
 void gen_if(Node *node) {
-    g_label_else_number++;
-    g_label_end_number++;
-    if (node->els) {
-        gen(node->condition);
-        printf("# if-condition\n");
-        printf("  pop rax\n");
-        printf("  cmp rax, 0\n");
-        printf("  je .Lelse%d\n", g_label_else_number);
-        gen(node->then);
-        printf("# if-then\n");
+    gen(node->condition);
+    printf("# if-condition\n");
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  je .Lelse%p\n", &(node->els));
+    gen(node->then);
+    printf("# if-then\n");
 
-        printf("  jmp .Lend%d\n", g_label_end_number);
-        printf(".Lelse%d:\n", g_label_else_number);
+    if (node->els) {
+        printf("  jmp .Lend%p\n", &(node->els));
+        printf(".Lelse%p:\n", &(node->els));
         gen(node->els);
         printf("# else\n");
-        printf(".Lend%d:\n", g_label_end_number);
+        printf(".Lend%p:\n", &(node->els));
+        printf("# if-else\n");
     }
     else {
-        gen(node->condition);
-        printf("# if-condition\n");
-        printf("  pop rax\n");
-        printf("  cmp rax, 0\n");
-        printf("  je .Lend%d\n", g_label_end_number);
-        gen(node->then);
-        printf(".Lend%d:\n", g_label_end_number);
+        printf(".Lelse%p:\n", &(node->els));
     }
+
     printf("  push rax\n");
 }
 
 void gen_while(Node *node) {
-    g_label_begin_number++;
-    g_label_end_number++;
-    printf(".Lbegin%d:\n", g_label_begin_number);
+    printf(".Lbegin%p:\n", &(node));
     gen(node->condition);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  je .Lend%d\n", g_label_end_number);
+    printf("  je .Lend%p\n", &(node));
     gen(node->body);
-    printf("  jmp .Lbegin%d\n", g_label_begin_number);
-    printf(".Lend%d:\n", g_label_end_number);
+    printf("  jmp .Lbegin%p\n", &(node));
+    printf(".Lend%p:\n", &(node));
 }
 
 void gen_for(Node *node) {
-    g_label_begin_number++;
-    g_label_end_number++;
     gen(node->init);
-    printf(".Lbegin%d:\n", g_label_begin_number);
+    printf(".Lbegin%p:\n", &(node));
     gen(node->condition);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  je .Lend%d\n", g_label_end_number);
+    printf("  je .Lend%p\n", &(node));
     gen(node->body);
     gen(node->inc);
-    printf("  jmp .Lbegin%d\n", g_label_begin_number);
-    printf(".Lend%d:\n", g_label_end_number);
+    printf("  jmp .Lbegin%p\n", &(node));
+    printf(".Lend%p:\n", &(node));
 }
 
 void gen_funccall(Node *node) {
