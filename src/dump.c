@@ -40,6 +40,12 @@ void dump_type(Node *node) {
     case ND_GE:
         printf("GREATER/EQUAL");
         break;
+    case ND_OR:
+        printf("OR");
+        break;
+    case ND_AND:
+        printf("AND");
+        break;
     case ND_IDENT:
         printf("%s", node->name);
         break;

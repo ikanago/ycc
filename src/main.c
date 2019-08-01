@@ -4,8 +4,9 @@ void usage() {
     printf("Usage: ycc [options] <file|code>\n");
     printf("Options:\n");
     printf(" --help          Show compiler usage.\n");
-    printf(" --test          Run test to check each feature of compiler works well.\n");
-    printf(" --raw           Receive source code as a command line argument.\n");
+    printf(" --test          Run test to check each compiler works well.\n");
+    printf(
+        " --raw           Receive source code as a command line argument.\n");
     printf(" --dump-token    Display analyzed token.\n");
     printf(" --dump-node     Display tree structures of analyzed node.\n");
 }
@@ -21,7 +22,8 @@ char *read_file(char *file_path) {
     int n = 256;
     char buffer[n];
     while (fgets(buffer, n, source) != NULL) {
-        stringbuilder_append(code, buffer);  // `buffer` is overwritten every `fgets` execution.
+        stringbuilder_append(
+            code, buffer); // `buffer` is overwritten every `fgets` execution.
     }
     return code->entity;
 }
@@ -58,13 +60,16 @@ int main(int argc, char **argv) {
         code = read_file(argv[argc - 1]);
 
     Vector *tokens = tokenize(code);
-    Vector *nodes = parse(tokens);
-    if (is_dump_token)
+    if (is_dump_token) {
         dump_token(tokens);
-    if (is_dump_nodes)
+    }
+    if (is_dump_nodes) {
+        Vector *nodes = parse(tokens);
         dump_nodes(nodes);
-    if (!(is_dump_token || is_dump_nodes))
+    }
+    if (!(is_dump_token || is_dump_nodes)) {
+        Vector *nodes = parse(tokens);
         codegen(nodes);
-
+    }
     return 0;
 }

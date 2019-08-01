@@ -61,6 +61,8 @@ enum Token_type {
     TK_NE,        // !=
     TK_LE,        // <=
     TK_GE,        // >=
+    TK_OR,        // ||
+    TK_AND,       // &&
     TK_IDENT,     // Identifier
     TK_IF,        // if
     TK_ELSE,      // else
@@ -76,6 +78,8 @@ enum Node_type {
     ND_NE,        // !=
     ND_LE,        // <=
     ND_GE,        // >=
+    ND_OR,        // ||
+    ND_AND,       // &&
     ND_IDENT,     // Identifier
     ND_IF,        // if
     ND_WHILE,     // while
@@ -98,6 +102,8 @@ Vector *func_params();
 Node *stmt();
 Node *expr();
 Node *assign();
+Node *logical_or();
+Node *logical_and();
 Node *equality();
 Node *relational();
 Node *add();

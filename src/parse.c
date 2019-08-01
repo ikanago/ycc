@@ -131,7 +131,7 @@ Node *stmt() {
         node = malloc(sizeof(Node));
         node->type = ND_IF;
         expect('(');
-        node->condition = equality();
+        node->condition = logical_or();
         expect(')');
         node->then = stmt();
         if (consume(TK_ELSE))
@@ -148,7 +148,7 @@ Node *stmt() {
         node = malloc(sizeof(Node));
         node->type = ND_WHILE;
         expect('(');
-        node->condition = equality();
+        node->condition = logical_or();
         expect(')');
         node->body = stmt();
     }
@@ -177,9 +177,25 @@ Node *expr() {
 }
 
 Node *assign() {
-    Node *node = equality();
+    Node *node = logical_or();
     if (consume('=')) {
         node = new_node('=', node, assign());
+    }
+    return node;
+}
+
+Node *logical_or() {
+    Node *node = logical_and();
+    if (consume(TK_OR)) {
+        node = new_node(ND_OR, node, equality());
+    }
+    return node;
+}
+
+Node *logical_and() {
+    Node *node = equality();
+    if (consume(TK_AND)) {
+        node = new_node(ND_AND, node, equality());
     }
     return node;
 }

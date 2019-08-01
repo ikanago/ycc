@@ -68,6 +68,18 @@ Vector *scan(char *pos) {
             t->name = ">=";
             pos += 2;
         }
+        else if (!strncmp(pos, "&&", 2)) {
+            Token *t = add_token(v, TK_AND, pos);
+            t->type_name = "AND";
+            t->name = "&&";
+            pos += 2;
+        }
+        else if (!strncmp(pos, "||", 2)) {
+            Token *t = add_token(v, TK_OR, pos);
+            t->type_name = "OR";
+            t->name = "||";
+            pos += 2;
+        }
         else if (isalpha(*pos)) {
             int length = 1;
             while (is_alnum(pos[length]))

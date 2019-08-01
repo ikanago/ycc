@@ -29,7 +29,9 @@ stmt       = expr ";"
             | "while "(" equality ")" "{" stmt* "}"
             | "return" expr ";"
 expr       = assign
-assign     = equality
+assign     = or "="? assign
+or         = and "||"? equality
+and        = equality "&&"? equality
 equality   = relational ("==" relational | "!=" relational)*
 relational = add ("<" add | "<=" add | ">" add | ">= add)*
 add        = mul ("+" mul | "-" mul)
