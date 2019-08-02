@@ -30,7 +30,7 @@ stmt       = expr ";"
             | "return" expr ";"
 expr       = assign
 assign     = or "="? assign
-or         = and "||"? equality
+or         = and "||"? and
 and        = equality "&&"? equality
 equality   = relational ("==" relational | "!=" relational)*
 relational = add ("<" add | "<=" add | ">" add | ">= add)*

@@ -43,6 +43,39 @@ void gen_assign(Node *node) {
     printf("# =\n");
 }
 
+void gen_logical_or(Node *node) {
+    gen(node->lhs);
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  jne .Ltrue%p\n", &(node));
+    gen(node->rhs);
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  jne .Ltrue%p\n", &(node));
+    printf("  push 0\n");
+    printf("  jmp .Lend_or%p\n", &(node));
+    printf(".Ltrue%p:\n", &(node));
+    printf("  push 1\n");
+    printf(".Lend_or%p:\n", &(node));
+}
+
+void gen_logical_and(Node *node) {
+    gen(node->lhs);
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  je .Lfalse%p\n", &(node));
+    gen(node->rhs);
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  jne .Ltrue%p\n", &(node));
+    printf(".Lfalse%p:\n", &(node));
+    printf("  push 0\n");
+    printf("  jmp .Lend_and%p\n", &(node));
+    printf(".Ltrue%p:\n", &(node));
+    printf("  push 1\n");
+    printf(".Lend_and%p:\n", &(node));
+}
+
 void gen_if(Node *node) {
     gen(node->condition);
     printf("# if-condition\n");
@@ -204,6 +237,12 @@ void gen(Node *node) {
         break;
     case '=':
         gen_assign(node);
+        break;
+    case ND_OR:
+        gen_logical_or(node);
+        break;
+    case ND_AND:
+        gen_logical_and(node);
         break;
     case ND_IF:
         gen_if(node);

@@ -1,4 +1,8 @@
 #!/bin/bash
+COLOR_VALID="\e[32;1m"
+COLOR_INVALID="\e[31;1m"
+COLOR_OFF="\e[m"
+
 try() {
 	expected="$1"
 	input="$2"
@@ -9,9 +13,9 @@ try() {
 	actual="$?"
 
 	if [ "$actual" = "$expected" ]; then
-		echo "$input => $actual"
+		echo -e "${input} => ${COLOR_VALID}${actual}${COLOR_OFF}"
 	else
-		echo "$expected expected, but got $actual"
+		echo -e "${COLOR_INVALID}⛔  ${expected} expected, but got ${actual} ⛔${COLOR_OFF}"
 		exit 1
 	fi
 }
@@ -55,5 +59,9 @@ try 3 "main(){ a = 1; b = 2; if(a < 2 && b > 1){ return 3; } return 2; }"
 try 2 "main(){ a = 1; b = 2; if(a > 2 && b > 1){ return 3; } return 2; }"
 try 3 "main(){ a = 1; b = 2; if(a < 2 || b > 1){ return 3; } return 2; }"
 try 2 "main(){ a = 1; b = 2; if(a > 2 || b < 1){ return 3; } return 2; }"
-echo Passed all test.
-make clean
+try 1 "main(){ return 0 || 1 || 0; }"
+try 0 "main(){ return 0 || 1 && 0; }"
+try 1 "main(){ return 1 || 1 && 0; }"
+try 0 "main(){ return 1 && 1 && 0; }"
+try 1 "main(){ return 1 && 1 && 1; }"
+echo -e "${COLOR_VALID}🎉  Passed all test 🎉${COLOR_OFF}."

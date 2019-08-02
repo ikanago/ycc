@@ -186,18 +186,22 @@ Node *assign() {
 
 Node *logical_or() {
     Node *node = logical_and();
-    if (consume(TK_OR)) {
-        node = new_node(ND_OR, node, equality());
+    for (;;) {
+        if (consume(TK_OR))
+            node = new_node(ND_OR, node, logical_and());
+        else
+            return node;
     }
-    return node;
 }
 
 Node *logical_and() {
     Node *node = equality();
-    if (consume(TK_AND)) {
-        node = new_node(ND_AND, node, equality());
+    for (;;) {
+        if (consume(TK_AND))
+            node = new_node(ND_AND, node, equality());
+        else
+            return node;
     }
-    return node;
 }
 
 Node *equality() {
