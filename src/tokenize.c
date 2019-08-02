@@ -94,7 +94,7 @@ Vector *scan(char *pos) {
             t->name = name;
             pos += length;
         }
-        else if (strchr("+-*/;=(){}<>,", *pos)) {
+        else if (strchr("+-*/;=(){}<>,!", *pos)) {
             Token *t = add_token(v, *pos, pos);
             t->type_name = strndup(pos, 1);
             t->name = strndup(pos, 1);

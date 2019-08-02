@@ -40,6 +40,9 @@ void dump_type(Node *node) {
     case ND_GE:
         printf("GREATER/EQUAL");
         break;
+    case '!':
+        printf("NOT");
+        break;
     case ND_OR:
         printf("OR");
         break;

@@ -43,6 +43,15 @@ void gen_assign(Node *node) {
     printf("# =\n");
 }
 
+void gen_logical_not(Node *node) {
+    gen(node->lhs);
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  sete al\n");
+    printf("  movzb rax, al\n");
+    printf("  push rax\n");
+}
+
 void gen_logical_or(Node *node) {
     gen(node->lhs);
     printf("  pop rax\n");
@@ -86,11 +95,11 @@ void gen_if(Node *node) {
     printf("# if-then\n");
 
     if (node->els) {
-        printf("  jmp .Lend%p\n", &(node->els));
+        printf("  jmp .Lend_if%p\n", &(node->els));
         printf(".Lelse%p:\n", &(node->els));
         gen(node->els);
         printf("# else\n");
-        printf(".Lend%p:\n", &(node->els));
+        printf(".Lend_if%p:\n", &(node->els));
         printf("# if-else\n");
     }
     else {
@@ -101,27 +110,27 @@ void gen_if(Node *node) {
 }
 
 void gen_while(Node *node) {
-    printf(".Lbegin%p:\n", &(node));
+    printf(".Lbegin_while%p:\n", &(node));
     gen(node->condition);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  je .Lend%p\n", &(node));
+    printf("  je .Lend_while%p\n", &(node));
     gen(node->body);
-    printf("  jmp .Lbegin%p\n", &(node));
-    printf(".Lend%p:\n", &(node));
+    printf("  jmp .Lbegin_while%p\n", &(node));
+    printf(".Lend_while%p:\n", &(node));
 }
 
 void gen_for(Node *node) {
     gen(node->init);
-    printf(".Lbegin%p:\n", &(node));
+    printf(".Lbegin_for%p:\n", &(node));
     gen(node->condition);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  je .Lend%p\n", &(node));
+    printf("  je .Lend_for%p\n", &(node));
     gen(node->body);
     gen(node->inc);
-    printf("  jmp .Lbegin%p\n", &(node));
-    printf(".Lend%p:\n", &(node));
+    printf("  jmp .Lbegin_for%p\n", &(node));
+    printf(".Lend_for%p:\n", &(node));
 }
 
 void gen_funccall(Node *node) {
@@ -237,6 +246,9 @@ void gen(Node *node) {
         break;
     case '=':
         gen_assign(node);
+        break;
+    case '!':
+        gen_logical_not(node);
         break;
     case ND_OR:
         gen_logical_or(node);

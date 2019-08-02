@@ -269,6 +269,8 @@ Node *unary() {
         return term();
     if (consume('-'))
         return new_node('-', new_node_num(0), term());
+    if (consume('!'))
+        return new_node('!', logical_or(), NULL);
     return term();
 }
 
