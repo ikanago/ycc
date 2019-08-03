@@ -69,6 +69,7 @@ enum Token_type {
     TK_WHILE,     // while
     TK_FOR,       // for
     TK_RETURN,    // return
+    TK_INT,       // int type
     TK_EOF,       // End Of Statement
 };
 
@@ -112,6 +113,7 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *term();
+Node *decl_var();
 
 // ---codegen.c---
 void codegen(Vector *nodes);

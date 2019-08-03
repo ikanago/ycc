@@ -2,11 +2,13 @@
 
 void error(const char *file_name, const char *func_name, int line,
            const char *fmt, ...) {
+    fprintf(stderr, "\033[1;31m");
     fprintf(stderr, "%s:%s:%d: ", file_name, func_name, line);
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
+    fprintf(stderr, "\33[0m");
     exit(1);
 }
 

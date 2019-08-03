@@ -26,6 +26,7 @@ Map *reserve_keywords() {
     map_set(keywords, "while", (void *)TK_WHILE);
     map_set(keywords, "for", (void *)TK_FOR);
     map_set(keywords, "return", (void *)TK_RETURN);
+    map_set(keywords, "int", (void *)TK_INT);
     return keywords;
 }
 
@@ -101,7 +102,7 @@ Vector *scan(char *pos) {
             pos++;
         }
         else {
-            ERROR("Cannot tokenize: %s", pos);
+            ERROR("Cannot tokenize: \"%s\"", pos);
         }
     }
     add_token(v, TK_EOF, pos);

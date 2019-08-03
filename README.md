@@ -42,5 +42,6 @@ unary      = "+" term
             | "&" unary
             | "*" unary
             |term
-term       = num | identifier ("(" params? ")")? | "(" expr ")"
+term       = num | identifier ("(" params? ")")? | "(" expr ")" | decl_var
+decl_var   = type identifier
 ```

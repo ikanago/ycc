@@ -52,8 +52,8 @@ Node *new_node_def_func(char *name, Vector *params, Node *body) {
 void expect(int type) {
     Token *t = g_tokens->data[g_token_index];
     if (t->type != type)
-        ERROR("%c (%d) expected, but got %c (%d) at %s", type, type, t->type,
-              t->type, t->input);
+        ERROR("%c (%d) expected, but got %c (%d) at \"%s\"", type, type,
+              t->type, t->type, t->input);
     g_token_index++;
 }
 
@@ -92,15 +92,16 @@ Vector *program() {
 Node *definition() { return define_func(); }
 
 Node *define_func() {
+    expect(TK_INT);
     Token *t = g_tokens->data[g_token_index];
     if (t->type != TK_IDENT)
-        ERROR("Not an identifier");
-    char *name = t->name;
+        ERROR("Expected identifier name, but got \"%s\"", t->input);
+    char *func_name = t->name;
     g_token_index++;
 
     Vector *params = func_params();
     Node *body = stmt();
-    Node *node = new_node_def_func(name, params, body);
+    Node *node = new_node_def_func(func_name, params, body);
     return node;
 }
 
@@ -108,13 +109,15 @@ Vector *func_params() {
     Vector *params = new_vector();
     if (!consume('(')) {
         Token *t = g_tokens->data[g_token_index];
-        ERROR("Expected '(', but got: %s", t->input);
+        ERROR("Expected '(', but got: \"%s\"", t->input);
     }
     if (consume(')'))
         return params;
 
+    expect(TK_INT);
     vec_push(params, term());
     while (consume(',')) {
+        expect(TK_INT);
         vec_push(params, term());
     }
     expect(')');
@@ -283,7 +286,7 @@ Node *term() {
     if (consume('(')) {
         Node *node = expr();
         if (!consume(')'))
-            ERROR("Expected ')', but got: %s", t->input);
+            ERROR("Expected ')', but got: \"%s\"", t->input);
         return node;
     }
     else if (t->type == TK_NUM) {
@@ -291,25 +294,35 @@ Node *term() {
         return new_node_num(t->value);
     }
     else if (t->type == TK_IDENT) {
+        char *ident_name = t->name;
         g_token_index++;
-        char *name = t->name;
-        if (!consume('(')) {
-            return new_node_var(name);
-        }
+        if (!consume('('))
+            return new_node_var(ident_name);
 
         Vector *args = new_vector();
-        if (consume(')')) {
-            return new_node_funccall(name, args);
-        }
+        if (consume(')'))
+            return new_node_funccall(ident_name, args);
 
         vec_push(args, expr());
         while (consume(','))
             vec_push(args, expr());
         expect(')');
-        return new_node_funccall(name, args);
+        return new_node_funccall(ident_name, args);
+    }
+    else if (t->type == TK_INT) {
+        g_token_index++;
+        return decl_var();
     }
     else {
-        ERROR("Expected value, but got: %s", t->input);
+        ERROR("Expected value, but got: \"%s\"", t->input);
         return NULL;
     }
+}
+
+Node *decl_var() {
+    Token *t = g_tokens->data[g_token_index];
+    if (consume(TK_IDENT))
+        return new_node_var(t->name);
+    ERROR("Expected identifier name, but got \"%s\"", t->input);
+    return NULL;
 }
