@@ -271,6 +271,10 @@ Node *unary() {
         return new_node('-', new_node_num(0), term());
     if (consume('!'))
         return new_node('!', logical_or(), NULL);
+    if (consume('&'))
+        return new_node(ND_ADDR, unary(), NULL);
+    if (consume('*'))
+        return new_node(ND_DEREF, unary(), NULL);
     return term();
 }
 

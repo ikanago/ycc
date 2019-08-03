@@ -84,6 +84,8 @@ enum Node_type {
     ND_IF,        // if
     ND_WHILE,     // while
     ND_FOR,       // for
+    ND_ADDR,      // address-of operator
+    ND_DEREF,     // dereference operator
     ND_FUNCCALL,  // function call
     ND_DEF_FUNC,  // define function
     ND_RETURN,    // return

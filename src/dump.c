@@ -64,6 +64,12 @@ void dump_type(Node *node) {
     case ND_FOR:
         printf("FOR");
         break;
+    case ND_ADDR:
+        printf("ADDR");
+        break;
+    case ND_DEREF:
+        printf("DEREF");
+        break;
     case ND_FUNCCALL:
         printf("%s: call", node->name);
         break;
@@ -130,7 +136,7 @@ void dump_node(Node *node, int depth) {
     }
     if (node->params) {
         emit_space(child_depth - 4);
-        printf("PARAMS:\n");
+        printf("PARAMS: %d\n", node->params->len);
         for (int i = 0; node->params->data[i]; i++) {
             dump_node(node->params->data[i], child_depth);
         }

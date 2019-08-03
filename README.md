@@ -36,6 +36,11 @@ equality   = relational ("==" relational | "!=" relational)*
 relational = add ("<" add | "<=" add | ">" add | ">= add)*
 add        = mul ("+" mul | "-" mul)
 mul        = unary ("*" unary | "/" unary)*
-unary      = ("+" | "-")? term
+unary      = "+" term
+            | "-" term
+            | "!" or
+            | "&" unary
+            | "*" unary
+            |term
 term       = num | identifier ("(" params? ")")? | "(" expr ")"
 ```

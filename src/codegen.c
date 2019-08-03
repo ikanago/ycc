@@ -40,7 +40,7 @@ void gen_assign(Node *node) {
     printf("  pop rax\n");
     printf("  mov [rax], rdi\n");
     printf("  push rdi\n");
-    printf("# =\n");
+    printf("# assignment to \"%s\"\n", node->lhs->name);
 }
 
 void gen_logical_not(Node *node) {
@@ -131,6 +131,14 @@ void gen_for(Node *node) {
     gen(node->inc);
     printf("  jmp .Lbegin_for%p\n", &(node));
     printf(".Lend_for%p:\n", &(node));
+}
+
+void gen_dereference(Node *node) {
+    gen(node->lhs);
+    printf("  pop rax\n");
+    printf("  mov rax, [rax]\n");
+    printf("  push rax\n");
+    printf("# dereference\n");
 }
 
 void gen_funccall(Node *node) {
@@ -264,6 +272,12 @@ void gen(Node *node) {
         break;
     case ND_FOR:
         gen_for(node);
+        break;
+    case ND_ADDR:
+        gen_lval(node->lhs);
+        break;
+    case ND_DEREF:
+        gen_dereference(node);
         break;
     case ND_FUNCCALL:
         gen_funccall(node);
