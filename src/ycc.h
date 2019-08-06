@@ -20,7 +20,8 @@ typedef struct Token {
 } Token;
 
 typedef struct Node {
-    int type;                      // type of node(integer)
+    int node_type;                 // type of node(integer)
+    struct C_type *c_type;         // type of C
     int value;                     // value of integer node
     char *name;                    // name of identifier node
     struct Node *lhs;              // left-hand side node
@@ -37,6 +38,11 @@ typedef struct Node {
     struct Node *body;             // compound statement
     struct Vector *stmts_in_block; // nodes of block scope
 } Node;
+
+typedef struct C_type {
+    int type;
+    struct C_type *ptr_to;
+} C_type;
 
 typedef struct Vector {
     void **data;  // array of stored data
@@ -91,6 +97,11 @@ enum Node_type {
     ND_DEF_FUNC,  // define function
     ND_RETURN,    // return
     ND_BLOCK,     // { }
+};
+
+enum specifier_type {
+    SP_INT,
+    SP_PTR,
 };
 
 // ---tokenize.c---

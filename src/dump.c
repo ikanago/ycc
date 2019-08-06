@@ -23,8 +23,24 @@ void emit_space(int num) {
         printf("    ");
 }
 
-void dump_type(Node *node) {
-    switch (node->type) {
+void dump_C_type(Node *node) {
+    if (node->c_type == NULL)
+        return;
+    printf(" :");
+    switch (node->c_type->type) {
+    case SP_INT:
+        printf("INT");
+        break;
+    case SP_PTR:
+        printf("PTR");
+        break;
+    default:
+        break;
+    }
+}
+
+void dump_node_type(Node *node) {
+    switch (node->node_type) {
     case ND_NUM:
         printf("%d", node->value);
         break;
@@ -51,6 +67,7 @@ void dump_type(Node *node) {
         break;
     case ND_IDENT:
         printf("%s", node->name);
+        dump_C_type(node);
         break;
     case ND_IF:
         printf("IF");
@@ -98,7 +115,7 @@ void dump_type(Node *node) {
         printf("ASSIGN");
         break;
     default:
-        printf("%d", node->type);
+        printf("%d", node->node_type);
         break;
     }
     printf("\n");
@@ -111,7 +128,7 @@ void dump_node(Node *node, int depth) {
         printf("└───");
     }
 
-    dump_type(node);
+    dump_node_type(node);
 
     if (node->lhs)
         dump_node(node->lhs, child_depth);

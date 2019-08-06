@@ -8,7 +8,7 @@ int g_variable_offset; // sum of variable's offset.
 
 Node *new_node(int type, Node *lhs, Node *rhs) {
     Node *node = malloc(sizeof(Node));
-    node->type = type;
+    node->node_type = type;
     node->lhs = lhs;
     node->rhs = rhs;
     return node;
@@ -16,14 +16,14 @@ Node *new_node(int type, Node *lhs, Node *rhs) {
 
 Node *new_node_num(int value) {
     Node *node = malloc(sizeof(Node));
-    node->type = ND_NUM;
+    node->node_type = ND_NUM;
     node->value = value;
     return node;
 }
 
 Node *new_node_var(char *name) {
     Node *node = malloc(sizeof(Node));
-    node->type = ND_IDENT;
+    node->node_type = ND_IDENT;
     node->name = name;
     if (!map_exists(g_variable_map, name)) {
         g_variable_offset += 8;
@@ -34,22 +34,24 @@ Node *new_node_var(char *name) {
 
 Node *new_node_funccall(char *name, Vector *args) {
     Node *node = malloc(sizeof(Node));
-    node->type = ND_FUNCCALL;
+    node->node_type = ND_FUNCCALL;
     node->name = name;
     node->args = args;
     return node;
 }
 
-Node *new_node_def_func(char *name, Vector *params, Node *body) {
+Node *new_node_def_func(char *name, C_type *type, Vector *params, Node *body) {
     Node *node = malloc(sizeof(Node));
-    node->type = ND_DEF_FUNC;
+    node->node_type = ND_DEF_FUNC;
     node->name = name;
+    node->c_type = type;
     node->params = params;
     node->body = body;
     return node;
 }
 
-void expect(int type) {
+// Check if current token's type is expected one.
+void expect_token(int type) {
     Token *t = g_tokens->data[g_token_index];
     if (t->type != type)
         ERROR("%c (%d) expected, but got %c (%d) at \"%s\"", type, type,
@@ -57,7 +59,9 @@ void expect(int type) {
     g_token_index++;
 }
 
-int consume(int type) {
+// Check if current token's type is desired one.
+// If so, proceed to next token.
+int consume_next_token(int type) {
     Token *t = g_tokens->data[g_token_index];
     if (t->type != type)
         return 0;
@@ -65,6 +69,27 @@ int consume(int type) {
     return 1;
 }
 
+// Check if current token's type is desired one.
+int check_next_token(int type) {
+    Token *t = g_tokens->data[g_token_index];
+    if (t->type != type)
+        return 0;
+    return 1;
+}
+
+// Generate new C_type struct following information passed by arguments.
+// After generating, proceed to next token.
+C_type *new_type(int sp_type, C_type *ptr_to) {
+    C_type *type = malloc(sizeof(C_type));
+    type->type = sp_type;
+    type->ptr_to = ptr_to;
+    g_token_index++;
+    while (check_next_token('*'))
+        type = new_type(SP_PTR, type);
+    return type;
+}
+
+// Initialize parser and start parsing.
 Vector *parse(Vector *v) {
     g_tokens = v;
     g_nodes = new_vector();
@@ -72,6 +97,8 @@ Vector *parse(Vector *v) {
     return program();
 }
 
+// Entry point of constructing syntax tree.
+// Top node of each tree will be function type node.
 Vector *program() {
     for (;;) {
         Token *t = g_tokens->data[g_token_index];
@@ -92,7 +119,7 @@ Vector *program() {
 Node *definition() { return define_func(); }
 
 Node *define_func() {
-    expect(TK_INT);
+    C_type *type = new_type(SP_INT, NULL);
     Token *t = g_tokens->data[g_token_index];
     if (t->type != TK_IDENT)
         ERROR("Expected identifier name, but got \"%s\"", t->input);
@@ -101,75 +128,85 @@ Node *define_func() {
 
     Vector *params = func_params();
     Node *body = stmt();
-    Node *node = new_node_def_func(func_name, params, body);
+    Node *node = new_node_def_func(func_name, type, params, body);
+    return node;
+}
+
+Node *param() {
+    C_type *type = new_type(SP_INT, NULL);
+    Token *t = g_tokens->data[g_token_index];
+    Node *node = new_node_var(t->name);
+    node->c_type = type;
+    g_token_index++;
     return node;
 }
 
 Vector *func_params() {
     Vector *params = new_vector();
-    if (!consume('(')) {
+    if (!consume_next_token('(')) {
         Token *t = g_tokens->data[g_token_index];
         ERROR("Expected '(', but got: \"%s\"", t->input);
     }
-    if (consume(')'))
+    if (consume_next_token(')'))
         return params;
 
-    expect(TK_INT);
-    vec_push(params, term());
-    while (consume(',')) {
-        expect(TK_INT);
-        vec_push(params, term());
+    vec_push(params, param());
+    while (consume_next_token(',')) {
+        vec_push(params, param());
     }
-    expect(')');
+    expect_token(')');
     return params;
 }
 
 Node *stmt() {
     Node *node;
-    if (consume(TK_RETURN)) {
+    if (consume_next_token(TK_RETURN)) {
         node = new_node(ND_RETURN, expr(), NULL);
-        expect(';');
+        expect_token(';');
     }
-    else if (consume(TK_IF)) {
+    else if (consume_next_token(TK_IF)) {
         node = malloc(sizeof(Node));
-        node->type = ND_IF;
-        expect('(');
+        node->node_type = ND_IF;
+        expect_token('(');
         node->condition = logical_or();
-        expect(')');
+        expect_token(')');
         node->then = stmt();
-        if (consume(TK_ELSE))
+        if (consume_next_token(TK_ELSE))
             node->els = stmt();
     }
-    else if (consume('{')) {
+    else if (consume_next_token('{')) {
         node = malloc(sizeof(Node));
-        node->type = ND_BLOCK;
+        node->node_type = ND_BLOCK;
         node->stmts_in_block = new_vector();
-        while (!consume('}'))
+        while (!consume_next_token('}'))
             vec_push(node->stmts_in_block, stmt());
     }
-    else if (consume(TK_WHILE)) {
+    else if (consume_next_token(TK_WHILE)) {
         node = malloc(sizeof(Node));
-        node->type = ND_WHILE;
-        expect('(');
+        node->node_type = ND_WHILE;
+        expect_token('(');
         node->condition = logical_or();
-        expect(')');
+        expect_token(')');
         node->body = stmt();
     }
-    else if (consume(TK_FOR)) {
+    else if (consume_next_token(TK_FOR)) {
         node = malloc(sizeof(Node));
-        node->type = ND_FOR;
-        expect('(');
-        node->init = assign();
-        expect(';');
+        node->node_type = ND_FOR;
+        expect_token('(');
+        node->init = stmt();
         node->condition = equality();
-        expect(';');
+        expect_token(';');
         node->inc = assign();
-        expect(')');
+        expect_token(')');
         node->body = stmt();
+    }
+    else if (check_next_token(TK_INT)) {
+        node = decl_var();
+        expect_token(';');
     }
     else {
         node = expr();
-        expect(';');
+        expect_token(';');
     }
     return node;
 }
@@ -181,7 +218,7 @@ Node *expr() {
 
 Node *assign() {
     Node *node = logical_or();
-    if (consume('=')) {
+    if (consume_next_token('=')) {
         node = new_node('=', node, assign());
     }
     return node;
@@ -190,7 +227,7 @@ Node *assign() {
 Node *logical_or() {
     Node *node = logical_and();
     for (;;) {
-        if (consume(TK_OR))
+        if (consume_next_token(TK_OR))
             node = new_node(ND_OR, node, logical_and());
         else
             return node;
@@ -200,7 +237,7 @@ Node *logical_or() {
 Node *logical_and() {
     Node *node = equality();
     for (;;) {
-        if (consume(TK_AND))
+        if (consume_next_token(TK_AND))
             node = new_node(ND_AND, node, equality());
         else
             return node;
@@ -210,10 +247,10 @@ Node *logical_and() {
 Node *equality() {
     Node *node = relational();
     for (;;) {
-        if (consume(TK_EQ)) {
+        if (consume_next_token(TK_EQ)) {
             node = new_node(ND_EQ, node, relational());
         }
-        else if (consume(TK_NE)) {
+        else if (consume_next_token(TK_NE)) {
             node = new_node(ND_NE, node, relational());
         }
         else {
@@ -225,16 +262,16 @@ Node *equality() {
 Node *relational() {
     Node *node = add();
     for (;;) {
-        if (consume(TK_LE)) {
+        if (consume_next_token(TK_LE)) {
             node = new_node(ND_LE, node, add());
         }
-        else if (consume('<')) {
+        else if (consume_next_token('<')) {
             node = new_node('<', node, add());
         }
-        else if (consume(TK_GE)) {
+        else if (consume_next_token(TK_GE)) {
             node = new_node(ND_LE, add(), node);
         }
-        else if (consume('>')) {
+        else if (consume_next_token('>')) {
             node = new_node('<', add(), node);
         }
         else {
@@ -246,9 +283,9 @@ Node *relational() {
 Node *add() {
     Node *node = mul();
     for (;;) {
-        if (consume('+'))
+        if (consume_next_token('+'))
             node = new_node('+', node, mul());
-        else if (consume('-'))
+        else if (consume_next_token('-'))
             node = new_node('-', node, mul());
         else
             return node;
@@ -258,9 +295,9 @@ Node *add() {
 Node *mul() {
     Node *node = unary();
     for (;;) {
-        if (consume('*'))
+        if (consume_next_token('*'))
             node = new_node('*', node, unary());
-        else if (consume('/'))
+        else if (consume_next_token('/'))
             node = new_node('/', node, unary());
         else
             return node;
@@ -268,24 +305,24 @@ Node *mul() {
 }
 
 Node *unary() {
-    if (consume('+'))
+    if (consume_next_token('+'))
         return term();
-    if (consume('-'))
+    if (consume_next_token('-'))
         return new_node('-', new_node_num(0), term());
-    if (consume('!'))
+    if (consume_next_token('!'))
         return new_node('!', logical_or(), NULL);
-    if (consume('&'))
+    if (consume_next_token('&'))
         return new_node(ND_ADDR, unary(), NULL);
-    if (consume('*'))
+    if (consume_next_token('*'))
         return new_node(ND_DEREF, unary(), NULL);
     return term();
 }
 
 Node *term() {
     Token *t = g_tokens->data[g_token_index];
-    if (consume('(')) {
+    if (consume_next_token('(')) {
         Node *node = expr();
-        if (!consume(')'))
+        if (!consume_next_token(')'))
             ERROR("Expected ')', but got: \"%s\"", t->input);
         return node;
     }
@@ -296,17 +333,17 @@ Node *term() {
     else if (t->type == TK_IDENT) {
         char *ident_name = t->name;
         g_token_index++;
-        if (!consume('('))
+        if (!consume_next_token('('))
             return new_node_var(ident_name);
 
         Vector *args = new_vector();
-        if (consume(')'))
+        if (consume_next_token(')'))
             return new_node_funccall(ident_name, args);
 
         vec_push(args, expr());
-        while (consume(','))
+        while (consume_next_token(','))
             vec_push(args, expr());
-        expect(')');
+        expect_token(')');
         return new_node_funccall(ident_name, args);
     }
     else if (t->type == TK_INT) {
@@ -320,9 +357,17 @@ Node *term() {
 }
 
 Node *decl_var() {
+    C_type *type = new_type(SP_INT, NULL);
     Token *t = g_tokens->data[g_token_index];
-    if (consume(TK_IDENT))
-        return new_node_var(t->name);
-    ERROR("Expected identifier name, but got \"%s\"", t->input);
-    return NULL;
+    g_token_index++;
+    if (t->type != TK_IDENT) {
+        ERROR("Expected identifier name, but got \"%s\"", t->input);
+        return NULL;
+    }
+
+    Node *node = new_node_var(t->name);
+    node->c_type = type;
+    if (consume_next_token('='))
+        node = new_node('=', node, assign());
+    return node;
 }

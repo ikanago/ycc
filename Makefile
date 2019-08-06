@@ -20,7 +20,7 @@ test: ycc
 	make clean
 
 debug: $(SRCS)
-	$(CC) -g -o $(BIN_DIR)/dycc $(OBJS) $(LDFLAGS)
+	$(CC) -g -o $(BIN_DIR)/dycc $(SRCS) $(LDFLAGS)
 
 clean:
 	rm -f $(OBJ_DIR)/*

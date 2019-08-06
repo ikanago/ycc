@@ -13,7 +13,7 @@ void gen_num(Node *node) {
 }
 
 void gen_lval(Node *node) {
-    if (node->type != ND_IDENT)
+    if (node->node_type != ND_IDENT)
         ERROR("Left value of assignment is not variable.");
 
     int *offset = (int *)map_get(g_variable_map, node->name);
@@ -201,7 +201,7 @@ void gen_binary_operator(Node *node) {
     printf("  pop rdi\n");
     printf("  pop rax\n");
 
-    switch (node->type) {
+    switch (node->node_type) {
     case '+':
         printf("  add rax, rdi\n");
         printf("# +\n");
@@ -245,7 +245,7 @@ void gen_binary_operator(Node *node) {
 }
 
 void gen(Node *node) {
-    switch (node->type) {
+    switch (node->node_type) {
     case ND_NUM:
         gen_num(node);
         break;
