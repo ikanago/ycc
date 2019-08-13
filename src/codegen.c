@@ -13,23 +13,34 @@ void gen_num(Node *node) {
 }
 
 void gen_lval(Node *node) {
-    if (node->node_type != ND_IDENT)
-        ERROR("Left value of assignment is not variable.");
+    if (node->node_type == ND_IDENT) {
+        int *offset = (int *)map_get(g_variable_map, node->name);
+        map_set(g_variable_map, node->name, (void *)offset);
 
-    int *offset = (int *)map_get(g_variable_map, node->name);
-    map_set(g_variable_map, node->name, (void *)offset);
+        printf("  lea rax, [rbp-%ld]\n", (intptr_t)offset);
+        printf("  push rax\n");
+    }
+    else if (node->node_type == ND_DEREF) {
+        gen(node->lhs);
+    }
+    printf("# left value address: %s\n", node->name);
+}
 
-    printf("  mov rax, rbp\n");
-    printf("  sub rax, %ld\n", (intptr_t)offset);
+void gen_load_value() {
+    printf("  pop rax\n");
+    printf("  mov rax, [rax]\n");
     printf("  push rax\n");
-    printf("# left value: %s\n", node->name);
+}
+
+void gen_dereference(Node *node) {
+    gen(node->lhs);
+    gen_load_value();
+    printf("# dereference\n");
 }
 
 void gen_ident(Node *node) {
     gen_lval(node);
-    printf("  pop rax\n");
-    printf("  mov rax, [rax]\n");
-    printf("  push rax\n");
+    gen_load_value();
     printf("# variable: %s\n", node->name);
 }
 
@@ -131,14 +142,6 @@ void gen_for(Node *node) {
     gen(node->inc);
     printf("  jmp .Lbegin_for%p\n", &(node));
     printf(".Lend_for%p:\n", &(node));
-}
-
-void gen_dereference(Node *node) {
-    gen(node->lhs);
-    printf("  pop rax\n");
-    printf("  mov rax, [rax]\n");
-    printf("  push rax\n");
-    printf("# dereference\n");
 }
 
 void gen_funccall(Node *node) {

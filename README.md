@@ -28,6 +28,7 @@ stmt       = expr ";"
             | "if" "(" equality ")" stmt ("else" stmt)?
             | "while "(" equality ")" "{" stmt* "}"
             | "return" expr ";"
+            | decl_var ";"
 expr       = assign
 assign     = or "="? assign
 or         = and "||"? and
@@ -41,7 +42,7 @@ unary      = "+" term
             | "!" or
             | "&" unary
             | "*" unary
-            |term
-term       = num | identifier ("(" params? ")")? | "(" expr ")" | decl_var
+            | term
+term       = num | identifier ("(" params? ")")? | "(" expr ")"
 decl_var   = type identifier
 ```
