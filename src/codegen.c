@@ -1,8 +1,5 @@
 #include "ycc.h"
 
-int g_label_else_number = 0;
-int g_label_begin_number = 0;
-int g_label_end_number = 0;
 // registers to store function parameters and arguments.
 char *g_registers_for_args[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 Map *g_variable_map;
@@ -26,31 +23,47 @@ void gen_lval(Node *node) {
     printf("# left value address: %s\n", node->name);
 }
 
-void gen_load_value() {
+// Generate assembly to load value from a register
+// corresponding to each type size.
+void gen_load_value(C_type *type) {
     printf("  pop rax\n");
-    printf("  mov rax, [rax]\n");
+    if (type->size == 4) {
+        printf("  mov eax, [rax]\n");
+    }
+    else if (type->size == 8) {
+        printf("  mov rax, [rax]\n");
+    }
     printf("  push rax\n");
+}
+
+void gen_store_value(C_type *type) {
+    printf("  pop rdi\n");
+    printf("  pop rax\n");
+    if (type->size == 4) {
+        printf("  mov [rax], edi\n");
+    }
+    else if (type->size == 8) {
+        printf("  mov [rax], rdi\n");
+    }
+    printf("  push rdi\n");
 }
 
 void gen_dereference(Node *node) {
     gen(node->lhs);
-    gen_load_value();
+    gen_load_value(node->c_type);
     printf("# dereference\n");
 }
 
 void gen_ident(Node *node) {
     gen_lval(node);
-    gen_load_value();
+    gen_load_value(node->c_type);
     printf("# variable: %s\n", node->name);
 }
 
 void gen_assign(Node *node) {
     gen_lval(node->lhs);
     gen(node->rhs);
-    printf("  pop rdi\n");
-    printf("  pop rax\n");
-    printf("  mov [rax], rdi\n");
-    printf("  push rdi\n");
+    gen_store_value(node->lhs->c_type);
     printf("# assignment to \"%s\"\n", node->lhs->name);
 }
 
@@ -302,7 +315,6 @@ void gen(Node *node) {
 void codegen(Vector *nodes) {
     printf(".intel_syntax noprefix\n");
     for (int i = 0; nodes->data[i]; i++) {
-        g_label_end_number++;
         Node *node = nodes->data[i];
         printf(".global %s\n", node->name);
         gen(node);

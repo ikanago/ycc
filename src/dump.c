@@ -28,10 +28,10 @@ void dump_C_type(Node *node) {
         return;
     printf(" :");
     switch (node->c_type->type) {
-    case SP_INT:
+    case TY_INT:
         printf("INT");
         break;
-    case SP_PTR:
+    case TY_PTR:
         printf("PTR");
         break;
     default:

@@ -34,13 +34,14 @@ typedef struct Node {
     struct Vector *args;           // node of function arguments
     struct Vector *params;         // node of function params
     struct Map *vars;              // variables for function
-    int max_variable_offset;       // sum of variable offset
+    int max_variable_offset;       // sum of variable offset for function
     struct Node *body;             // compound statement
     struct Vector *stmts_in_block; // nodes of block scope
 } Node;
 
 typedef struct C_type {
     int type;
+    int size;
     struct C_type *ptr_to;
 } C_type;
 
@@ -61,7 +62,7 @@ typedef struct StringBuilder {
     int len;      // actual length
 } StringBuilder;
 
-enum Token_type {
+enum Token_kind {
     TK_NUM = 256, // Number literal
     TK_EQ,        // ==
     TK_NE,        // !=
@@ -79,7 +80,7 @@ enum Token_type {
     TK_EOF,       // End Of Statement
 };
 
-enum Node_type {
+enum Node_kind {
     ND_NUM = 512, // Number literal
     ND_EQ,        // ==
     ND_NE,        // !=
@@ -99,9 +100,9 @@ enum Node_type {
     ND_BLOCK,     // { }
 };
 
-enum specifier_type {
-    SP_INT,
-    SP_PTR,
+enum Type_kind {
+    TY_INT,
+    TY_PTR,
 };
 
 // ---tokenize.c---

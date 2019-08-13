@@ -3,7 +3,8 @@
 Vector *g_tokens;      // token array received from tokenizer.
 Vector *g_nodes;       // node array to store parsed node.
 int g_token_index;     // index to indicate current position at `g_tokens`.
-Map *g_variable_map;   // map to store sets of local variable and stack offset.
+Map *g_var_offset_map; // map to store sets of local variable and stack offset.
+Map *g_var_type_map;   // map to store sets of local variable and its type.
 int g_variable_offset; // sum of variable's offset.
 
 Node *new_node(int type, Node *lhs, Node *rhs) {
@@ -25,9 +26,10 @@ Node *new_node_var(char *name) {
     Node *node = malloc(sizeof(Node));
     node->node_type = ND_IDENT;
     node->name = name;
-    if (!map_exists(g_variable_map, name)) {
-        g_variable_offset += 8;
-        map_set(g_variable_map, name, (void *)(intptr_t)g_variable_offset);
+    node->c_type = (C_type *)map_get(g_var_type_map, name);
+    if (!map_exists(g_var_offset_map, name)) {
+        g_variable_offset += node->c_type->size;
+        map_set(g_var_offset_map, name, (void *)(intptr_t)g_variable_offset);
     }
     return node;
 }
@@ -70,6 +72,7 @@ int consume_next_token(int type) {
 }
 
 // Check if current token's type is desired one.
+// Never proceed to next token.
 int check_next_token(int type) {
     Token *t = g_tokens->data[g_token_index];
     if (t->type != type)
@@ -79,14 +82,24 @@ int check_next_token(int type) {
 
 // Generate new C_type struct following information passed by arguments.
 // After generating, proceed to next token.
-C_type *new_type(int sp_type, C_type *ptr_to) {
+C_type *new_type(int TY_type, int size, C_type *ptr_to) {
     C_type *type = malloc(sizeof(C_type));
-    type->type = sp_type;
+    type->type = TY_type;
+    type->size = size;
     type->ptr_to = ptr_to;
-    g_token_index++;
     while (check_next_token('*'))
-        type = new_type(SP_PTR, type);
+        type = new_type(TY_PTR, 8, type);
     return type;
+}
+
+C_type *type_specifier() {
+    Token *t = g_tokens->data[g_token_index];
+    if (consume_next_token(TK_INT)) {
+        return new_type(TY_INT, 4, NULL);
+    }
+    else {
+        ERROR("Expected type name, but got \"%s\"", t->input);
+    }
 }
 
 // Initialize parser and start parsing.
@@ -105,10 +118,11 @@ Vector *program() {
         if (t->type == TK_EOF)
             break;
 
-        g_variable_map = new_map();
+        g_var_offset_map = new_map();
+        g_var_type_map = new_map();
         g_variable_offset = 0;
         Node *node = definition();
-        node->vars = g_variable_map;
+        node->vars = g_var_offset_map;
         node->max_variable_offset = g_variable_offset;
         vec_push(g_nodes, node);
     }
@@ -119,7 +133,7 @@ Vector *program() {
 Node *definition() { return define_func(); }
 
 Node *define_func() {
-    C_type *type = new_type(SP_INT, NULL);
+    C_type *type = type_specifier();
     Token *t = g_tokens->data[g_token_index];
     if (t->type != TK_IDENT)
         ERROR("Expected identifier name, but got \"%s\"", t->input);
@@ -133,11 +147,12 @@ Node *define_func() {
 }
 
 Node *param() {
-    C_type *type = new_type(SP_INT, NULL);
-    Token *t = g_tokens->data[g_token_index];
-    Node *node = new_node_var(t->name);
-    node->c_type = type;
-    g_token_index++;
+    // C_type *type = type_specifier();
+    // Token *t = g_tokens->data[g_token_index];
+    // Node *node = new_node_var(t->name);
+    // node->c_type = type;
+    // g_token_index++;
+    Node *node = decl_var();
     return node;
 }
 
@@ -357,16 +372,16 @@ Node *term() {
 }
 
 Node *decl_var() {
-    C_type *type = new_type(SP_INT, NULL);
+    C_type *type = type_specifier();
     Token *t = g_tokens->data[g_token_index];
-    g_token_index++;
     if (t->type != TK_IDENT) {
         ERROR("Expected identifier name, but got \"%s\"", t->input);
         return NULL;
     }
+    g_token_index++;
 
+    map_set(g_var_type_map, t->name, (void *)type);
     Node *node = new_node_var(t->name);
-    node->c_type = type;
     if (consume_next_token('='))
         node = new_node('=', node, assign());
     return node;
