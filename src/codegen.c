@@ -25,45 +25,41 @@ void gen_lval(Node *node) {
 
 // Generate assembly to load value from a register
 // corresponding to each type size.
-void gen_load_value(C_type *type) {
+void gen_load_value(Node *node) {
+    while (node->node_type == ND_DEREF)
+        node = node->lhs;
+
     printf("  pop rax\n");
-    if (type->size == 4) {
-        printf("  mov eax, [rax]\n");
-    }
-    else if (type->size == 8) {
-        printf("  mov rax, [rax]\n");
-    }
+    printf("  mov rax, [rax]\n");
     printf("  push rax\n");
 }
 
-void gen_store_value(C_type *type) {
+void gen_store_value(Node *node) {
+    while (node->node_type == ND_DEREF)
+        node = node->lhs;
+
     printf("  pop rdi\n");
     printf("  pop rax\n");
-    if (type->size == 4) {
-        printf("  mov [rax], edi\n");
-    }
-    else if (type->size == 8) {
-        printf("  mov [rax], rdi\n");
-    }
+    printf("  mov [rax], rdi\n");
     printf("  push rdi\n");
 }
 
 void gen_dereference(Node *node) {
     gen(node->lhs);
-    gen_load_value(node->c_type);
+    gen_load_value(node);
     printf("# dereference\n");
 }
 
 void gen_ident(Node *node) {
     gen_lval(node);
-    gen_load_value(node->c_type);
+    gen_load_value(node);
     printf("# variable: %s\n", node->name);
 }
 
 void gen_assign(Node *node) {
     gen_lval(node->lhs);
     gen(node->rhs);
-    gen_store_value(node->lhs->c_type);
+    gen_store_value(node->lhs);
     printf("# assignment to \"%s\"\n", node->lhs->name);
 }
 
@@ -159,9 +155,10 @@ void gen_for(Node *node) {
 
 void gen_funccall(Node *node) {
     for (int i = node->args->len - 1; i >= 0; i--) {
-        gen(node->args->data[i]);
+        Node *argument = node->args->data[i];
+        gen(argument);
         printf("  pop %s\n", g_registers_for_args[i]);
-        printf("# store arg to regester\n");
+        printf("# store arg to register\n");
     }
     printf("  call %s\n", node->name);
     printf("  push rax\n");

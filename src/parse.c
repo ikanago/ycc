@@ -87,7 +87,7 @@ C_type *new_type(int TY_type, int size, C_type *ptr_to) {
     type->type = TY_type;
     type->size = size;
     type->ptr_to = ptr_to;
-    while (check_next_token('*'))
+    while (consume_next_token('*'))
         type = new_type(TY_PTR, 8, type);
     return type;
 }
@@ -95,11 +95,10 @@ C_type *new_type(int TY_type, int size, C_type *ptr_to) {
 C_type *type_specifier() {
     Token *t = g_tokens->data[g_token_index];
     if (consume_next_token(TK_INT)) {
-        return new_type(TY_INT, 4, NULL);
+        return new_type(TY_INT, 8, NULL);
     }
-    else {
-        ERROR("Expected type name, but got \"%s\"", t->input);
-    }
+    ERROR("Expected type name, but got \"%s\"", t->input);
+    return NULL;
 }
 
 // Initialize parser and start parsing.

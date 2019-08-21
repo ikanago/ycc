@@ -53,7 +53,7 @@ try 8 "int fib(int n){ if(n == 0){ return 1; } if(n == 1){ return 1; } return fi
 try 120 "int fact(int n){ if(n == 1){ return 1; } return n * fact(n - 1); } int main(){ int n = 5; return fact(n); }"
 try 15 "int main(){ int n = 0; int i = 0; while(i < 6){ n = n + i; i = i + 1; } return n; }"
 try 120 "int fact(int n){ int a = 1; int i = 1; while(i <= n){ a = a * i; i = i + 1; } return a; } int main(){int a = fact(5); return a; }"
-try 120 "int fact(int n){ if(n < 0){ return -1; } int r = 1; for(int i = 1; i <= n; i = i + 1){ r = r * i; } return r; } int main(){ int n = 5; return fact(n);}"
+try 120 "int fact(int n){ if(n < 0){ return 0; } int r = 1; for(int i = 1; i <= n; i = i + 1){ r = r * i; } return r; } int main(){ int n = 5; return fact(n);}"
 try 0 "int fact(int n){ if(n < 0){ return 0; } int r = 1; for(int i = 1; i <= n; i = i + 1){ r = r * i; } return r; } int main(){ int n = -3; return fact(n);}"
 try 3 "int main(){ int a = 1; int b = 2; if(a < 2 && b > 1){ return 3; } return 2; }"
 try 2 "int main(){ int a = 1; int b = 2; if(a > 2 && b > 1){ return 3; } return 2; }"
