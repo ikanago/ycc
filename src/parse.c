@@ -95,7 +95,7 @@ C_type *new_type(int TY_type, int size, C_type *ptr_to) {
 C_type *type_specifier() {
     Token *t = g_tokens->data[g_token_index];
     if (consume_next_token(TK_INT)) {
-        return new_type(TY_INT, 8, NULL);
+        return new_type(TY_INT, 4, NULL);
     }
     ERROR("Expected type name, but got \"%s\"", t->input);
     return NULL;
@@ -146,11 +146,6 @@ Node *define_func() {
 }
 
 Node *param() {
-    // C_type *type = type_specifier();
-    // Token *t = g_tokens->data[g_token_index];
-    // Node *node = new_node_var(t->name);
-    // node->c_type = type;
-    // g_token_index++;
     Node *node = decl_var();
     return node;
 }

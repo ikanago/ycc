@@ -26,13 +26,13 @@ void emit_space(int num) {
 void dump_C_type(Node *node) {
     if (node->c_type == NULL)
         return;
-    printf(" :");
+    printf(": ");
     switch (node->c_type->type) {
     case TY_INT:
-        printf("INT");
+        printf("INT/%d", node->c_type->size);
         break;
     case TY_PTR:
-        printf("PTR");
+        printf("PTR/%d", node->c_type->size);
         break;
     default:
         break;
