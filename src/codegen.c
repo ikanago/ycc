@@ -235,19 +235,19 @@ void gen_binary_operator(Node *node) {
     printf("  pop rax\n");
 
     switch (node->node_type) {
-    case '+':
+    case ND_ADD:
         printf("  add rax, rdi\n");
         printf("# +\n");
         break;
-    case '-':
+    case ND_SUB:
         printf("  sub rax, rdi\n");
         printf("# -\n");
         break;
-    case '*':
+    case ND_MUL:
         printf("  mul rdi\n");
         printf("# *\n");
         break;
-    case '/':
+    case ND_DIV:
         printf("  mov rdx, 0\n");
         printf("  div rdi\n");
         printf("# /\n");
@@ -267,7 +267,7 @@ void gen_binary_operator(Node *node) {
         printf("  setle al\n");
         printf("  movzb rax, al\n");
         break;
-    case '<':
+    case ND_LESS:
         printf("  cmp rax, rdi\n");
         printf("  setl al\n");
         printf("  movzb rax, al\n");
@@ -285,10 +285,10 @@ void gen(Node *node) {
     case ND_IDENT:
         gen_ident(node);
         break;
-    case '=':
+    case ND_ASSIGN:
         gen_assign(node);
         break;
-    case '!':
+    case ND_NOT:
         gen_logical_not(node);
         break;
     case ND_OR:

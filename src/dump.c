@@ -53,10 +53,7 @@ void dump_node_type(Node *node) {
     case ND_LE:
         printf("LESS/EQUAL");
         break;
-    case ND_GE:
-        printf("GREATER/EQUAL");
-        break;
-    case '!':
+    case ND_NOT:
         printf("NOT");
         break;
     case ND_OR:
@@ -96,22 +93,22 @@ void dump_node_type(Node *node) {
     case ND_BLOCK:
         printf("BLOCK");
         break;
-    case '+':
+    case ND_ADD:
         printf("ADD");
         break;
-    case '-':
+    case ND_SUB:
         printf("SUB");
         break;
-    case '*':
+    case ND_MUL:
         printf("MUL");
         break;
-    case '/':
+    case ND_DIV:
         printf("DIV");
         break;
-    case '<':
+    case ND_LESS:
         printf("GREATER");
         break;
-    case '=':
+    case ND_ASSIGN:
         printf("ASSIGN");
         break;
     default:

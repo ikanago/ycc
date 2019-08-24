@@ -81,23 +81,29 @@ enum Token_kind {
 };
 
 enum Node_kind {
-    ND_NUM = 512, // Number literal
-    ND_EQ,        // ==
-    ND_NE,        // !=
-    ND_LE,        // <=
-    ND_GE,        // >=
-    ND_OR,        // ||
-    ND_AND,       // &&
-    ND_IDENT,     // Identifier
-    ND_IF,        // if
-    ND_WHILE,     // while
-    ND_FOR,       // for
-    ND_ADDR,      // address-of operator
-    ND_DEREF,     // dereference operator
-    ND_FUNCCALL,  // function call
-    ND_DEF_FUNC,  // define function
-    ND_RETURN,    // return
-    ND_BLOCK,     // { }
+    ND_DEF_FUNC = 512, // define function
+    ND_FUNCCALL,       // function call
+    ND_RETURN,         // return
+    ND_IF,             // if
+    ND_WHILE,          // while
+    ND_FOR,            // for
+    ND_BLOCK,          // { }
+    ND_ASSIGN,         // =
+    ND_OR,             // ||
+    ND_AND,            // &&
+    ND_EQ,             // ==
+    ND_NE,             // !=
+    ND_LESS,           // <
+    ND_LE,             // <=
+    ND_ADD,            // +
+    ND_SUB,            // -
+    ND_MUL,            // *
+    ND_DIV,            // /
+    ND_NOT,            // !
+    ND_ADDR,           // address-of operator
+    ND_DEREF,          // dereference operator
+    ND_NUM,            // Number literal
+    ND_IDENT,          // Identifier
 };
 
 enum Type_kind {
