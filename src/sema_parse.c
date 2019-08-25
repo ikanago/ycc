@@ -70,6 +70,8 @@ void sema_parse(Node *node) {
             ERROR("Invalid operands to binary expression ('int' and 'int *')\n");
         node->c_type = node->lhs->c_type;
         break;
+    case ND_SIZEOF:
+        node->c_type = new_type(TY_INT, 4, NULL);
     case ND_NUM:
         node->c_type = new_type(TY_INT, 4, NULL);
         break;

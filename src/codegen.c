@@ -227,6 +227,11 @@ void gen_block(Node *node) {
     printf("# end of of a block\n\n");
 }
 
+void gen_sizeof(Node *node) {
+    printf("  push %d\n", node->lhs->c_type->size);
+    printf("# sizeof\n");
+}
+
 void gen_binary_operator(Node *node) {
     gen(node->lhs);
     gen(node->rhs);
@@ -327,6 +332,9 @@ void gen(Node *node) {
         break;
     case ND_BLOCK:
         gen_block(node);
+        break;
+    case ND_SIZEOF:
+        gen_sizeof(node);
         break;
     default:
         gen_binary_operator(node);

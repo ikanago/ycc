@@ -324,6 +324,8 @@ Node *unary() {
         return new_node(ND_ADDR, unary(), NULL);
     if (consume_next_token('*'))
         return new_node(ND_DEREF, unary(), NULL);
+    if (consume_next_token(TK_SIZEOF))
+        return new_node(ND_SIZEOF, unary(), NULL);
     return term();
 }
 

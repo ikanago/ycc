@@ -111,6 +111,9 @@ void dump_node_type(Node *node) {
     case ND_ASSIGN:
         printf("ASSIGN");
         break;
+    case ND_SIZEOF:
+        printf("SIZEOF");
+        break;
     default:
         printf("%d", node->node_type);
         break;

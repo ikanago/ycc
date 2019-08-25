@@ -26,6 +26,7 @@ Map *reserve_keywords() {
     map_set(keywords, "while", (void *)TK_WHILE);
     map_set(keywords, "for", (void *)TK_FOR);
     map_set(keywords, "return", (void *)TK_RETURN);
+    map_set(keywords, "sizeof", (void *)TK_SIZEOF);
     map_set(keywords, "int", (void *)TK_INT);
     return keywords;
 }

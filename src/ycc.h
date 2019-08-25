@@ -76,6 +76,7 @@ enum Token_kind {
     TK_WHILE,     // while
     TK_FOR,       // for
     TK_RETURN,    // return
+    TK_SIZEOF,    // sizeof
     TK_INT,       // int type
     TK_EOF,       // End Of Statement
 };
@@ -102,6 +103,7 @@ enum Node_kind {
     ND_NOT,            // !
     ND_ADDR,           // address-of operator
     ND_DEREF,          // dereference operator
+    ND_SIZEOF,         // sizeof
     ND_NUM,            // Number literal
     ND_IDENT,          // Identifier
 };
