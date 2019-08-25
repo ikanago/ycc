@@ -1,7 +1,8 @@
 #include "ycc.h"
 
 // registers to store function parameters and arguments.
-char *g_registers_for_args[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+char *g_registers64_for_args[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+char *g_registers32_for_args[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
 Map *g_variable_map;
 
 void gen_num(Node *node) {
@@ -30,7 +31,14 @@ void gen_load_value(Node *node) {
         node = node->lhs;
 
     printf("  pop rax\n");
-    printf("  mov rax, [rax]\n");
+    if (node->c_type->size == 4) {
+        printf("  mov eax, DWORD PTR [rax]\n");
+        //        printf("  push eax\n");
+    }
+    if (node->c_type->size == 8) {
+        printf("  mov rax, [rax]\n");
+        //        printf("  push rax\n");
+    }
     printf("  push rax\n");
 }
 
@@ -40,7 +48,10 @@ void gen_store_value(Node *node) {
 
     printf("  pop rdi\n");
     printf("  pop rax\n");
-    printf("  mov [rax], rdi\n");
+    if (node->c_type->size == 4)
+        printf("  mov DWORD PTR [rax], edi\n");
+    else if (node->c_type->size == 8)
+        printf("  mov [rax], rdi\n");
     printf("  push rdi\n");
 }
 
@@ -157,7 +168,11 @@ void gen_funccall(Node *node) {
     for (int i = node->args->len - 1; i >= 0; i--) {
         Node *argument = node->args->data[i];
         gen(argument);
-        printf("  pop %s\n", g_registers_for_args[i]);
+        //        if (argument->c_type->size == 4)
+        //            printf("  pop %s\n", g_registers32_for_args[i]);
+        //        else if (argument->c_type->size == 8)
+        //            printf("  pop %s\n", g_registers64_for_args[i]);
+        printf("  pop %s\n", g_registers64_for_args[i]);
         printf("# store arg to register\n");
     }
     printf("  call %s\n", node->name);
@@ -178,7 +193,10 @@ void gen_def_func(Node *node) {
         int offset = (intptr_t)map_get(g_variable_map, param->name);
         printf("  mov rax, rbp\n");
         printf("  sub rax, %d\n", offset);
-        printf("  mov [rax], %s\n", g_registers_for_args[i]);
+        if (param->c_type->size == 4)
+            printf("  mov DWORD PTR [rax], %s\n", g_registers32_for_args[i]);
+        else if (param->c_type->size == 8)
+            printf("  mov [rax], %s\n", g_registers64_for_args[i]);
         printf("# store parameters to stack\n");
     }
 
@@ -205,6 +223,13 @@ void gen_block(Node *node) {
         printf("  pop rax\n");
         printf("# end of a statement\n\n");
     }
+    printf("  push rax\n");
+    printf("# end of of a block\n\n");
+}
+
+void gen_sizeof(Node *node) {
+    printf("  push %d\n", node->lhs->c_type->size);
+    printf("# sizeof\n");
 }
 
 void gen_binary_operator(Node *node) {
@@ -215,19 +240,23 @@ void gen_binary_operator(Node *node) {
     printf("  pop rax\n");
 
     switch (node->node_type) {
-    case '+':
+    case ND_ADD:
+        if (node->c_type->type == TY_PTR)
+            printf("  imul rdi, %d\n", node->lhs->c_type->ptr_to->size);
         printf("  add rax, rdi\n");
         printf("# +\n");
         break;
-    case '-':
+    case ND_SUB:
+        if (node->c_type->type == TY_PTR)
+            printf("  imul rdi, %d\n", node->lhs->c_type->size);
         printf("  sub rax, rdi\n");
         printf("# -\n");
         break;
-    case '*':
+    case ND_MUL:
         printf("  mul rdi\n");
         printf("# *\n");
         break;
-    case '/':
+    case ND_DIV:
         printf("  mov rdx, 0\n");
         printf("  div rdi\n");
         printf("# /\n");
@@ -247,7 +276,7 @@ void gen_binary_operator(Node *node) {
         printf("  setle al\n");
         printf("  movzb rax, al\n");
         break;
-    case '<':
+    case ND_LESS:
         printf("  cmp rax, rdi\n");
         printf("  setl al\n");
         printf("  movzb rax, al\n");
@@ -265,10 +294,10 @@ void gen(Node *node) {
     case ND_IDENT:
         gen_ident(node);
         break;
-    case '=':
+    case ND_ASSIGN:
         gen_assign(node);
         break;
-    case '!':
+    case ND_NOT:
         gen_logical_not(node);
         break;
     case ND_OR:
@@ -303,6 +332,9 @@ void gen(Node *node) {
         break;
     case ND_BLOCK:
         gen_block(node);
+        break;
+    case ND_SIZEOF:
+        gen_sizeof(node);
         break;
     default:
         gen_binary_operator(node);

@@ -26,13 +26,13 @@ void emit_space(int num) {
 void dump_C_type(Node *node) {
     if (node->c_type == NULL)
         return;
-    printf(" :");
+    printf(": ");
     switch (node->c_type->type) {
     case TY_INT:
-        printf("INT");
+        printf("INT/%d", node->c_type->size);
         break;
     case TY_PTR:
-        printf("PTR");
+        printf("PTR/%d", node->c_type->size);
         break;
     default:
         break;
@@ -53,10 +53,7 @@ void dump_node_type(Node *node) {
     case ND_LE:
         printf("LESS/EQUAL");
         break;
-    case ND_GE:
-        printf("GREATER/EQUAL");
-        break;
-    case '!':
+    case ND_NOT:
         printf("NOT");
         break;
     case ND_OR:
@@ -96,23 +93,26 @@ void dump_node_type(Node *node) {
     case ND_BLOCK:
         printf("BLOCK");
         break;
-    case '+':
+    case ND_ADD:
         printf("ADD");
         break;
-    case '-':
+    case ND_SUB:
         printf("SUB");
         break;
-    case '*':
+    case ND_MUL:
         printf("MUL");
         break;
-    case '/':
+    case ND_DIV:
         printf("DIV");
         break;
-    case '<':
+    case ND_LESS:
         printf("GREATER");
         break;
-    case '=':
+    case ND_ASSIGN:
         printf("ASSIGN");
+        break;
+    case ND_SIZEOF:
+        printf("SIZEOF");
         break;
     default:
         printf("%d", node->node_type);

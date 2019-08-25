@@ -95,7 +95,7 @@ C_type *new_type(int TY_type, int size, C_type *ptr_to) {
 C_type *type_specifier() {
     Token *t = g_tokens->data[g_token_index];
     if (consume_next_token(TK_INT)) {
-        return new_type(TY_INT, 8, NULL);
+        return new_type(TY_INT, 4, NULL);
     }
     ERROR("Expected type name, but got \"%s\"", t->input);
     return NULL;
@@ -146,11 +146,6 @@ Node *define_func() {
 }
 
 Node *param() {
-    // C_type *type = type_specifier();
-    // Token *t = g_tokens->data[g_token_index];
-    // Node *node = new_node_var(t->name);
-    // node->c_type = type;
-    // g_token_index++;
     Node *node = decl_var();
     return node;
 }
@@ -233,7 +228,7 @@ Node *expr() {
 Node *assign() {
     Node *node = logical_or();
     if (consume_next_token('=')) {
-        node = new_node('=', node, assign());
+        node = new_node(ND_ASSIGN, node, assign());
     }
     return node;
 }
@@ -280,13 +275,13 @@ Node *relational() {
             node = new_node(ND_LE, node, add());
         }
         else if (consume_next_token('<')) {
-            node = new_node('<', node, add());
+            node = new_node(ND_LESS, node, add());
         }
         else if (consume_next_token(TK_GE)) {
             node = new_node(ND_LE, add(), node);
         }
         else if (consume_next_token('>')) {
-            node = new_node('<', add(), node);
+            node = new_node(ND_LESS, add(), node);
         }
         else {
             return node;
@@ -298,9 +293,9 @@ Node *add() {
     Node *node = mul();
     for (;;) {
         if (consume_next_token('+'))
-            node = new_node('+', node, mul());
+            node = new_node(ND_ADD, node, mul());
         else if (consume_next_token('-'))
-            node = new_node('-', node, mul());
+            node = new_node(ND_SUB, node, mul());
         else
             return node;
     }
@@ -310,9 +305,9 @@ Node *mul() {
     Node *node = unary();
     for (;;) {
         if (consume_next_token('*'))
-            node = new_node('*', node, unary());
+            node = new_node(ND_MUL, node, unary());
         else if (consume_next_token('/'))
-            node = new_node('/', node, unary());
+            node = new_node(ND_DIV, node, unary());
         else
             return node;
     }
@@ -322,13 +317,15 @@ Node *unary() {
     if (consume_next_token('+'))
         return term();
     if (consume_next_token('-'))
-        return new_node('-', new_node_num(0), term());
+        return new_node(ND_SUB, new_node_num(0), term());
     if (consume_next_token('!'))
-        return new_node('!', logical_or(), NULL);
+        return new_node(ND_NOT, logical_or(), NULL);
     if (consume_next_token('&'))
         return new_node(ND_ADDR, unary(), NULL);
     if (consume_next_token('*'))
         return new_node(ND_DEREF, unary(), NULL);
+    if (consume_next_token(TK_SIZEOF))
+        return new_node(ND_SIZEOF, unary(), NULL);
     return term();
 }
 
@@ -382,6 +379,6 @@ Node *decl_var() {
     map_set(g_var_type_map, t->name, (void *)type);
     Node *node = new_node_var(t->name);
     if (consume_next_token('='))
-        node = new_node('=', node, assign());
+        node = new_node(ND_ASSIGN, node, assign());
     return node;
 }

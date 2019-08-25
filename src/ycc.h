@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define ERROR(fmt, ...)                                                        \
+#define ERROR(fmt, ...) \
     error(__FILE__, __FUNCTION__, __LINE__, fmt, ##__VA_ARGS__)
 
 typedef struct Token {
@@ -76,39 +76,49 @@ enum Token_kind {
     TK_WHILE,     // while
     TK_FOR,       // for
     TK_RETURN,    // return
+    TK_SIZEOF,    // sizeof
     TK_INT,       // int type
     TK_EOF,       // End Of Statement
 };
 
 enum Node_kind {
-    ND_NUM = 512, // Number literal
-    ND_EQ,        // ==
-    ND_NE,        // !=
-    ND_LE,        // <=
-    ND_GE,        // >=
-    ND_OR,        // ||
-    ND_AND,       // &&
-    ND_IDENT,     // Identifier
-    ND_IF,        // if
-    ND_WHILE,     // while
-    ND_FOR,       // for
-    ND_ADDR,      // address-of operator
-    ND_DEREF,     // dereference operator
-    ND_FUNCCALL,  // function call
-    ND_DEF_FUNC,  // define function
-    ND_RETURN,    // return
-    ND_BLOCK,     // { }
+    ND_DEF_FUNC = 512, // define function
+    ND_FUNCCALL,       // function call
+    ND_RETURN,         // return
+    ND_IF,             // if
+    ND_WHILE,          // while
+    ND_FOR,            // for
+    ND_BLOCK,          // { }
+    ND_ASSIGN,         // =
+    ND_OR,             // ||
+    ND_AND,            // &&
+    ND_EQ,             // ==
+    ND_NE,             // !=
+    ND_LESS,           // <
+    ND_LE,             // <=
+    ND_ADD,            // +
+    ND_SUB,            // -
+    ND_MUL,            // *
+    ND_DIV,            // /
+    ND_NOT,            // !
+    ND_ADDR,           // address-of operator
+    ND_DEREF,          // dereference operator
+    ND_SIZEOF,         // sizeof
+    ND_NUM,            // Number literal
+    ND_IDENT,          // Identifier
 };
 
 enum Type_kind {
     TY_INT,
     TY_PTR,
+    TY_FUNC,
 };
 
 // ---tokenize.c---
 Vector *tokenize(char *code);
 
 // ---parse.c---
+C_type *new_type(int, int, C_type *);
 Vector *parse(Vector *v);
 Vector *program();
 Node *definition();
@@ -126,6 +136,10 @@ Node *mul();
 Node *unary();
 Node *term();
 Node *decl_var();
+
+// ---sema_parse.c---
+void sema_parse(Node *node);
+void sema_parse_nodes(Vector *nodes);
 
 // ---codegen.c---
 void codegen(Vector *nodes);

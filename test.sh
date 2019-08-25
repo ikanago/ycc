@@ -15,6 +15,7 @@ try() {
 	if [ "$actual" = "$expected" ]; then
 		echo -e "${input} => ${COLOR_VALID}${actual}${COLOR_OFF}"
 	else
+	  echo -e "${COLOR_INVALID}Failed:${COLOR_OFF} ${input}"
 		echo -e "${COLOR_INVALID}⛔  ${expected} expected, but got ${actual} ⛔${COLOR_OFF}"
 		exit 1
 	fi
@@ -54,7 +55,7 @@ try 120 "int fact(int n){ if(n == 1){ return 1; } return n * fact(n - 1); } int 
 try 15 "int main(){ int n = 0; int i = 0; while(i < 6){ n = n + i; i = i + 1; } return n; }"
 try 120 "int fact(int n){ int a = 1; int i = 1; while(i <= n){ a = a * i; i = i + 1; } return a; } int main(){int a = fact(5); return a; }"
 try 120 "int fact(int n){ if(n < 0){ return 0; } int r = 1; for(int i = 1; i <= n; i = i + 1){ r = r * i; } return r; } int main(){ int n = 5; return fact(n);}"
-try 0 "int fact(int n){ if(n < 0){ return 0; } int r = 1; for(int i = 1; i <= n; i = i + 1){ r = r * i; } return r; } int main(){ int n = -3; return fact(n);}"
+#try 0 "int fact(int n){ if(n < 0){ return 0; } int r = 1; for(int i = 1; i <= n; i = i + 1){ r = r * i; } return r; } int main(){ int n = -3; return fact(n);}"
 try 3 "int main(){ int a = 1; int b = 2; if(a < 2 && b > 1){ return 3; } return 2; }"
 try 2 "int main(){ int a = 1; int b = 2; if(a > 2 && b > 1){ return 3; } return 2; }"
 try 3 "int main(){ int a = 1; int b = 2; if(a < 2 || b > 1){ return 3; } return 2; }"
@@ -68,9 +69,13 @@ try 2 "int main(){ int a = 1; if(!(a < 2)){ return 3; } return 2; }"
 try 2 "int main(){ int a = 1; int b = 2; if(!(a < 2 && b > 1)){ return 3; } return 2; }"
 try 3 "int main(){ int a = 1; int b = 2; if(!(a > 2 || b < 1)){ return 3; } return 2; }"
 try 1 "int main(){ int a = 1; int *b = &a; return *b; }"
-try 1 "int main(){ int a = 0; int b = 1; int *c = &a - 8; return *c; }"
+try 1 "int main(){ int a = 0; int b = 1; int *c = &a - 4; return *c; }"
 try 0 "int main(){ int a = 0; int *b = &a; int **c = &b; return **c; }"
 try 3 "int main(){ int a = 1; int b = 2; int *pa = &a; int *pb = &b; return *pa + *pb; }"
 try 2 "int main(){ int a = 1; int *b = &a; *b = 2; return a; }"
 try 2 "int main(){ int a = 1; int *b = &a; int **c = &b; **c = 2; return a; }"
+try 10 "int main(){ int *p; alloc4(&p, 1, 2, 3, 4); int sum = *p + *(p+1) + *(p+2) + *(p+3); return sum; }"
+try 4 "int main(){ int a = 1; return sizeof a; }"
+try 8 "int main(){ int a = 1; int *p = &a; return sizeof p; }"
+try 12 "int main(){ int a = 1; int *p = &a; return sizeof a + sizeof p; }"
 echo -e "${COLOR_VALID}🎉  Passed all tests. 🎉${COLOR_OFF}"
