@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define ERROR(fmt, ...)                                                        \
+#define ERROR(fmt, ...) \
     error(__FILE__, __FUNCTION__, __LINE__, fmt, ##__VA_ARGS__)
 
 typedef struct Token {
@@ -109,12 +109,14 @@ enum Node_kind {
 enum Type_kind {
     TY_INT,
     TY_PTR,
+    TY_FUNC,
 };
 
 // ---tokenize.c---
 Vector *tokenize(char *code);
 
 // ---parse.c---
+C_type *new_type(int, int, C_type *);
 Vector *parse(Vector *v);
 Vector *program();
 Node *definition();
@@ -132,6 +134,10 @@ Node *mul();
 Node *unary();
 Node *term();
 Node *decl_var();
+
+// ---sema_parse.c---
+void sema_parse(Node *node);
+void sema_parse_nodes(Vector *nodes);
 
 // ---codegen.c---
 void codegen(Vector *nodes);

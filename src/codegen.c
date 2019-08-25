@@ -236,10 +236,14 @@ void gen_binary_operator(Node *node) {
 
     switch (node->node_type) {
     case ND_ADD:
+        if (node->c_type->type == TY_PTR)
+            printf("  imul rdi, %d\n", node->lhs->c_type->ptr_to->size);
         printf("  add rax, rdi\n");
         printf("# +\n");
         break;
     case ND_SUB:
+        if (node->c_type->type == TY_PTR)
+            printf("  imul rdi, %d\n", node->lhs->c_type->size);
         printf("  sub rax, rdi\n");
         printf("# -\n");
         break;

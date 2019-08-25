@@ -69,6 +69,7 @@ int main(int argc, char **argv) {
     }
     if (!(is_dump_token || is_dump_nodes)) {
         Vector *nodes = parse(tokens);
+        sema_parse_nodes(nodes);
         codegen(nodes);
     }
     return 0;
