@@ -13,14 +13,14 @@ ycc: $(OBJS)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) -o $@ -c $< $(CFLAGS)
 
+debug: $(SRCS)
+	$(CC) -g -o $(BIN_DIR)/dycc $(SRCS) $(LDFLAGS)
+
 test: ycc
 	make format
 	$(BIN_DIR)/ycc --test
 	./test.sh
 	make clean
-
-debug: $(SRCS)
-	$(CC) -g -o $(BIN_DIR)/dycc $(SRCS) $(LDFLAGS)
 
 clean:
 	rm -f $(OBJ_DIR)/*

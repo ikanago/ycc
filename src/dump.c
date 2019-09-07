@@ -31,6 +31,10 @@ void dump_C_type(Node *node) {
     case TY_INT:
         printf("INT/%d", node->c_type->size);
         break;
+    case TY_ARRAY:
+        printf("ARRAY");
+        printf("/SIZE: %dx%d", node->c_type->array_of->size, node->c_type->array_len);
+        break;
     case TY_PTR:
         printf("PTR/%d", node->c_type->size);
         break;

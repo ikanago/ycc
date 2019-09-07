@@ -78,4 +78,7 @@ try 10 "int main(){ int *p; alloc4(&p, 1, 2, 3, 4); int sum = *p + *(p+1) + *(p+
 try 4 "int main(){ int a = 1; return sizeof a; }"
 try 8 "int main(){ int a = 1; int *p = &a; return sizeof p; }"
 try 12 "int main(){ int a = 1; int *p = &a; return sizeof a + sizeof p; }"
+try 2 "int main(){ int a[2]; a[0] = 1; a[1] = 2; return a[1]; }"
+try 3 "int main(){ int a[2]; a[0] = 1; a[1] = 2; int sum = a[0] + a[1]; return sum; }"
+try 55 "int main(){ int a[10]; a[0] = 1; for(int i = 1; i < 10; i = i + 1){ a[i] = a[i - 1] + i + 1; } return a[9]; }"
 echo -e "${COLOR_VALID}🎉  Passed all tests. 🎉${COLOR_OFF}"

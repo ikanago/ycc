@@ -33,11 +33,9 @@ void gen_load_value(Node *node) {
     printf("  pop rax\n");
     if (node->c_type->size == 4) {
         printf("  mov eax, DWORD PTR [rax]\n");
-        //        printf("  push eax\n");
     }
     if (node->c_type->size == 8) {
         printf("  mov rax, [rax]\n");
-        //        printf("  push rax\n");
     }
     printf("  push rax\n");
 }
@@ -63,7 +61,9 @@ void gen_dereference(Node *node) {
 
 void gen_ident(Node *node) {
     gen_lval(node);
-    gen_load_value(node);
+    // Not array variable
+    if (node->c_type->type != TY_ARRAY)
+        gen_load_value(node);
     printf("# variable: %s\n", node->name);
 }
 
@@ -243,12 +243,16 @@ void gen_binary_operator(Node *node) {
     case ND_ADD:
         if (node->c_type->type == TY_PTR)
             printf("  imul rdi, %d\n", node->lhs->c_type->ptr_to->size);
+        else if (node->c_type->type == TY_ARRAY)
+            printf("  imul rdi, %d\n", node->lhs->c_type->array_of->size);
         printf("  add rax, rdi\n");
         printf("# +\n");
         break;
     case ND_SUB:
         if (node->c_type->type == TY_PTR)
-            printf("  imul rdi, %d\n", node->lhs->c_type->size);
+            printf("  imul rdi, %d\n", node->lhs->c_type->ptr_to->size);
+        else if (node->c_type->type == TY_ARRAY)
+            printf("  imul rdi, %d\n", node->lhs->c_type->array_of->size);
         printf("  sub rax, rdi\n");
         printf("# -\n");
         break;

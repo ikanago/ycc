@@ -48,7 +48,10 @@ void sema_parse(Node *node) {
         node->c_type = node->lhs->c_type;
         break;
     case ND_DEREF:
-        node->c_type = node->lhs->c_type->ptr_to;
+        if (node->lhs->c_type->type == TY_ARRAY)
+            node->c_type = node->lhs->c_type->array_of;
+        else
+            node->c_type = node->lhs->c_type->ptr_to;
         break;
     case ND_ADD:
         // Convert 'num + ptr' to 'ptr + num'
@@ -60,6 +63,8 @@ void sema_parse(Node *node) {
         // 'ptr + ptr' is invalid, and its rhs is still 'ptr' after swapping
         if (node->rhs->c_type->type == TY_PTR)
             ERROR("Invalid operands to binary expression ('int *' and 'int *')\n");
+        if (node->lhs->c_type->type == TY_ARRAY && node->rhs->c_type->type == TY_PTR)
+            ERROR("Invalid operands to binary expression ('int *' and 'int *')\n");
         node->c_type = node->lhs->c_type;
     case ND_SUB:
         if (node->lhs->c_type->type == TY_PTR) {
@@ -68,6 +73,8 @@ void sema_parse(Node *node) {
         }
         else if (node->rhs->c_type->type == TY_PTR)
             ERROR("Invalid operands to binary expression ('int' and 'int *')\n");
+        if (node->lhs->c_type->type == TY_ARRAY && node->rhs->c_type->type == TY_PTR)
+            ERROR("Invalid operands to binary expression ('int *' and 'int *')\n");
         node->c_type = node->lhs->c_type;
         break;
     case ND_SIZEOF:

@@ -28,7 +28,14 @@ Node *new_node_var(char *name) {
     node->name = name;
     node->c_type = (C_type *)map_get(g_var_type_map, name);
     if (!map_exists(g_var_offset_map, name)) {
-        g_variable_offset += node->c_type->size;
+        // Variable
+        if (node->c_type->array_len == 0)
+            g_variable_offset += node->c_type->size;
+        // Array variable
+        else if (node->c_type->array_len > 0) {
+            node->c_type->array_size = node->c_type->size * node->c_type->array_len;
+            g_variable_offset += node->c_type->array_size;
+        }
         map_set(g_var_offset_map, name, (void *)(intptr_t)g_variable_offset);
     }
     return node;
@@ -52,9 +59,14 @@ Node *new_node_def_func(char *name, C_type *type, Vector *params, Node *body) {
     return node;
 }
 
+Token *get_token(int index) {
+    Token *t = g_tokens->data[index];
+    return t;
+}
+
 // Check if current token's type is expected one.
 void expect_token(int type) {
-    Token *t = g_tokens->data[g_token_index];
+    Token *t = get_token(g_token_index);
     if (t->type != type)
         ERROR("%c (%d) expected, but got %c (%d) at \"%s\"", type, type,
               t->type, t->type, t->input);
@@ -64,7 +76,7 @@ void expect_token(int type) {
 // Check if current token's type is desired one.
 // If so, proceed to next token.
 int consume_next_token(int type) {
-    Token *t = g_tokens->data[g_token_index];
+    Token *t = get_token(g_token_index);
     if (t->type != type)
         return 0;
     g_token_index++;
@@ -74,14 +86,13 @@ int consume_next_token(int type) {
 // Check if current token's type is desired one.
 // Never proceed to next token.
 int check_next_token(int type) {
-    Token *t = g_tokens->data[g_token_index];
-    if (t->type != type)
+    if (get_token(g_token_index)->type != type) {
         return 0;
+    }
     return 1;
 }
 
 // Generate new C_type struct following information passed by arguments.
-// After generating, proceed to next token.
 C_type *new_type(int TY_type, int size, C_type *ptr_to) {
     C_type *type = malloc(sizeof(C_type));
     type->type = TY_type;
@@ -93,7 +104,7 @@ C_type *new_type(int TY_type, int size, C_type *ptr_to) {
 }
 
 C_type *type_specifier() {
-    Token *t = g_tokens->data[g_token_index];
+    Token *t = get_token(g_token_index);
     if (consume_next_token(TK_INT)) {
         return new_type(TY_INT, 4, NULL);
     }
@@ -113,7 +124,7 @@ Vector *parse(Vector *v) {
 // Top node of each tree will be function type node.
 Vector *program() {
     for (;;) {
-        Token *t = g_tokens->data[g_token_index];
+        Token *t = get_token(g_token_index);
         if (t->type == TK_EOF)
             break;
 
@@ -133,7 +144,7 @@ Node *definition() { return define_func(); }
 
 Node *define_func() {
     C_type *type = type_specifier();
-    Token *t = g_tokens->data[g_token_index];
+    Token *t = get_token(g_token_index);
     if (t->type != TK_IDENT)
         ERROR("Expected identifier name, but got \"%s\"", t->input);
     char *func_name = t->name;
@@ -153,8 +164,7 @@ Node *param() {
 Vector *func_params() {
     Vector *params = new_vector();
     if (!consume_next_token('(')) {
-        Token *t = g_tokens->data[g_token_index];
-        ERROR("Expected '(', but got: \"%s\"", t->input);
+        ERROR("Expected '(', but got: \"%s\"", get_token(g_token_index)->input);
     }
     if (consume_next_token(')'))
         return params;
@@ -330,13 +340,14 @@ Node *unary() {
 }
 
 Node *term() {
-    Token *t = g_tokens->data[g_token_index];
+    Token *t = get_token(g_token_index);
     if (consume_next_token('(')) {
         Node *node = expr();
         if (!consume_next_token(')'))
             ERROR("Expected ')', but got: \"%s\"", t->input);
         return node;
     }
+    // Integer literal
     else if (t->type == TK_NUM) {
         g_token_index++;
         return new_node_num(t->value);
@@ -344,19 +355,31 @@ Node *term() {
     else if (t->type == TK_IDENT) {
         char *ident_name = t->name;
         g_token_index++;
-        if (!consume_next_token('('))
-            return new_node_var(ident_name);
+        // Function call
+        if (consume_next_token('(')) {
+            Vector *args = new_vector();
+            // Function call without argument
+            if (consume_next_token(')'))
+                return new_node_funccall(ident_name, args);
 
-        Vector *args = new_vector();
-        if (consume_next_token(')'))
-            return new_node_funccall(ident_name, args);
-
-        vec_push(args, expr());
-        while (consume_next_token(','))
             vec_push(args, expr());
-        expect_token(')');
-        return new_node_funccall(ident_name, args);
+            while (consume_next_token(','))
+                vec_push(args, expr());
+            expect_token(')');
+            return new_node_funccall(ident_name, args);
+        }
+        else if (consume_next_token('[')) {
+            Node *array_index_node = assign();
+            expect_token(']');
+            Node *node = new_node(ND_ADD, new_node_var(ident_name), array_index_node);
+            return new_node(ND_DEREF, node, NULL);
+        }
+        // Local Variable
+        else {
+            return new_node_var(ident_name);
+        }
     }
+    // Token "int"
     else if (t->type == TK_INT) {
         g_token_index++;
         return decl_var();
@@ -369,16 +392,24 @@ Node *term() {
 
 Node *decl_var() {
     C_type *type = type_specifier();
-    Token *t = g_tokens->data[g_token_index];
-    if (t->type != TK_IDENT) {
+    Token *t = get_token(g_token_index);
+    if (get_token(g_token_index)->type != TK_IDENT) {
         ERROR("Expected identifier name, but got \"%s\"", t->input);
         return NULL;
     }
     g_token_index++;
 
+    if (consume_next_token('[')) {
+        type->array_of = new_type(type->type, 4, NULL);
+        type->type = TY_ARRAY;
+        type->array_len = get_token(g_token_index)->value;
+        g_token_index++;
+        expect_token(']');
+    }
     map_set(g_var_type_map, t->name, (void *)type);
     Node *node = new_node_var(t->name);
-    if (consume_next_token('='))
-        node = new_node(ND_ASSIGN, node, assign());
+    if (consume_next_token('=')) {
+        return new_node(ND_ASSIGN, node, assign());
+    }
     return node;
 }

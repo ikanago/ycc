@@ -43,12 +43,15 @@ typedef struct C_type {
     int type;
     int size;
     struct C_type *ptr_to;
+    struct C_type *array_of;
+    int array_len;  // How many elements
+    int array_size; // size * array_len
 } C_type;
 
 typedef struct Vector {
     void **data;  // array of stored data
     int capacity; // maximum numbers of data to store
-    int len;      // actual length of data array
+    int len;      // actual array_len of data array
 } Vector;
 
 typedef struct Map {
@@ -58,8 +61,8 @@ typedef struct Map {
 
 typedef struct StringBuilder {
     char *entity; // entity of string
-    int capacity; // maximum length to store
-    int len;      // actual length
+    int capacity; // maximum array_len to store
+    int len;      // actual array_len
 } StringBuilder;
 
 enum Token_kind {
@@ -111,6 +114,7 @@ enum Node_kind {
 enum Type_kind {
     TY_INT,
     TY_PTR,
+    TY_ARRAY,
     TY_FUNC,
 };
 
