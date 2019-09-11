@@ -4,8 +4,8 @@ int fib(int n) {
     }
     return fib(n - 1) + fib(n - 2);
 }
+
 int main() {
-    int n;
-    n = 5;
+    int n = 5;
     return fib(n);
 }

@@ -66,7 +66,8 @@ void dump_node_type(Node *node) {
     case ND_AND:
         printf("AND");
         break;
-    case ND_IDENT:
+    case ND_LVAR:
+    case ND_GVAR:
         printf("%s", node->name);
         dump_C_type(node);
         break;

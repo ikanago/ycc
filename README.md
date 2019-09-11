@@ -20,7 +20,6 @@ e: null
 
 ```
 program    = definition*
-definition = define_func
 define_func = identifier "(" params? ")" "{" stmt * "}"
 params     = expr ("," expr)*
 stmt       = expr ";"

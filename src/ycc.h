@@ -33,7 +33,7 @@ typedef struct Node {
     struct Node *inc;              // for-loop variable update
     struct Vector *args;           // node of function arguments
     struct Vector *params;         // node of function params
-    struct Map *vars;              // variables for function
+    struct Map *lvar_offset_map;   // variables for function
     int max_variable_offset;       // sum of variable offset for function
     struct Node *body;             // compound statement
     struct Vector *stmts_in_block; // nodes of block scope
@@ -108,7 +108,8 @@ enum Node_kind {
     ND_DEREF,          // dereference operator
     ND_SIZEOF,         // sizeof
     ND_NUM,            // Number literal
-    ND_IDENT,          // Identifier
+    ND_LVAR,           // Local variable
+    ND_GVAR,           // Global variable
 };
 
 enum Type_kind {

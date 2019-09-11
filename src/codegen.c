@@ -3,7 +3,8 @@
 // registers to store function parameters and arguments.
 char *g_registers64_for_args[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 char *g_registers32_for_args[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
-Map *g_variable_map;
+Map *g_lvar_offset_map;
+extern Vector *g_gvar_nodes;
 
 void gen_num(Node *node) {
     printf("  push %d\n", node->value);
@@ -11,11 +12,13 @@ void gen_num(Node *node) {
 }
 
 void gen_lval(Node *node) {
-    if (node->node_type == ND_IDENT) {
-        int *offset = (int *)map_get(g_variable_map, node->name);
-        map_set(g_variable_map, node->name, (void *)offset);
-
+    if (node->node_type == ND_LVAR) {
+        int *offset = (int *)map_get(g_lvar_offset_map, node->name);
         printf("  lea rax, [rbp-%ld]\n", (intptr_t)offset);
+        printf("  push rax\n");
+    }
+    else if (node->node_type == ND_GVAR) {
+        printf("  lea rax, %s[rip]\n", node->name);
         printf("  push rax\n");
     }
     else if (node->node_type == ND_DEREF) {
@@ -168,10 +171,6 @@ void gen_funccall(Node *node) {
     for (int i = node->args->len - 1; i >= 0; i--) {
         Node *argument = node->args->data[i];
         gen(argument);
-        //        if (argument->c_type->size == 4)
-        //            printf("  pop %s\n", g_registers32_for_args[i]);
-        //        else if (argument->c_type->size == 8)
-        //            printf("  pop %s\n", g_registers64_for_args[i]);
         printf("  pop %s\n", g_registers64_for_args[i]);
         printf("# store arg to register\n");
     }
@@ -181,7 +180,7 @@ void gen_funccall(Node *node) {
 }
 
 void gen_def_func(Node *node) {
-    g_variable_map = node->vars;
+    g_lvar_offset_map = node->lvar_offset_map;
     printf("%s:\n", node->name);
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
@@ -190,7 +189,7 @@ void gen_def_func(Node *node) {
 
     for (int i = 0; i < node->params->len; i++) {
         Node *param = node->params->data[i];
-        int offset = (intptr_t)map_get(g_variable_map, param->name);
+        int offset = (intptr_t)map_get(g_lvar_offset_map, param->name);
         printf("  mov rax, rbp\n");
         printf("  sub rax, %d\n", offset);
         if (param->c_type->size == 4)
@@ -228,7 +227,10 @@ void gen_block(Node *node) {
 }
 
 void gen_sizeof(Node *node) {
-    printf("  push %d\n", node->lhs->c_type->size);
+    if (node->lhs->c_type->type == TY_ARRAY)
+        printf("  push %d\n", node->lhs->c_type->array_size);
+    else
+        printf("  push %d\n", node->lhs->c_type->size);
     printf("# sizeof\n");
 }
 
@@ -295,7 +297,8 @@ void gen(Node *node) {
     case ND_NUM:
         gen_num(node);
         break;
-    case ND_IDENT:
+    case ND_LVAR:
+    case ND_GVAR:
         gen_ident(node);
         break;
     case ND_ASSIGN:
@@ -347,6 +350,19 @@ void gen(Node *node) {
 
 void codegen(Vector *nodes) {
     printf(".intel_syntax noprefix\n");
+    for (int i = 0; g_gvar_nodes->data[i]; i++) {
+        Node *node = g_gvar_nodes->data[i];
+        if (node->node_type == ND_ASSIGN) {
+            printf("%s:\n", node->lhs->name);
+            if (node->lhs->c_type->size == 4)
+                printf("  .long %d\n", node->rhs->value);
+            else if (node->lhs->c_type->size == 8)
+                printf("  .quad %d\n", node->rhs->value);
+        }
+        else if (node->node_type == ND_GVAR) {
+            printf(".comm %s,%d\n", node->name, node->c_type->size);
+        }
+    }
     for (int i = 0; nodes->data[i]; i++) {
         Node *node = nodes->data[i];
         printf(".global %s\n", node->name);
