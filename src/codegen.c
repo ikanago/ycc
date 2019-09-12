@@ -34,12 +34,12 @@ void gen_load_value(Node *node) {
         node = node->lhs;
 
     printf("  pop rax\n");
-    if (node->c_type->size == 4) {
+    if (node->c_type->size == 1)
+        printf("  mov al, BYTE PTR [rax]\n");
+    if (node->c_type->size == 4)
         printf("  mov eax, DWORD PTR [rax]\n");
-    }
-    if (node->c_type->size == 8) {
+    if (node->c_type->size == 8)
         printf("  mov rax, [rax]\n");
-    }
     printf("  push rax\n");
 }
 
@@ -49,6 +49,8 @@ void gen_store_value(Node *node) {
 
     printf("  pop rdi\n");
     printf("  pop rax\n");
+    if (node->c_type->size == 1)
+        printf("  mov BYTe PTR [rax], dil\n");
     if (node->c_type->size == 4)
         printf("  mov DWORD PTR [rax], edi\n");
     else if (node->c_type->size == 8)

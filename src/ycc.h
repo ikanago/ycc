@@ -80,6 +80,7 @@ enum Token_kind {
     TK_FOR,       // for
     TK_RETURN,    // return
     TK_SIZEOF,    // sizeof
+    TK_CHAR,      // char type
     TK_INT,       // int type
     TK_EOF,       // End Of Statement
 };
@@ -113,6 +114,7 @@ enum Node_kind {
 };
 
 enum Type_kind {
+    TY_CHAR,
     TY_INT,
     TY_PTR,
     TY_ARRAY,

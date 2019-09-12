@@ -28,6 +28,7 @@ Map *reserve_keywords() {
     map_set(keywords, "return", (void *)TK_RETURN);
     map_set(keywords, "sizeof", (void *)TK_SIZEOF);
     map_set(keywords, "int", (void *)TK_INT);
+    map_set(keywords, "char", (void *)TK_CHAR);
     return keywords;
 }
 

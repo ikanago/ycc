@@ -43,6 +43,8 @@ int check_next_token(int type) {
 }
 
 int map_type_size(int TY_type) {
+    if (TY_type == TY_CHAR)
+        return 1;
     if (TY_type == TY_INT)
         return 4;
     if (TY_type == TY_PTR)
@@ -64,9 +66,10 @@ C_type *new_type(int TY_type, int size, C_type *ptr_to) {
 
 C_type *type_specifier() {
     Token *t = get_token(g_token_index);
-    if (consume_next_token(TK_INT)) {
+    if (consume_next_token(TK_CHAR))
+        return new_type(TY_CHAR, map_type_size(TY_CHAR), NULL);
+    if (consume_next_token(TK_INT))
         return new_type(TY_INT, map_type_size(TY_INT), NULL);
-    }
     ERROR("Expected type name, but got \"%s\"", t->input);
     return NULL;
 }
@@ -283,6 +286,10 @@ Node *stmt() {
         node->inc = assign();
         expect_token(')');
         node->body = stmt();
+    }
+    else if (check_next_token(TK_CHAR)) {
+        node = new_node_decl_lvar();
+        expect_token(';');
     }
     else if (check_next_token(TK_INT)) {
         node = new_node_decl_lvar();
