@@ -66,6 +66,7 @@ void sema_parse(Node *node) {
         if (node->lhs->c_type->type == TY_ARRAY && node->rhs->c_type->type == TY_PTR)
             ERROR("Invalid operands to binary expression ('int *' and 'int *')\n");
         node->c_type = node->lhs->c_type;
+        break;
     case ND_SUB:
         if (node->lhs->c_type->type == TY_PTR) {
             if (node->rhs->c_type->type == TY_PTR)

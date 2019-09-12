@@ -42,6 +42,15 @@ int check_next_token(int type) {
     return 1;
 }
 
+int map_type_size(int TY_type) {
+    if (TY_type == TY_INT)
+        return 4;
+    if (TY_type == TY_PTR)
+        return 8;
+    else
+        return 0;
+}
+
 // Generate new C_type struct following information passed by arguments.
 C_type *new_type(int TY_type, int size, C_type *ptr_to) {
     C_type *type = malloc(sizeof(C_type));
@@ -49,14 +58,14 @@ C_type *new_type(int TY_type, int size, C_type *ptr_to) {
     type->size = size;
     type->ptr_to = ptr_to;
     while (consume_next_token('*'))
-        type = new_type(TY_PTR, 8, type);
+        type = new_type(TY_PTR, map_type_size(TY_PTR), type);
     return type;
 }
 
 C_type *type_specifier() {
     Token *t = get_token(g_token_index);
     if (consume_next_token(TK_INT)) {
-        return new_type(TY_INT, 4, NULL);
+        return new_type(TY_INT, map_type_size(TY_INT), NULL);
     }
     ERROR("Expected type name, but got \"%s\"", t->input);
     return NULL;
@@ -97,15 +106,17 @@ Node *new_node_def_func(C_type *type, char *name, Vector *params, Node *body) {
 
 // This function is
 Node *decl_var(C_type *var_type, char *name) {
-    if (consume_next_token('[')) {
-        var_type->array_of = new_type(var_type->type, 4, NULL);
-        var_type->type = TY_ARRAY;
-        var_type->array_len = get_token(g_token_index)->value;
-        g_token_index++;
-        expect_token(']');
-    }
     Node *node = malloc(sizeof(Node));
     node->name = name;
+    if (consume_next_token('[')) {
+        C_type *array_type = new_type(TY_ARRAY, map_type_size(var_type->type), var_type->ptr_to);
+        array_type->array_of = var_type;
+        array_type->array_len = get_token(g_token_index)->value;
+        g_token_index++;
+        expect_token(']');
+        node->c_type = array_type;
+        return node;
+    }
     node->c_type = var_type;
     return node;
 }
@@ -131,20 +142,20 @@ Node *new_node_decl_lvar() {
         return NULL;
     }
 
-    char *name = get_token(g_token_index)->name;
+    char *name = t->name;
     g_token_index++;
 
     Node *node = decl_var(var_type, name);
     node->node_type = ND_LVAR;
     // Array variable
     if (node->c_type->type == TY_ARRAY) {
-        node->c_type->array_size = node->c_type->size * node->c_type->array_len;
+        node->c_type->array_size = node->c_type->array_of->size * node->c_type->array_len;
         g_variable_offset += node->c_type->array_size;
     }
     // Variable
     else
         g_variable_offset += node->c_type->size;
-    map_set(g_lvar_type_map, name, (void *)var_type);
+    map_set(g_lvar_type_map, name, (void *)node->c_type);
     map_set(g_lvar_offset_map, name, (void *)(intptr_t)g_variable_offset);
     if (consume_next_token('=')) {
         return new_node(ND_ASSIGN, node, assign());
