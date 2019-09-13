@@ -73,6 +73,8 @@ enum Token_kind {
     TK_GE,        // >=
     TK_OR,        // ||
     TK_AND,       // &&
+    TK_INCR,      // ++
+    TK_DECR,      // --
     TK_IDENT,     // Identifier
     TK_IF,        // if
     TK_ELSE,      // else

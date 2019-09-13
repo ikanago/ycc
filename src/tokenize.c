@@ -83,6 +83,18 @@ Vector *scan(char *pos) {
             t->name = "||";
             pos += 2;
         }
+        else if (!strncmp(pos, "++", 2)) {
+            Token *t = add_token(v, TK_INCR, pos);
+            t->type_name = "INCREMENT";
+            t->name = "++";
+            pos += 2;
+        }
+        else if (!strncmp(pos, "--", 2)) {
+            Token *t = add_token(v, TK_DECR, pos);
+            t->type_name = "DECREMENT";
+            t->name = "--";
+            pos += 2;
+        }
         else if (isalpha(*pos) || *pos == '_') {
             int length = 1;
             while (is_alnum(pos[length]))

@@ -1,0 +1,10 @@
+add_executable(ycc
+                   main.c
+                       tokenize.c
+                           parse.c
+                               sema_parse.c
+                                   codegen.c
+                                       util.c
+                                           util_test.c
+                                               dump.c
+                                                   ycc.h)

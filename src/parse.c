@@ -408,6 +408,14 @@ Node *unary() {
         return new_node(ND_DEREF, unary(), NULL);
     if (consume_next_token(TK_SIZEOF))
         return new_node(ND_SIZEOF, unary(), NULL);
+    if (consume_next_token(TK_INCR)) {
+        Node *node = unary();
+        return new_node(ND_ASSIGN, node, new_node(ND_ADD, node, new_node_num(1)));
+    }
+    if (consume_next_token(TK_DECR)) {
+        Node *node = unary();
+        return new_node(ND_ASSIGN, node, new_node(ND_SUB, node, new_node_num(1)));
+    }
     return term();
 }
 

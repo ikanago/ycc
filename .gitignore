@@ -6,6 +6,5 @@ dycc
 main
 .vscode
 .idea
-CMakeLists.txt
 cmake-build-debug
 .commit_template
