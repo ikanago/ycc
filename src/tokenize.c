@@ -47,6 +47,18 @@ Vector *scan(char *pos) {
             t->value =
                 strtol(pos, &pos, 10); // this function increments pointer
         }
+        else if (!strncmp(pos, "+=", 2)) {
+            Token *t = add_token(v, TK_ADD_ASSIGN, pos);
+            t->type_name = "ADD_ASSIGN";
+            t->name = "+=";
+            pos += 2;
+        }
+        else if (!strncmp(pos, "-=", 2)) {
+            Token *t = add_token(v, TK_SUB_ASSIGN, pos);
+            t->type_name = "SUB_ASSIGN";
+            t->name = "-=";
+            pos += 2;
+        }
         else if (!strncmp(pos, "==", 2)) {
             Token *t = add_token(v, TK_EQ, pos);
             t->type_name = "EQUAL";

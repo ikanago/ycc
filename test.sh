@@ -96,4 +96,7 @@ try 10 "int main(){ int r = 0; for(int i = 1; i < 5; ++i){ r = r + i; } return r
 try 10 "int main(){ int r = 0; for(int i = 4; i > 0; --i){ r = r + i; } return r; }"
 try 10 "int main(){ int r = 0; for(int i = 1; i < 5; ++i){ r = r + i; } return r; }"
 try 3 "int main(){ int a[2]; a[0] = 1; a[1] = 2; int r = 0; int *p = a; for(int i = 0; i < 2; ++i){ r = r + *p; ++p; } return r; }"
+try 3 "int main(){ int a = 1; a += 2; return a; }"
+try 3 "int main(){ int a = 10; a -= 7; return a; }"
+try 10 "int main(){ int r = 0; for(int i = 1; i < 5; ++i){ r += i; } return r; }"
 echo -e "${COLOR_VALID}🎉  Passed all tests. 🎉${COLOR_OFF}"

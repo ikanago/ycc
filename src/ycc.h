@@ -66,25 +66,27 @@ typedef struct StringBuilder {
 } StringBuilder;
 
 enum Token_kind {
-    TK_NUM = 256, // Number literal
-    TK_EQ,        // ==
-    TK_NE,        // !=
-    TK_LE,        // <=
-    TK_GE,        // >=
-    TK_OR,        // ||
-    TK_AND,       // &&
-    TK_INCR,      // ++
-    TK_DECR,      // --
-    TK_IDENT,     // Identifier
-    TK_IF,        // if
-    TK_ELSE,      // else
-    TK_WHILE,     // while
-    TK_FOR,       // for
-    TK_RETURN,    // return
-    TK_SIZEOF,    // sizeof
-    TK_CHAR,      // char type
-    TK_INT,       // int type
-    TK_EOF,       // End Of Statement
+    TK_NUM = 256,  // Number literal
+    TK_ADD_ASSIGN, // +=
+    TK_SUB_ASSIGN, // -=
+    TK_EQ,         // ==
+    TK_NE,         // !=
+    TK_LE,         // <=
+    TK_GE,         // >=
+    TK_OR,         // ||
+    TK_AND,        // &&
+    TK_INCR,       // ++
+    TK_DECR,       // --
+    TK_IDENT,      // Identifier
+    TK_IF,         // if
+    TK_ELSE,       // else
+    TK_WHILE,      // while
+    TK_FOR,        // for
+    TK_RETURN,     // return
+    TK_SIZEOF,     // sizeof
+    TK_CHAR,       // char type
+    TK_INT,        // int type
+    TK_EOF,        // End Of Statement
 };
 
 enum Node_kind {

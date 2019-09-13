@@ -308,11 +308,18 @@ Node *expr() {
 }
 
 Node *assign() {
-    Node *node = logical_or();
-    if (consume_next_token('=')) {
-        node = new_node(ND_ASSIGN, node, assign());
+    Node *lhs = logical_or();
+    if (consume_next_token('='))
+        return new_node(ND_ASSIGN, lhs, assign());
+    if (consume_next_token(TK_ADD_ASSIGN)) {
+        Node *rhs = new_node(ND_ADD, lhs, logical_or());
+        return new_node(ND_ASSIGN, lhs, rhs);
     }
-    return node;
+    if (consume_next_token(TK_SUB_ASSIGN)) {
+        Node *rhs = new_node(ND_SUB, lhs, logical_or());
+        return new_node(ND_ASSIGN, lhs, rhs);
+    }
+    return lhs;
 }
 
 Node *logical_or() {
