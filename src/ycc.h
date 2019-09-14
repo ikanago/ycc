@@ -24,6 +24,7 @@ typedef struct Node {
     struct C_type *c_type;         // type of C
     int value;                     // value of integer node
     char *name;                    // name of identifier node
+    char *string_literal;          // entity of string literal
     struct Node *lhs;              // left-hand side node
     struct Node *rhs;              // right-hand side node
     struct Node *condition;        // node of (if|while|for)-condition
@@ -85,6 +86,7 @@ enum Token_kind {
     TK_RETURN,     // return
     TK_SIZEOF,     // sizeof
     TK_CHAR,       // char type
+    TK_STRING,     // string type
     TK_INT,        // int type
     TK_EOF,        // End Of Statement
 };
@@ -112,6 +114,7 @@ enum Node_kind {
     ND_ADDR,           // address-of operator
     ND_DEREF,          // dereference operator
     ND_SIZEOF,         // sizeof
+    ND_STRING,         // String literal
     ND_NUM,            // Number literal
     ND_LVAR,           // Local variable
     ND_GVAR,           // Global variable

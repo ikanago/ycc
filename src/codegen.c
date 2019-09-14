@@ -5,6 +5,7 @@ char *g_registers64_for_args[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 char *g_registers32_for_args[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
 Map *g_lvar_offset_map;
 extern Vector *g_gvar_nodes;
+extern Map *g_string_map;
 
 void gen_num(Node *node) {
     printf("  push %d\n", node->value);

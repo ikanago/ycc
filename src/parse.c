@@ -434,6 +434,12 @@ Node *term() {
             ERROR("Expected ')', but got: \"%s\"", t->input);
         return node;
     }
+    else if (t->type == TK_STRING) {
+        g_token_index++;
+        Node *node = new_node(ND_STRING, NULL, NULL);
+        node->string_literal = t->name;
+        return node;
+    }
     // Integer literal
     else if (t->type == TK_NUM) {
         g_token_index++;

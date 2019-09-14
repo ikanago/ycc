@@ -1,6 +1,8 @@
 #include "ycc.h"
 
 Map *g_keywords;
+Map *g_string_map;
+int string_literal_label;
 
 Token *add_token(Vector *v, int type, char *input) {
     Token *t = malloc(sizeof(Token));
@@ -127,6 +129,19 @@ Vector *scan(char *pos) {
             t->name = strndup(pos, 1);
             pos++;
         }
+        else if (strchr("\"", *pos)) {
+            pos++;
+            int length = 0;
+            while (!strchr("\"", pos[length]))
+                length++;
+            
+            char *string_literal = strndup(pos, length);
+            map_set(g_string_map, string_literal, (void *)(intptr_t )string_literal_label);
+            Token *t = add_token(v, TK_STRING, pos);
+            t->type_name = "STRING";
+            t->name = string_literal;
+            pos += length + 1;
+        }
         else {
             ERROR("Cannot tokenize: \"%s\"", pos);
         }
@@ -137,5 +152,7 @@ Vector *scan(char *pos) {
 
 Vector *tokenize(char *pos) {
     g_keywords = reserve_keywords();
+    g_string_map = new_map();
+    string_literal_label = 0;
     return scan(pos);
 }

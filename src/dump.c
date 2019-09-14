@@ -28,6 +28,8 @@ void dump_C_type(Node *node) {
         return;
     printf(": ");
     switch (node->c_type->type) {
+    case TY_CHAR:
+        printf("CHAR/%d", node->c_type->size);
     case TY_INT:
         printf("INT/%d", node->c_type->size);
         break;
@@ -118,6 +120,9 @@ void dump_node_type(Node *node) {
         break;
     case ND_SIZEOF:
         printf("SIZEOF");
+        break;
+    case ND_STRING:
+        printf("%s", node->string_literal);
         break;
     default:
         printf("%d", node->node_type);
