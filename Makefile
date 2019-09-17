@@ -18,7 +18,6 @@ debug: $(SRCS)
 	$(CC) -g -o $(BIN_DIR)/dycc $(SRCS) $(LDFLAGS)
 
 test: ycc
-	make format
 	$(BIN_DIR)/ycc --test
 	./test.sh
 	make clean
