@@ -319,6 +319,14 @@ Node *assign() {
         Node *rhs = new_node(ND_SUB, lhs, logical_or());
         return new_node(ND_ASSIGN, lhs, rhs);
     }
+    if (consume_next_token(TK_MUL_ASSIGN)) {
+        Node *rhs = new_node(ND_MUL, lhs, logical_or());
+        return new_node(ND_ASSIGN, lhs, rhs);
+    }
+    if (consume_next_token(TK_DIV_ASSIGN)) {
+        Node *rhs = new_node(ND_DIV, lhs, logical_or());
+        return new_node(ND_ASSIGN, lhs, rhs);
+    }
     return lhs;
 }
 

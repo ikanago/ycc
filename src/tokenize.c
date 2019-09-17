@@ -61,6 +61,18 @@ Vector *scan(char *pos) {
             t->name = "-=";
             pos += 2;
         }
+        else if (!strncmp(pos, "*=", 2)) {
+            Token *t = add_token(v, TK_MUL_ASSIGN, pos);
+            t->type_name = "MUL_ASSIGN";
+            t->name = "*=";
+            pos += 2;
+        }
+        else if (!strncmp(pos, "/=", 2)) {
+            Token *t = add_token(v, TK_DIV_ASSIGN, pos);
+            t->type_name = "DIV_ASSIGN";
+            t->name = "/=";
+            pos += 2;
+        }
         else if (!strncmp(pos, "==", 2)) {
             Token *t = add_token(v, TK_EQ, pos);
             t->type_name = "EQUAL";

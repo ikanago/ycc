@@ -70,6 +70,8 @@ enum Token_kind {
     TK_NUM = 256,  // Number literal
     TK_ADD_ASSIGN, // +=
     TK_SUB_ASSIGN, // -=
+    TK_MUL_ASSIGN, // *=
+    TK_DIV_ASSIGN, // /=
     TK_EQ,         // ==
     TK_NE,         // !=
     TK_LE,         // <=
