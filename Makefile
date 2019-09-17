@@ -11,6 +11,7 @@ ycc: $(OBJS)
 	$(CC) -o $(BIN_DIR)/ycc $(OBJS) $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p ./obj ./bin
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 debug: $(SRCS)
