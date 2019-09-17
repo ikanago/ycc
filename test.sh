@@ -8,7 +8,7 @@ try() {
 	input="$2"
 
 	./bin/ycc --raw "$input" > ./obj/tmp.s
-	gcc -o ./obj/tmp ./obj/tmp.s ./test/test.c
+	gcc -static -o ./obj/tmp ./obj/tmp.s ./test/test.c
 	./obj/tmp
 	actual="$?"
 
@@ -99,4 +99,7 @@ try 3 "int main(){ int a[2]; a[0] = 1; a[1] = 2; int r = 0; int *p = a; for(int 
 try 3 "int main(){ int a = 1; a += 2; return a; }"
 try 3 "int main(){ int a = 10; a -= 7; return a; }"
 try 10 "int main(){ int r = 0; for(int i = 1; i < 5; ++i){ r += i; } return r; }"
+try 97 'int main(){ char *s = "abc"; char c = s[0]; return c; }'
+try 98 'int main(){ char *s = "abc"; char c = s[1]; return c; }'
+try 99 'int main(){ char *s = "abc"; char c = s[2]; return c; }'
 echo -e "${COLOR_VALID}🎉  Passed all tests. 🎉${COLOR_OFF}"

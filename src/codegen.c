@@ -51,7 +51,7 @@ void gen_store_value(Node *node) {
     printf("  pop rdi\n");
     printf("  pop rax\n");
     if (node->c_type->size == 1)
-        printf("  mov BYTe PTR [rax], dil\n");
+        printf("  mov BYTE PTR [rax], dil\n");
     if (node->c_type->size == 4)
         printf("  mov DWORD PTR [rax], edi\n");
     else if (node->c_type->size == 8)
@@ -177,7 +177,8 @@ void gen_funccall(Node *node) {
         printf("  pop %s\n", g_registers64_for_args[i]);
         printf("# store arg to register\n");
     }
-    printf("  call %s\n", node->name);
+    printf("  mov eax, 0\n");  // To call va_args function.
+    printf("  call %s@PLT\n", node->name);
     printf("  push rax\n");
     printf("# function call\n");
 }
@@ -235,6 +236,12 @@ void gen_sizeof(Node *node) {
     else
         printf("  push %d\n", node->lhs->c_type->size);
     printf("# sizeof\n");
+}
+
+void gen_string_literal(Node *node) {
+    intptr_t label_number = (intptr_t)(void *)map_get(g_string_map, node->string_literal);
+    printf("  lea rax, .LC%ld[rip]\n", label_number);
+    printf("  push rax\n");
 }
 
 void gen_binary_operator(Node *node) {
@@ -346,6 +353,9 @@ void gen(Node *node) {
     case ND_SIZEOF:
         gen_sizeof(node);
         break;
+    case ND_STRING:
+        gen_string_literal(node);
+        break;
     default:
         gen_binary_operator(node);
     }
@@ -353,6 +363,15 @@ void gen(Node *node) {
 
 void codegen(Vector *nodes) {
     printf(".intel_syntax noprefix\n");
+    if (g_string_map->keys->len) {
+        printf("  .text\n");
+        printf("  .section .rodata\n");
+        for (int i = 0; g_string_map->keys->data[i]; i++) {
+            printf(".LC%ld:\n", (intptr_t) (void *) (g_string_map->values->data[i]));
+            printf("  .string \"%s\"\n", (char *) g_string_map->keys->data[i]);
+        }
+        printf("  .text\n");
+    }
     for (int i = 0; g_gvar_nodes->data[i]; i++) {
         Node *node = g_gvar_nodes->data[i];
         if (node->node_type == ND_ASSIGN) {

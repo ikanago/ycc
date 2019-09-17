@@ -136,7 +136,7 @@ Vector *scan(char *pos) {
                 length++;
 
             char *string_literal = strndup(pos, length);
-            map_set(g_string_map, string_literal, (void *)(intptr_t)string_literal_label);
+            map_set(g_string_map, string_literal, (void *)(intptr_t)string_literal_label++);
             Token *t = add_token(v, TK_STRING, pos);
             t->type_name = "STRING";
             t->name = string_literal;
