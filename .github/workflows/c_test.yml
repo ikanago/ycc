@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install clang-format
-      run: sudo apt install -y clang-format-6.0
+      run: sudo apt install clang-format-6.0
     - name: Build from source
       run: make ycc
     - name: Run test
