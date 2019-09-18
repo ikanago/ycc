@@ -21,7 +21,7 @@ int g(int n) {
     }
     int *p = a;
     int r = 0;
-    for (int i = 9; i >= 0; --i) {
+    for (int i = 0; i < 10; ++i) {
         r += *p;
         ++p;
     }

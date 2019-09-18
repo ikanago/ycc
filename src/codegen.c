@@ -3,6 +3,7 @@
 // registers to store function parameters and arguments.
 char *g_registers64_for_args[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 char *g_registers32_for_args[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
+int g_label_number = 0;
 Map *g_lvar_offset_map;
 extern Vector *g_gvar_nodes;
 extern Map *g_string_map;
@@ -90,84 +91,89 @@ void gen_logical_not(Node *node) {
 }
 
 void gen_logical_or(Node *node) {
+    int label_number = g_label_number++;
     gen(node->lhs);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  jne .Ltrue%p\n", &(node));
+    printf("  jne .Ltrue%d\n", label_number);
     gen(node->rhs);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  jne .Ltrue%p\n", &(node));
+    printf("  jne .Ltrue%d\n", label_number);
     printf("  push 0\n");
-    printf("  jmp .Lend_or%p\n", &(node));
-    printf(".Ltrue%p:\n", &(node));
+    printf("  jmp .Lend_or%d\n", label_number);
+    printf(".Ltrue%d:\n", label_number);
     printf("  push 1\n");
-    printf(".Lend_or%p:\n", &(node));
+    printf(".Lend_or%d:\n", label_number);
 }
 
 void gen_logical_and(Node *node) {
+    int label_number = g_label_number++;
     gen(node->lhs);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  je .Lfalse%p\n", &(node));
+    printf("  je .Lfalse%d\n", label_number);
     gen(node->rhs);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  jne .Ltrue%p\n", &(node));
-    printf(".Lfalse%p:\n", &(node));
+    printf("  jne .Ltrue%d\n", label_number);
+    printf(".Lfalse%d:\n", label_number);
     printf("  push 0\n");
-    printf("  jmp .Lend_and%p\n", &(node));
-    printf(".Ltrue%p:\n", &(node));
+    printf("  jmp .Lend_and%d\n", label_number);
+    printf(".Ltrue%d:\n", label_number);
     printf("  push 1\n");
-    printf(".Lend_and%p:\n", &(node));
+    printf(".Lend_and%d:\n", label_number);
 }
 
 void gen_if(Node *node) {
+    int label_number = g_label_number++;
     gen(node->condition);
     printf("# if-condition\n");
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  je .Lelse%p\n", &(node->els));
+    printf("  je .Lelse%d\n", label_number);
     gen(node->then);
     printf("# if-then\n");
 
     if (node->els) {
-        printf("  jmp .Lend_if%p\n", &(node->els));
-        printf(".Lelse%p:\n", &(node->els));
+        printf("  jmp .Lend_if%d\n", label_number);
+        printf(".Lelse%d:\n", label_number);
         gen(node->els);
         printf("# else\n");
-        printf(".Lend_if%p:\n", &(node->els));
+        printf(".Lend_if%d:\n", label_number);
         printf("# if-else\n");
     }
     else {
-        printf(".Lelse%p:\n", &(node->els));
+        printf(".Lelse%d:\n", label_number);
     }
 
     printf("  push rax\n");
 }
 
 void gen_while(Node *node) {
-    printf(".Lbegin_while%p:\n", &(node));
+    int label_number = g_label_number++;
+    printf(".Lbegin_while%d:\n", label_number);
     gen(node->condition);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  je .Lend_while%p\n", &(node));
+    printf("  je .Lend_while%d\n", label_number);
     gen(node->body);
-    printf("  jmp .Lbegin_while%p\n", &(node));
-    printf(".Lend_while%p:\n", &(node));
+    printf("  jmp .Lbegin_while%d\n", label_number);
+    printf(".Lend_while%d:\n", label_number);
 }
 
 void gen_for(Node *node) {
+    int label_number = g_label_number++;
     gen(node->init);
-    printf(".Lbegin_for%p:\n", &(node));
+    printf(".Lbegin_for%d:\n", label_number);
     gen(node->condition);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    printf("  je .Lend_for%p\n", &(node));
+    printf("  je .Lend_for%d\n", label_number);
     gen(node->body);
     gen(node->inc);
-    printf("  jmp .Lbegin_for%p\n", &(node));
-    printf(".Lend_for%p:\n", &(node));
+    printf("  jmp .Lbegin_for%d\n", label_number);
+    printf(".Lend_for%d:\n", label_number);
 }
 
 void gen_funccall(Node *node) {
