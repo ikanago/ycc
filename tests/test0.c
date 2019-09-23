@@ -19,7 +19,7 @@ int g(int x, int y) {
 
 int main() {
     int result = g(3, 2);
-    if (result == 18) {
+    if (result == 15) {
         printf("test0.c passed.\n");
         return 0;
     }

@@ -19,7 +19,8 @@ debug: $(SRCS)
 
 test: ycc
 	$(BIN_DIR)/ycc --test
-	./test.sh
+	./unit_test.sh
+	./integration_test.sh
 	make clean
 
 clean:
