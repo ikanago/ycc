@@ -21,9 +21,11 @@ char *read_file(char *file_path) {
     StringBuilder *code = new_stringbiulder();
     int n = 256;
     char buffer[n];
+    memset(buffer, n, sizeof buffer);
     while (fgets(buffer, n, source) != NULL) {
         stringbuilder_append(
             code, buffer); // `buffer` is overwritten every `fgets` execution.
+        memset(buffer, n, sizeof buffer);
     }
     return code->entity;
 }

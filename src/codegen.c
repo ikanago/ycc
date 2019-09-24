@@ -379,7 +379,7 @@ void codegen(Vector *nodes) {
         }
         printf("  .text\n");
     }
-    for (int i = 0; g_gvar_nodes->data[i]; i++) {
+    for (int i = 0; i < g_gvar_nodes->len; i++) {
         Node *node = g_gvar_nodes->data[i];
         if (node->node_type == ND_ASSIGN) {
             printf("%s:\n", node->lhs->name);
