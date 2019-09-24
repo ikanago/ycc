@@ -7,6 +7,7 @@ int g_label_number = 0;
 Map *g_lvar_offset_map;
 extern Vector *g_gvar_nodes;
 extern Map *g_string_map;
+char *func_name;
 
 void gen_num(Node *node) {
     printf("  push %d\n", node->value);
@@ -190,6 +191,7 @@ void gen_funccall(Node *node) {
 }
 
 void gen_def_func(Node *node) {
+    func_name = node->name;
     g_lvar_offset_map = node->lvar_offset_map;
     printf("%s:\n", node->name);
     printf("  push rbp\n");
@@ -211,6 +213,7 @@ void gen_def_func(Node *node) {
 
     gen(node->body);
 
+    printf(".Lreturn_%s:\n", func_name);
     printf("  mov rsp, rbp\n");
     printf("  pop rbp\n");
     printf("  ret\n");
@@ -219,9 +222,7 @@ void gen_def_func(Node *node) {
 void gen_return(Node *node) {
     gen(node->lhs);
     printf("  pop rax\n");
-    printf("  mov rsp, rbp\n");
-    printf("  pop rbp\n");
-    printf("  ret\n");
+    printf("  jmp .Lreturn_%s\n", func_name);
     printf("# return\n");
 }
 
