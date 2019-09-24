@@ -1,3 +1,7 @@
+/*
+ * Test: string literal
+ */
+
 int scan(char *input, int length) {
     for (int i = 0; i < length; ++i) {
         printf("%c\n", *input);

@@ -43,6 +43,18 @@ Vector *scan(char *pos) {
         else if (is_new_line(pos)) {
             pos += 2;
         }
+        else if (!strncmp(pos, "//", 2)) {
+            pos += 2;
+            while (*pos != '\n')
+                pos++;
+        }
+        else if (!strncmp(pos, "/*", 2)) {
+            pos += 2;
+            char *comment_end = strstr(pos, "*/");
+            if (!comment_end)
+                ERROR("Unclosed block comment: \"%s\"", pos);
+            pos = comment_end + 2;
+        }
         else if (is_digit(*pos)) {
             Token *t = add_token(v, TK_NUM, pos);
             t->type_name = "INT";

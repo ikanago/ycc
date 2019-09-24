@@ -184,7 +184,7 @@ void gen_funccall(Node *node) {
         printf("  pop %s\n", g_registers64_for_args[i]);
         printf("# store arg to register\n");
     }
-    printf("  mov eax, 0\n");  // To call va_args function.
+    printf("  mov eax, 0\n"); // To call va_args function.
     printf("  call %s@PLT\n", node->name);
     printf("  push rax\n");
     printf("# function call\n");
@@ -374,8 +374,8 @@ void codegen(Vector *nodes) {
         printf("  .text\n");
         printf("  .section .rodata\n");
         for (int i = 0; g_string_map->keys->data[i]; i++) {
-            printf(".LC%ld:\n", (intptr_t) (void *) (g_string_map->values->data[i]));
-            printf("  .string \"%s\"\n", (char *) g_string_map->keys->data[i]);
+            printf(".LC%ld:\n", (intptr_t)(void *)(g_string_map->values->data[i]));
+            printf("  .string \"%s\"\n", (char *)g_string_map->keys->data[i]);
         }
         printf("  .text\n");
     }

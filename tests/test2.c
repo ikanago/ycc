@@ -1,3 +1,7 @@
+/*
+ * Test: array, while, increment, sizeof, pointer
+ */
+
 int f() {
     int array[5];
     array[0] = 1;

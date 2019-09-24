@@ -1,3 +1,8 @@
+/*
+ * Test: global variable, function definition/call, binary operator,
+ *       if-else, printf
+ */
+
 int g_a = 1;
 int g_b = 2;
 

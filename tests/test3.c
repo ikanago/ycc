@@ -1,3 +1,7 @@
+/*
+ * Test: add-assign operator, nested if-else, logical and/or/not
+ */
+
 int f(int n) {
     int a = 0;
     for (int i = 0; i < n; ++i) {
@@ -25,7 +29,7 @@ int g() {
 
 int main() {
     int result = g();
-    if (result == 0) {
+    if (!result) {
         printf("test3.c passed.\n");
         return 0;
     }

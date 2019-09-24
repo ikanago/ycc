@@ -1,3 +1,8 @@
+/*
+ * Tests in this file verify standard function call.
+ * Each test return 0 when succeeded, 1 when failed.
+ */
+
 int test_strlen() {
     char *s = "hello";
     if (strlen(s) == 5)
@@ -44,6 +49,7 @@ int main() {
     int r1 = test_strtol();
     int r2 = test_strncmp();
     int r3 = test_malloc();
+    // Succeed when all return value are 0
     if (r0 + r1 + r2 + r3 == 0)
         return 0;
     return 1;
