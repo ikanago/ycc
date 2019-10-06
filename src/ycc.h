@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #define ERROR(fmt, ...) \
     error(__FILE__, __FUNCTION__, __LINE__, fmt, ##__VA_ARGS__)
 

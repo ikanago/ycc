@@ -17,17 +17,26 @@ char *read_file(char *file_path) {
         perror(file_path);
         exit(1);
     }
-
-    StringBuilder *code = new_stringbiulder();
-    int n = 256;
-    char buffer[n];
-    memset(buffer, n, sizeof buffer);
-    while (fgets(buffer, n, source) != NULL) {
-        stringbuilder_append(
-            code, buffer); // `buffer` is overwritten every `fgets` execution.
-        memset(buffer, n, sizeof buffer);
+    
+    struct stat file_stat;
+    int stat_result = stat(file_path, &file_stat);
+    if (stat_result == -1) {
+        perror("stat() error");
+        exit(1);
     }
-    return code->entity;
+    
+    int file_size = file_stat.st_size;
+    char *buffer = malloc(file_size + 2);
+    fread(buffer, file_size, 1, source);
+    
+    // Make sure that the end of code is "\n\0".
+    if (file_size == 0 || buffer[file_size - 1] != '\n') {
+        buffer[file_size++] = '\n';
+    }
+    buffer[file_size] = '\0';
+    
+    fclose(source);
+    return buffer;
 }
 
 int main(int argc, char **argv) {
