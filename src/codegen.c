@@ -373,7 +373,7 @@ void codegen(Vector *nodes) {
     if (g_string_map->keys->len) {
         printf("  .text\n");
         printf("  .section .rodata\n");
-        for (int i = 0; g_string_map->keys->data[i]; i++) {
+        for (int i = 0; i < g_string_map->keys->len; i++) {
             printf(".LC%ld:\n", (intptr_t)(void *)(g_string_map->values->data[i]));
             printf("  .string \"%s\"\n", (char *)g_string_map->keys->data[i]);
         }
