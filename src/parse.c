@@ -107,26 +107,25 @@ Node *new_node_def_func(C_type *type, char *name, Vector *params, Node *body) {
     return node;
 }
 
-// This function is
-Node *decl_var(C_type *var_type, char *name) {
-    Node *node = malloc(sizeof(Node));
-    node->name = name;
+//
+C_type *check_array_type(C_type *var_type) {
     if (consume_next_token('[')) {
         C_type *array_type = new_type(TY_ARRAY, map_type_size(var_type->type), var_type->ptr_to);
         array_type->array_of = var_type;
         array_type->array_len = get_token(g_token_index)->value;
         g_token_index++;
         expect_token(']');
-        node->c_type = array_type;
-        return node;
+        return array_type;
     }
-    node->c_type = var_type;
-    return node;
+    return var_type;
 }
 
 // A type and name of global variable is determined before this function is called.
 Node *new_node_decl_gvar(C_type *var_type, char *name) {
-    Node *node = decl_var(var_type, name);
+    C_type *new_var_type = check_array_type(var_type);
+    Node *node = malloc(sizeof(Node));
+    node->name = name;
+    node->c_type = new_var_type;
     node->node_type = ND_GVAR;
 
     map_set(g_gvar_type_map, name, node->c_type);
@@ -147,9 +146,12 @@ Node *new_node_decl_lvar() {
 
     char *name = t->name;
     g_token_index++;
-
-    Node *node = decl_var(var_type, name);
+    
+    C_type *new_var_type = check_array_type(var_type);
+    Node *node = malloc(sizeof(Node));
+    node->c_type = new_var_type;
     node->node_type = ND_LVAR;
+    node->name = name;
     // Array variable
     if (node->c_type->type == TY_ARRAY) {
         node->c_type->array_size = node->c_type->array_of->size * node->c_type->array_len;
@@ -166,14 +168,17 @@ Node *new_node_decl_lvar() {
     return node;
 }
 
+// Create node for a variable already declared.
 Node *new_node_var(char *name) {
     Node *node = malloc(sizeof(Node));
     node->name = name;
     node->c_type = (C_type *)map_get(g_lvar_type_map, name);
 
+    // If this condition is true, local variable.
     if (node->c_type != NULL)
         node->node_type = ND_LVAR;
-    else if (node->c_type == NULL) {
+    // Or global variable.
+    else {
         node->c_type = (C_type *)map_get(g_gvar_type_map, name);
         node->node_type = ND_GVAR;
     }
@@ -469,21 +474,17 @@ Node *term() {
             expect_token(')');
             return new_node_funccall(ident_name, args);
         }
+        // Array variable
         else if (consume_next_token('[')) {
             Node *array_index_node = assign();
             expect_token(']');
             Node *node = new_node(ND_ADD, new_node_var(ident_name), array_index_node);
             return new_node(ND_DEREF, node, NULL);
         }
-        // Local Variable
+        // Local variable
         else {
             return new_node_var(ident_name);
         }
-    }
-    // Token "int"
-    else if (t->type == TK_INT) {
-        g_token_index++;
-        return new_node_decl_lvar();
     }
     else {
         ERROR("Expected value, but got: \"%s\"", t->input);
