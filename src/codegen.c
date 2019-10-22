@@ -37,12 +37,22 @@ void gen_load_value(Node *node) {
         node = node->lhs;
 
     printf("  pop rax\n");
-    if (node->c_type->size == 1)
-        printf("  mov al, BYTE PTR [rax]\n");
-    if (node->c_type->size == 4)
-        printf("  mov eax, DWORD PTR [rax]\n");
-    if (node->c_type->size == 8)
-        printf("  mov rax, [rax]\n");
+    if (node->c_type->type == TY_ARRAY) {
+        if (node->c_type->array_elem_size == 1)
+            printf("  mov al, BYTE PTR [rax]\n");
+        if (node->c_type->array_elem_size == 4)
+            printf("  mov eax, DWORD PTR [rax]\n");
+        if (node->c_type->array_elem_size == 8)
+            printf("  mov rax, [rax]\n");
+    }
+    else {
+        if (node->c_type->size == 1)
+            printf("  mov al, BYTE PTR [rax]\n");
+        if (node->c_type->size == 4)
+            printf("  mov eax, DWORD PTR [rax]\n");
+        if (node->c_type->size == 8)
+            printf("  mov rax, [rax]\n");
+    }
     printf("  push rax\n");
 }
 
@@ -52,12 +62,23 @@ void gen_store_value(Node *node) {
 
     printf("  pop rdi\n");
     printf("  pop rax\n");
-    if (node->c_type->size == 1)
-        printf("  mov BYTE PTR [rax], dil\n");
-    if (node->c_type->size == 4)
-        printf("  mov DWORD PTR [rax], edi\n");
-    else if (node->c_type->size == 8)
-        printf("  mov [rax], rdi\n");
+    
+    if (node->c_type->type == TY_ARRAY) {
+        if (node->c_type->array_elem_size == 1)
+            printf("  mov BYTE PTR [rax], dil\n");
+        else if (node->c_type->array_elem_size == 4)
+            printf("  mov DWORD PTR [rax], edi\n");
+        else if (node->c_type->array_elem_size == 8)
+            printf("  mov [rax], rdi\n");
+    }
+    else {
+        if (node->c_type->size == 1)
+            printf("  mov BYTE PTR [rax], dil\n");
+        else if (node->c_type->size == 4)
+            printf("  mov DWORD PTR [rax], edi\n");
+        else if (node->c_type->size == 8)
+            printf("  mov [rax], rdi\n");
+    }
     printf("  push rdi\n");
 }
 
@@ -238,9 +259,9 @@ void gen_block(Node *node) {
 }
 
 void gen_sizeof(Node *node) {
-    if (node->lhs->c_type->type == TY_ARRAY)
-        printf("  push %d\n", node->lhs->c_type->array_size);
-    else
+//    if (node->lhs->c_type->type == TY_ARRAY)
+//        printf("  push %d\n", node->lhs->c_type->array_size);
+//    else
         printf("  push %d\n", node->lhs->c_type->size);
     printf("# sizeof\n");
 }

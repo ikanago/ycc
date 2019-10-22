@@ -107,12 +107,17 @@ Node *new_node_def_func(C_type *type, char *name, Vector *params, Node *body) {
     return node;
 }
 
-//
+// Check if there's a `[` token to declare array variable.
+// If not, just return argument.
 C_type *check_array_type(C_type *var_type) {
     if (consume_next_token('[')) {
-        C_type *array_type = new_type(TY_ARRAY, map_type_size(var_type->type), var_type->ptr_to);
+        int array_len = get_token(g_token_index)->value;
+        int array_size = var_type->size * array_len;
+        C_type *array_type = new_type(TY_ARRAY, array_size, var_type->ptr_to);
         array_type->array_of = var_type;
-        array_type->array_len = get_token(g_token_index)->value;
+        array_type->array_len = array_len;
+        array_type->size = array_size;
+        array_type->array_elem_size = var_type->size;
         g_token_index++;
         expect_token(']');
         return array_type;
@@ -153,12 +158,12 @@ Node *new_node_decl_lvar() {
     node->node_type = ND_LVAR;
     node->name = name;
     // Array variable
-    if (node->c_type->type == TY_ARRAY) {
-        node->c_type->array_size = node->c_type->array_of->size * node->c_type->array_len;
-        g_variable_offset += node->c_type->array_size;
-    }
-    // Variable
-    else
+//    if (node->c_type->type == TY_ARRAY) {
+//        node->c_type->array_size = node->c_type->array_of->size * node->c_type->array_len;
+//        g_variable_offset += node->c_type->array_size;
+//    }
+//    // Variable
+//    else
         g_variable_offset += node->c_type->size;
     map_set(g_lvar_type_map, name, (void *)node->c_type);
     map_set(g_lvar_offset_map, name, (void *)(intptr_t)g_variable_offset);

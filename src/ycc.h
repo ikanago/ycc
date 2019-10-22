@@ -48,7 +48,7 @@ typedef struct C_type {
     struct C_type *ptr_to;
     struct C_type *array_of;
     int array_len;  // How many elements
-    int array_size; // size * array_len
+    int array_elem_size; // size of each of array element
 } C_type;
 
 typedef struct Vector {
