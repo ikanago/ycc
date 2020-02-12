@@ -1,12 +1,12 @@
 #include "ycc.h"
 
 void usage() {
-    printf("Usage: ycc [options] <file|code>\n");
+    printf("Usage: ycc [options] file\n");
     printf("Options:\n");
     printf(" --help          Show compiler usage.\n");
     printf(" --test          Run test to check each compiler works well.\n");
     printf(
-        " --raw           Receive source code as a command line argument.\n");
+        " --raw <code>    Receive source code as a command line argument.\n");
     printf(" --dump-token    Display analyzed token.\n");
     printf(" --dump-node     Display tree structures of analyzed node.\n");
 }
@@ -17,24 +17,24 @@ char *read_file(char *file_path) {
         perror(file_path);
         exit(1);
     }
-    
+
     struct stat file_stat;
     int stat_result = stat(file_path, &file_stat);
     if (stat_result == -1) {
         perror("stat() error");
         exit(1);
     }
-    
+
     int file_size = file_stat.st_size;
     char *buffer = malloc(file_size + 2);
     fread(buffer, file_size, 1, source);
-    
+
     // Make sure that the end of code is "\n\0".
     if (file_size == 0 || buffer[file_size - 1] != '\n') {
         buffer[file_size++] = '\n';
     }
     buffer[file_size] = '\0';
-    
+
     fclose(source);
     return buffer;
 }
