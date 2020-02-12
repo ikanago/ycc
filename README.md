@@ -6,17 +6,43 @@ This C compiler is written by C, so my current goal is compiling itself.
 I develop this compiler incrementally. In other words, I write code of tokenizer, parser, and code generator little by little when I add a new feature.  
 "ycc" is named after my name. 
 
-# Generative grammar
+## How ro run
+1. Clone this repo.
 
-A: nonterminal symbol  
-e: null
+```
+$ git clone git@github.com:ikanago/ycc.git
+$ cd ycc
+```
 
-| Expression |          Meaning           |
-| :--------: | :------------------------: |
-|     A*     | Repeat A more than 0 times |
-|     A?     |           A or e           |
-|   A \| B   |           A or B           |
-|   (...)    |          Grouping          |
+2. Build the project.
+
+```
+$ make ycc
+```
+
+3. Test(test result will be shown).
+
+```
+$ make test
+```
+
+4. Compile and run C source code.
+
+```
+$ ./run.sh FILE(*.c)
+```
+
+## Generative grammar
+
+$A$: nonterminal symbol  
+$\epsilon$: null
+
+| Expression  |          Meaning           |
+| :---------: | :------------------------: |
+|    $A$*     | Repeat A more than 0 times |
+|    $A$?     |     $A$ or $\epsilon$      |
+| $A$ \| $B$  |         $A$ or $B$         |
+| ( $\cdot$ ) |          Grouping          |
 
 ```
 program    = definition*
