@@ -50,7 +50,8 @@ int main() {
     int r2 = test_strncmp();
     int r3 = test_malloc();
     // Succeed when all return value are 0
-    if (r0 + r1 + r2 + r3 == 0)
+    if (r0 + r1 + r2 + r3 == 0) {
         return 0;
+    }
     return 1;
 }

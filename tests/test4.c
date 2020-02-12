@@ -12,5 +12,6 @@ int scan(char *input, int length) {
 
 int main() {
     scan("hello", 5);
+    printf("test4.c passed.\n");
     return 0;
 }
